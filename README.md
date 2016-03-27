@@ -1,2 +1,2 @@
 # doMynation-framework
-A custom microframework for learning purposes
+A custom microframework made for fun and to learn the intricaties of framework development.
