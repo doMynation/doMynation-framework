@@ -5,6 +5,13 @@ namespace Domynation\Search;
 use Elasticsearch\Client;
 use Solarius\Infrastructure\SearchResult;
 
+/**
+ * Class ElasticSearch
+ *
+ * @todo: Still in progress.
+ *
+ * @package Domynation\Search
+ */
 final class ElasticSearch implements SearchInterface
 {
 
