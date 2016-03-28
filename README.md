@@ -1,6 +1,6 @@
 **doMynation framework**
 =============
-A custom microframework made for fun and to learn the intricaties of framework development. This is an experimental project. **Do not use in production**.
+A custom microframework made for fun and to learn the intricacies of framework development. This is an experimental project. **Do not use in production**.
 
 Requirements
 ------------
