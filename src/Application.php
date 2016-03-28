@@ -47,7 +47,7 @@ final class Application
         // Boot the configuration
         $config = $this->bootConfiguration();
 
-        // Default timezone
+        // Set the default timezone
         date_default_timezone_set(DATE_TIMEZONE);
 
         // Boot the session

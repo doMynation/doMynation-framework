@@ -14,7 +14,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Domynation\\": "src/Domynation"
+      "Domynation\\": "src/"
     },
     "files": [
       "src/Config/constants.php",
@@ -22,16 +22,15 @@
       "src/Helpers/functional.php",
       "src/Helpers/array.php",
       "src/Helpers/util.php"
+    ],
+    "classmap": [
+      "src/_very_old_dependencies"
     ]
   },
   "autoload-dev": {
     "psr-4": {
-      "test\\": "Test"
-    },
-    "classmap": [
-      "tests/",
-      "src/_very_old_dependencies"
-    ]
+      "Test\\": "tests/"
+    }
   },
   "require": {
     "php": ">=7.0.0",
