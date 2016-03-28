@@ -2,6 +2,13 @@
 
 namespace Domynation\Search;
 
+/**
+ * Interface SearchInterface
+ *
+ * @todo: Still in progress. Don't use this.
+ *
+ * @package Domynation\Search
+ */
 interface SearchInterface
 {
 

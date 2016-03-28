@@ -8,7 +8,7 @@ use Solarius\Infrastructure\SearchResult;
 /**
  * Class ElasticSearch
  *
- * @todo: Still in progress.
+ * @todo: Still in progress. Don't use this.
  *
  * @package Domynation\Search
  */
