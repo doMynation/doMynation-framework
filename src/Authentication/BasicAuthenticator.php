@@ -46,7 +46,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
     {
         // Fetch the user
         $user = $this->db->createQueryBuilder()
-            ->select('user.id')
+            ->select('user.id, user.password')
             ->from('users', 'user')
             ->andWhere('user.username = :username')
             ->setParameter('username', $username)
@@ -109,7 +109,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
      */
     private function hydrateUser(array $user)
     {
-        return new User($user['id'], $user['username'], $user['fullName']);
+        return new User($user['id'], $user['username'], $user['full_name']);
     }
 
     /**
