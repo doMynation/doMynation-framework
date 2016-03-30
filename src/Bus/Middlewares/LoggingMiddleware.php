@@ -2,17 +2,28 @@
 
 namespace Domynation\Bus\Middlewares;
 
+use Domynation\Authentication\AuthenticatorInterface;
 use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 use Psr\Log\LoggerInterface;
 
 final class LoggingMiddleware extends CommandBusMiddleware
 {
+
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var \Domynation\Authentication\AuthenticatorInterface
+     */
+    private $auth;
+
+    public function __construct(LoggerInterface $logger, AuthenticatorInterface $auth)
     {
         $this->logger = $logger;
+        $this->auth = $auth;
     }
 
     public function handle(Command $command, CommandHandler $handler)
@@ -21,10 +32,12 @@ final class LoggingMiddleware extends CommandBusMiddleware
         $data = [];
 
         // Append the user info (if authentified)
-        if (\User::isLogged()) {
+        if ($this->auth->isAuthenticated()) {
+            $user = $this->auth->getUser();
+
             $data['user'] = [
-                'id'   => \User::id(),
-                'name' => utf8_encode(\User::get('fullName'))
+                'id'   => $user->getId(),
+                'name' => utf8_encode($user->getFullName())
             ];
         }
 

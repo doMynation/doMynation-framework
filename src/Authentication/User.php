@@ -1,10 +1,11 @@
 <?php
 
-namespace Domynation\Security\Authentication;
+namespace Domynation\Authentication;
 
+use Domynation\Authorization\PermissionInterface;
 use Domynation\Entities\Entity;
 
-class User extends Entity
+class User extends Entity implements UserInterface
 {
 
     /**
@@ -33,7 +34,7 @@ class User extends Entity
     protected $password;
 
     /**
-     * @var array
+     * @var PermissionInterface[]
      */
     protected $permissions;
 
@@ -46,6 +47,13 @@ class User extends Entity
      * @var \DateTime
      */
     protected $passwordExpiresAt;
+
+    public function __construct($id, $username, $fullName)
+    {
+        $this->id       = $id;
+        $this->username = $username;
+        $this->fullName = $fullName;
+    }
 
     public function toArray()
     {
@@ -140,5 +148,17 @@ class User extends Entity
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function hasPermission($code)
+    {
+        return array_some($this->permissions, function (PermissionInterface $permission) use ($code) {
+            return $permission->getCode() === $code;
+        });
     }
 }

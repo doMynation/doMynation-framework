@@ -2,17 +2,28 @@
 
 namespace Domynation\Http;
 
+use Domynation\Authentication\AuthenticatorInterface;
 use Domynation\Exceptions\AuthenticationException;
 
 final class AuthenticationMiddleware extends RouterMiddleware
 {
 
     /**
+     * @var \Domynation\Authentication\AuthenticatorInterface
+     */
+    private $auth;
+
+    public function __construct(AuthenticatorInterface $auth)
+    {
+        $this->auth = $auth;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function handle(Route $route, array $inputs)
     {
-        if (!\User::isLogged() && $route->isSecure()) {
+        if (!$this->auth->isAuthenticated() && $route->isSecure()) {
             throw new AuthenticationException;
         }
 

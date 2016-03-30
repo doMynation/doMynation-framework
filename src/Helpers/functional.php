@@ -27,6 +27,13 @@ function memoize(callable $function)
     };
 }
 
+/**
+ * Returns a curried version of the array_filter function.
+ *
+ * @param callable $function
+ *
+ * @return callable
+ */
 function filter(callable $function)
 {
     return function (array $array) use ($function) {
@@ -88,7 +95,7 @@ function compose(callable ...$functions)
  *
  * @return \Generator
  */
-function take(int $n, Generator $gen)
+function take($n, Generator $gen)
 {
     while ($n-- > 0 && $gen->valid()) {
         yield $gen->current();

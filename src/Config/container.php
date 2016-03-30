@@ -36,7 +36,12 @@ return [
         return $db;
     },
 
-    \Domynation\Bus\CommandBusInterface::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Eventing\EventDispatcherInterface $dispatcher, \Domynation\Cache\CacheInterface $cache) {
+    \Domynation\Bus\CommandBusInterface::class => function (
+        \Interop\Container\ContainerInterface $container,
+        \Domynation\Authentication\AuthenticatorInterface $auth,
+        \Domynation\Eventing\EventDispatcherInterface $dispatcher,
+        \Domynation\Cache\CacheInterface $cache
+    ) {
         $busLogger = new Monolog\Logger('Bus_logger');
         $busLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/bus.log', Monolog\Logger::INFO));
 
@@ -44,23 +49,23 @@ return [
             $container,
             $dispatcher,
             [
-                new \Domynation\Bus\Middlewares\AuthorizationMiddleware,
+                new \Domynation\Bus\Middlewares\AuthorizationMiddleware($auth),
                 new \Domynation\Bus\Middlewares\CachingMiddleware($cache),
-                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger),
+                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $auth),
                 new \Domynation\Bus\Middlewares\HandlingMiddleware
             ]);
     },
 
-    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container) {
+    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\AuthenticatorInterface $auth) {
         $routerLogger = new Monolog\Logger('Router_logger');
         $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
 
         return new \Domynation\Http\Router(
             $container,
-            new \Domynation\Http\AuthenticationMiddleware,
-            new \Domynation\Http\AuthorizationMiddleware,
+            new \Domynation\Http\AuthenticationMiddleware($auth),
+            new \Domynation\Http\AuthorizationMiddleware($auth),
             new \Domynation\Http\ValidationMiddleware($container),
-            new \Domynation\Http\LoggingMiddleware($routerLogger),
+            new \Domynation\Http\LoggingMiddleware($routerLogger, $auth),
             new \Domynation\Http\HandlingMiddleware($container)
         );
     },
@@ -109,8 +114,8 @@ return [
         return new \Domynation\Security\BasicPasswordGenerator;
     },
 
-    \Domynation\Security\Authentication\UserAuthenticatorInterface::class => function (\Doctrine\ORM\EntityManager $orm, \Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
-        $instance = new \Domynation\Security\Authentication\DoctrineUserAuthenticator($orm, $db, $session, $password);
+    \Domynation\Authentication\AuthenticatorInterface::class => function (\Doctrine\ORM\EntityManager $orm, \Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
+        $instance = new \Domynation\Authentication\DoctrineUserAuthenticator($orm, $db, $session, $password);
 
         // Attempt to remmember an active user session
         $instance->remember();
@@ -133,13 +138,15 @@ return [
 
     \Domynation\Communication\MailerInterface::class => function () {
         switch (EMAIL_DRIVER) {
-            case 'native':
-                $mailer = new \Domynation\Communication\NativeMailer;
-                break;
-
             case 'mailgun':
                 $mailer = new Domynation\Communication\MailgunMailer(MAILGUN_API_KEY, MAILGUN_DEFAULT_DOMAIN, EMAIL_DEFAULT_SENDER);
                 break;
+
+            case 'native':
+            default:
+                $mailer = new \Domynation\Communication\NativeMailer;
+                break;
+
         }
 
         if (IS_PRODUCTION) {

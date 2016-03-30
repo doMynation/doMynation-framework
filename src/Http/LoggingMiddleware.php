@@ -2,6 +2,7 @@
 
 namespace Domynation\Http;
 
+use Domynation\Authentication\AuthenticatorInterface;
 use Psr\Log\LoggerInterface;
 
 final class LoggingMiddleware extends RouterMiddleware
@@ -12,9 +13,15 @@ final class LoggingMiddleware extends RouterMiddleware
      */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var \Domynation\Authentication\AuthenticatorInterface
+     */
+    private $auth;
+
+    public function __construct(LoggerInterface $logger, AuthenticatorInterface $auth)
     {
         $this->logger = $logger;
+        $this->auth = $auth;
     }
 
     /**
@@ -22,7 +29,7 @@ final class LoggingMiddleware extends RouterMiddleware
      */
     public function handle(Route $route, array $inputs)
     {
-        if (\User::isLogged()) {
+        if ($this->auth->isAuthenticated()) {
             $this->doLog($route, $inputs);
         }
 
@@ -36,10 +43,12 @@ final class LoggingMiddleware extends RouterMiddleware
      */
     private function doLog(Route $route, array $inputs)
     {
+        $user = $this->auth->getUser();
+
         $data = [
             'user'  => [
-                'id'   => \User::id(),
-                'name' => \User::get('fullName')
+                'id'   => $user->getId(),
+                'name' => $user->getFullName(),
             ],
             'route' => [
                 'name'   => $route->getName(),

@@ -30,7 +30,7 @@ final class AuthorizationMiddleware extends CommandBusMiddleware
     }
 
     /**
-     * Authorizes the execution of the command
+     * Authorizes the execution of the command.
      *
      * @param Command $command
      * @param CommandHandler $handler
@@ -39,19 +39,7 @@ final class AuthorizationMiddleware extends CommandBusMiddleware
      */
     private function authorize(Command $command, CommandHandler $handler)
     {
-        $authorized = true;
-
-        // If the command has a "requiredPermissions" property,
-        // use them to authorize the execution
-        if (property_exists($handler, 'requiredPermissions')) {
-            $authorized = \User::hasAccess($handler->requiredPermissions);
-        }
-
-        // If an "authorize" method is defined, execute it
-        if ($authorized && method_exists($handler, 'authorize')) {
-            $authorized = $handler->authorize($command);
-        }
-
-        return $authorized;
+        // If an "authorize" method is defined, execute it. Otherwise return true.
+        return method_exists($handler, 'authorize') ? $handler->authorize($command) : true;
     }
 }

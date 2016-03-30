@@ -1,21 +1,14 @@
 <?php
 
-namespace Domynation\Security\Authentication;
+namespace Domynation\Authentication;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
+use Domynation\Exceptions\AuthenticationException;
 use Domynation\Security\PasswordInterface;
 use Domynation\Session\SessionInterface;
-use Solarius\Common\Entities\Permission;
-use Solarius\Common\Entities\User;
 
-final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
+final class BasicAuthenticator implements AuthenticatorInterface
 {
-
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
 
     /**
      * @var \Doctrine\DBAL\Connection
@@ -33,13 +26,12 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
     private $passwordManager;
 
     /**
-     * @var User
+     * @var UserInterface
      */
     private $user;
 
-    public function __construct(EntityManager $em, Connection $db, SessionInterface $session, PasswordInterface $passwordManager)
+    public function __construct(Connection $db, SessionInterface $session, PasswordInterface $passwordManager)
     {
-        $this->em              = $em;
         $this->db              = $db;
         $this->session         = $session;
         $this->passwordManager = $passwordManager;
@@ -52,24 +44,24 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
      */
     public function attempt($username, $password)
     {
-        $user = $this->em->createQueryBuilder()
-            ->select('user')
-            ->from(User::class, 'user')
-            ->where('user.disabledAt IS NULL')
+        // Fetch the user
+        $user = $this->db->createQueryBuilder()
+            ->select('user.id')
+            ->from('users', 'user')
             ->andWhere('user.username = :username')
             ->setParameter('username', $username)
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->execute()->fetch();
 
-        if ($user === null) {
+        if ($user === false) {
             return false;
         }
 
-        if (!$this->passwordManager->check($password, $user->getPassword())) {
+        // Check if the password matches
+        if (!$this->passwordManager->check($password, $user['password'])) {
             return false;
         }
 
-        return $user->getId();
+        return $user['id'];
     }
 
     /**
@@ -77,17 +69,21 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
      */
     public function authenticate($userId)
     {
-        $user = $this->em->getRepository(User::class)->find($userId);
+        // Fetch the user
+        $userInfo = $this->db->fetchAssoc('SELECT * FROM users WHERE id = ?', [$userId]);
 
-        if ($user === false) {
-            return false;
+        if ($userInfo === false) {
+            throw new AuthenticationException("Authentication failed");
         }
+
+        // Create the user instance
+        $user = $this->hydrateUser($userInfo);
 
         // Generate session fingerprint
         $sessionFingerprint = $this->createSessionFingerprint();
-        $now                = (new \DateTime)->format("Y-m-d H:i:s");
 
-        // Update the user session
+        // Update the user's info in the database
+        $now = (new \DateTime)->format("Y-m-d H:i:s");
         $this->db->update('users', [
             'ip_address'         => $_SERVER['REMOTE_ADDR'],
             'is_online'          => 1,
@@ -96,23 +92,24 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
             'last_activity_date' => $now
         ], ['id' => $userId]);
 
-        // Log connection
-        $this->db->insert('connection_logs', [
-            'user_id'            => $userId,
-            'user_ip_address'    => $_SERVER['REMOTE_ADDR'],
-            'session_start_date' => $now
-        ]);
-
         // Set session
         $this->session->set('ID', $userId);
         $this->session->set('ss_fprint', $sessionFingerprint);
 
-        // Set the authenticated user
-        $this->user = $user;
-
-        $this->loadBackwardCompatibleLogic($user);
-
         return $user;
+    }
+
+    /**
+     * Hydrates an associative array containing the user info into
+     * a User object.
+     *
+     * @param array $user
+     *
+     * @return \Domynation\Authentication\User
+     */
+    private function hydrateUser(array $user)
+    {
+        return new User($user['id'], $user['username'], $user['fullName']);
     }
 
     /**
@@ -127,18 +124,16 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
         }
 
         // Fetch the user info
-        $user = $this->em->getRepository(User::class)->findOneBy(['id' => $userId, 'isOnline' => 1]);
+        $userInfo = $this->db->fetchAssoc('SELECT * FROM users WHERE is_online = 1 AND id = ?', [$userId]);
 
-        if ($user === false) {
+        if (empty($user)) {
             return null;
         }
 
         // Store the user
-        $this->user = $user;
+        $this->user = $this->hydrateUser($userInfo);
 
-        $this->loadBackwardCompatibleLogic($user);
-
-        return $user;
+        return $this->user;
     }
 
     /**
@@ -195,21 +190,5 @@ final class DoctrineUserAuthenticator implements UserAuthenticatorInterface
     private function checkSession()
     {
         return $this->session->has('ss_fprint') && $this->createSessionFingerprint() === $this->session->get('ss_fprint');
-    }
-
-    /**
-     * @param \Solarius\Common\Entities\User $user
-     */
-    private function loadBackwardCompatibleLogic(User $user)
-    {
-        // Transform user permissions
-        $permissions = array_map(function (Permission $permission) {
-            return $permission->getCode();
-        }, $user->getPermissions());
-
-        $userData = array_merge($user->toArray(), ['permissions' => $permissions]);
-
-        // Backward compatibility hook
-        \User::init($userData);
     }
 }

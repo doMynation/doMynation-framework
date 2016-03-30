@@ -1,8 +1,8 @@
 <?php
 
-namespace Domynation\Security\Authentication;
+namespace Domynation\Authentication;
 
-interface UserAuthenticatorInterface
+interface AuthenticatorInterface
 {
 
     /**
@@ -16,26 +16,25 @@ interface UserAuthenticatorInterface
     public function attempt($username, $password);
 
     /**
-     * Authenticates as the user corresponding to the
-     * id provided.
+     * Authenticates as the user corresponding to the id provided.
      *
-     * @param $userId
+     * @param int $userId
      *
-     * @return \Solarius\Common\Entities\User
+     * @return UserInterface
      */
     public function authenticate($userId);
 
     /**
-     * Deauthenticates the authenticated user.
+     * Deauthenticates the user.
      *
      * @return bool
      */
     public function deauthenticate();
 
     /**
-     * Loads the currently authenticated user.
+     * Remmembers the currently authenticated user.
      *
-     * @return User
+     * @return UserInterface
      */
     public function remember();
 
@@ -49,7 +48,7 @@ interface UserAuthenticatorInterface
     /**
      * Returns the authenticated user.
      *
-     * @return User
+     * @return UserInterface
      */
     public function getUser();
 }
