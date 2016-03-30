@@ -69,7 +69,11 @@ final class Application
     {
         $builder = new ContainerBuilder();
         $builder->useAnnotations(false);
-        $builder->setDefinitionCache(new ApcuCache());
+
+        // Cache the definitions in production
+        if (IS_PRODUCTION) {
+            $builder->setDefinitionCache(new ApcuCache());
+        }
 
         // Load all global services
         $builder->addDefinitions(array_merge(require_once __DIR__ . '/Config/container.php', [
