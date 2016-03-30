@@ -2,20 +2,20 @@
 
 namespace Domynation\Http;
 
+use Domynation\Authentication\UserInterface;
 use Domynation\Exceptions\AuthorizationException;
-use Domynation\Authentication\AuthenticatorInterface;
 
 final class AuthorizationMiddleware extends RouterMiddleware
 {
 
     /**
-     * @var \Domynation\Authentication\AuthenticatorInterface
+     * @var UserInterface
      */
-    private $auth;
+    private $user;
 
-    public function __construct(AuthenticatorInterface $auth)
+    public function __construct(UserInterface $user)
     {
-        $this->auth = $auth;
+        $this->user = $user;
     }
 
     /**
@@ -26,9 +26,7 @@ final class AuthorizationMiddleware extends RouterMiddleware
         $permissions = $route->getRequiredPermissions();
 
         if (!empty($permissions)) {
-            $user = $this->auth->getUser();
-
-            if ($user->hasPermission($permissions)) {
+            if ($this->user->hasPermission($permissions)) {
                 throw new AuthorizationException;
             }
         }
