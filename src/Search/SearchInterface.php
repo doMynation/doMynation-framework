@@ -18,7 +18,7 @@ interface SearchInterface
      * @param array $types
      * @param array $options
      *
-     * @return \Solarius\Infrastructure\SearchResult
+     * @return SearchResult
      */
     public function search($needle, $index, array $types, array $options = []);
 

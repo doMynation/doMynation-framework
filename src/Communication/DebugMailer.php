@@ -2,8 +2,6 @@
 
 namespace Domynation\Communication;
 
-use Solarius\Common\ValueObjects\Email;
-
 final class DebugMailer implements MailerInterface
 {
     /**

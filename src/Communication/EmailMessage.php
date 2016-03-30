@@ -27,7 +27,7 @@ final class EmailMessage
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
         Assertion::nullOrEmail($from, "Invalid FROM email");
-        Assertion::allIsInstanceOf($transformedRecipients, 'Solarius\Common\ValueObjects\Email', "Invalid recipient(s)");
+        Assertion::allIsInstanceOf($transformedRecipients, Email::class, "Invalid recipient(s)");
 
         $this->recipients = $transformedRecipients;
         $this->subject    = $subject;

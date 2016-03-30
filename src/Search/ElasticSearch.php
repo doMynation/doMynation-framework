@@ -3,7 +3,6 @@
 namespace Domynation\Search;
 
 use Elasticsearch\Client;
-use Solarius\Infrastructure\SearchResult;
 
 /**
  * Class ElasticSearch
