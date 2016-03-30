@@ -40,29 +40,34 @@ return [
         \Interop\Container\ContainerInterface $container,
         \Domynation\Authentication\AuthenticatorInterface $auth,
         \Domynation\Eventing\EventDispatcherInterface $dispatcher,
-        \Domynation\Cache\CacheInterface $cache,
-        \Domynation\Logging\BusLoggerInterface $logger
+        \Domynation\Cache\CacheInterface $cache
     ) {
+        $busLogger = new Monolog\Logger('Bus_logger');
+        $busLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/bus.log', Monolog\Logger::INFO));
+
         return new Domynation\Bus\BasicCommandBus(
             $container,
             $dispatcher,
             [
                 new \Domynation\Bus\Middlewares\AuthorizationMiddleware($auth),
                 new \Domynation\Bus\Middlewares\CachingMiddleware($cache),
-                new \Domynation\Bus\Middlewares\LoggingMiddleware($logger, $auth),
+                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $auth),
                 new \Domynation\Bus\Middlewares\HandlingMiddleware
             ]);
     },
 
-    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config) {
-        $middlewareClasses = $config->get('routeMiddlewares');
+    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\AuthenticatorInterface $auth) {
+        $routerLogger = new Monolog\Logger('Router_logger');
+        $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
 
-        // Resolve each middleware and their dependencies
-        $middlewares = array_map(function ($class) use ($container) {
-            return $container->get($class);
-        }, $middlewareClasses);
-
-        return new \Domynation\Http\Router($container, $middlewares);
+        return new \Domynation\Http\Router(
+            $container,
+            new \Domynation\Http\AuthenticationMiddleware($auth),
+            new \Domynation\Http\AuthorizationMiddleware($auth),
+            new \Domynation\Http\ValidationMiddleware($container),
+            new \Domynation\Http\LoggingMiddleware($routerLogger, $auth),
+            new \Domynation\Http\HandlingMiddleware($container)
+        );
     },
 
     \Domynation\Cache\CacheInterface::class => function () {
@@ -198,20 +203,6 @@ return [
         );
     },
 
-    \Domynation\Logging\RouteLoggerInterface::class => function () {
-        $logger = new Monolog\Logger('Router_logger');
-        $logger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
-
-        return $logger;
-    },
-
-    \Domynation\Logging\BusLoggerInterface::class => function () {
-        $logger = new Monolog\Logger('Bus_logger');
-        $logger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/bus.log', Monolog\Logger::INFO));
-
-        return $logger;
-    },
-
     // aliases
-    'view'                                        => \DI\get(\Domynation\View\ViewFactoryInterface::class),
+    'view'                                          => \DI\get(\Domynation\View\ViewFactoryInterface::class),
 ];

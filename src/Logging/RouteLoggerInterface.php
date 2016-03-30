@@ -2,9 +2,9 @@
 
 namespace Domynation\Logging;
 
-use Psr\Log\LoggerInterface;
-
-interface RouteLoggerInterface extends LoggerInterface
+interface ApplicationLoggerInterface
 {
-
+    public function logRoute($data);
+    public function logCommand($data);
+    public function logErro($data);
 }

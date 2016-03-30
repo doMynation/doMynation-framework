@@ -3,18 +3,18 @@
 namespace Domynation\Http;
 
 use Assert\AssertionFailedException;
-use DI\Container;
 use Domynation\Exceptions\ValidationException;
+use Interop\Container\ContainerInterface;
 
 final class ValidationMiddleware extends RouterMiddleware
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var ContainerInterface
      */
     private $container;
 
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
