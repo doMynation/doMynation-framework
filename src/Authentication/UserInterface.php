@@ -21,7 +21,7 @@ interface UserInterface
     public function getUsername();
 
     /**
-     * @param string $code
+     * @param string|string[] $code
      *
      * @return bool
      */
@@ -31,4 +31,9 @@ interface UserInterface
      * @return array
      */
     public function getPermissions();
+
+    /**
+     * @return bool
+     */
+    public function isAuthenticated();
 }

@@ -157,8 +157,25 @@ class User extends Entity implements UserInterface
      */
     public function hasPermission($code)
     {
-        return array_some($this->permissions, function (PermissionInterface $permission) use ($code) {
-            return $permission->getCode() === $code;
+        // Collect all the codes
+        $permissionCodes = array_map(function (PermissionInterface $permission) {
+            return $permission->getCode();
+        }, $this->permissions);
+
+        if (!is_array($code)) {
+            return in_array($code, $permissionCodes);
+        }
+
+        return array_every($code, function ($permissionCode) use ($permissionCodes) {
+            return in_array($permissionCode, $permissionCodes);
         });
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthenticated()
+    {
+        return true;
     }
 }
