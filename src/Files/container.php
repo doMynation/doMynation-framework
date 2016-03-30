@@ -56,16 +56,16 @@ return [
             ]);
     },
 
-    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\AuthenticatorInterface $auth) {
+    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\UserInterface $user) {
         $routerLogger = new Monolog\Logger('Router_logger');
         $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
 
         return new \Domynation\Http\Router(
             $container,
-            new \Domynation\Http\AuthenticationMiddleware($auth),
-            new \Domynation\Http\AuthorizationMiddleware($auth),
+            new \Domynation\Http\AuthenticationMiddleware($user),
+            new \Domynation\Http\AuthorizationMiddleware($user),
             new \Domynation\Http\ValidationMiddleware($container),
-            new \Domynation\Http\LoggingMiddleware($routerLogger, $auth),
+            new \Domynation\Http\LoggingMiddleware($routerLogger, $user),
             new \Domynation\Http\HandlingMiddleware($container)
         );
     },
@@ -121,6 +121,14 @@ return [
         $instance->remember();
 
         return $instance;
+    },
+
+    \Domynation\Authentication\UserInterface::class => function (\Domynation\Authentication\AuthenticatorInterface $auth) {
+        if (!$auth->isAuthenticated()) {
+            return new \Domynation\Authentication\NullUser;
+        }
+
+        return $auth->getUser();
     },
 
     \Domynation\Storage\StorageInterface::class => function () {
@@ -204,5 +212,5 @@ return [
     },
 
     // aliases
-    'view'                                          => \DI\get(\Domynation\View\ViewFactoryInterface::class),
+    'view'                                    => \DI\get(\Domynation\View\ViewFactoryInterface::class),
 ];
