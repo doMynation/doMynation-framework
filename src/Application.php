@@ -76,7 +76,7 @@ final class Application
         }
 
         // Load all global services
-        $builder->addDefinitions(array_merge(require_once __DIR__ . '/Config/container.php', [
+        $builder->addDefinitions(array_merge(require_once __DIR__ . '/Files/container.php', [
             ConfigInterface::class  => $config,
             SessionInterface::class => $session
         ]));

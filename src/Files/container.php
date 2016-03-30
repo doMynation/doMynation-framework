@@ -181,9 +181,11 @@ return [
             );
         }
 
-        include_once PATH_BASE . '/config/twig.php';
+        $instance = new \Domynation\View\TwigViewFactory($twig);
 
-        return new \Domynation\View\TwigViewFactory($twig);
+        include_once __DIR__ . '/twig.php';
+
+        return $instance;
     },
 
 

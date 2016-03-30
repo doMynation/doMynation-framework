@@ -126,7 +126,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
         // Fetch the user info
         $userInfo = $this->db->fetchAssoc('SELECT * FROM users WHERE is_online = 1 AND id = ?', [$userId]);
 
-        if (empty($user)) {
+        if (empty($userInfo)) {
             return null;
         }
 

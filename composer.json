@@ -17,7 +17,7 @@
       "Domynation\\": "src/"
     },
     "files": [
-      "src/Config/constants.php",
+      "src/Files/constants.php",
       "src/Helpers/functional.php",
       "src/Helpers/functional.php",
       "src/Helpers/array.php",
