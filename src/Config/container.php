@@ -114,8 +114,8 @@ return [
         return new \Domynation\Security\BasicPasswordGenerator;
     },
 
-    \Domynation\Authentication\AuthenticatorInterface::class => function (\Doctrine\ORM\EntityManager $orm, \Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
-        $instance = new \Domynation\Authentication\BasicAuthenticator($orm, $db, $session, $password);
+    \Domynation\Authentication\AuthenticatorInterface::class => function (\Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
+        $instance = new \Domynation\Authentication\BasicAuthenticator($db, $session, $password);
 
         // Attempt to remmember an active user session
         $instance->remember();
