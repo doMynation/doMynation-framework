@@ -64,3 +64,7 @@ define('GOOGLE_MAP_API_KEY', 'fill_me');
 // Rackspace cloudfiles API. Uncomment this if you chose `rackspace` as the storage driver.
 define('RACKSPACE_USERNAME', 'fill_me');
 define('RACKSPACE_PASSWORD', 'fill_me');
+
+define('AWS_S3_REGION', 'fill_me');
+define('AWS_S3_API_KEY', 'fill_me');
+define('AWS_S3_SECRET_KEY', 'fill_me');

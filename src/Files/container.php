@@ -133,6 +133,10 @@ return [
 
     \Domynation\Storage\StorageInterface::class => function () {
         switch (STORAGE_DRIVER) {
+            case 'aws-s3':
+                return new \Domynation\Storage\AWSS3FileStorage(AWS_S3_REGION, AWS_S3_API_KEY, AWS_S3_SECRET_KEY);
+                break;
+
             case 'rackspace':
                 return new Domynation\Storage\RackspaceFileStorage(RACKSPACE_USERNAME, RACKSPACE_PASSWORD);
                 break;
