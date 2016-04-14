@@ -1,7 +1,7 @@
 <?php
 
 use DI\InvokerInterface;
-use Domynation\Authentication\AuthenticatorInterface;
+use Domynation\Authentication\UserInterface;
 use Domynation\Http\AuthenticationMiddleware;
 use Domynation\Http\AuthorizationMiddleware;
 use Domynation\Http\HandlingMiddleware;
@@ -25,12 +25,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $container = $this->getMock(ContainerInterface::class);
         $container->method('get')->willReturn('something');
 
-        $authenticator = $this->getMock(AuthenticatorInterface::class);
+        $user = $this->getMock(UserInterface::class);
 
         $this->router = new Router(
             $container,
-            new AuthenticationMiddleware($authenticator),
-            new AuthorizationMiddleware($authenticator),
+            new AuthenticationMiddleware($user),
+            new AuthorizationMiddleware($user),
             new ValidationMiddleware($container),
             new HandlingMiddleware($invoker)
         );
