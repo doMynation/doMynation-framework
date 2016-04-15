@@ -2,6 +2,7 @@
 
 namespace Domynation\Storage;
 
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Ramsey\Uuid\Uuid;
 
@@ -42,7 +43,22 @@ final class AWSS3FileStorage implements StorageInterface
      */
     public function get($key, $data = [])
     {
-        // TODO: Implement get() method.
+        if (!isset($data['container'])) {
+            throw new \RuntimeException("Container missing");
+        }
+
+        $response = $this->client->getObject([
+            'Bucket' => $data['container'],
+            'Key' => $key
+        ]);
+
+        return [
+            'name' => $key,
+            'url' => $response['@metadata']['effectiveUri'],
+            'size' => (int)$response['ContentLength'],
+            'mimeType' => $response['ContentType'],
+            'metadata' => $response['Metadata']
+        ];
     }
 
     /**
@@ -54,7 +70,18 @@ final class AWSS3FileStorage implements StorageInterface
      */
     public function getAll($data = [])
     {
-        // TODO: Implement getAll() method.
+        $response = $this->client->listObjects([
+            'Bucket' => $data['container'],
+            'MaxKeys' => isset($data['limit']) ? $data['limit'] : 1000
+        ]);
+
+        return array_map(function($file) use ($data) {
+            return [
+                'name' => $file['Key'],
+                'size' => $file['Size'],
+                'url' => "https://s3.amazonaws.com/{$data['container']}/{$file['Key']}"
+            ];
+        }, $response['Contents']);
     }
 
     /**
@@ -67,17 +94,23 @@ final class AWSS3FileStorage implements StorageInterface
      */
     public function put($filePath, $data = [])
     {
+        if (!isset($data['container'])) {
+            throw new \RuntimeException("Container missing");
+        }
+
         $fileInfo = pathinfo($filePath);
 
+        // Generate a unique name
         $key = Uuid::uuid4() . '.' . $fileInfo['extension'];
 
         $result = $this->client->putObject([
-            'Bucket'     => $data['bucket'],
+            'Bucket'     => $data['container'],
             'Key'        => $key,
             'SourceFile' => $filePath,
-            'Metadata'   => [
+            'ACL'        => 'public-read',
+            'Metadata'   => array_merge($data, [
                 'originalName' => $fileInfo['basename']
-            ]
+            ])
         ]);
 
         return new StorageResponse($key, $result['ObjectURL']);
@@ -93,7 +126,16 @@ final class AWSS3FileStorage implements StorageInterface
      */
     public function delete($key, $data = [])
     {
-        // TODO: Implement delete() method.
+        if (!isset($data['container'])) {
+            throw new \RuntimeException("Container missing");
+        }
+
+        $response = $this->client->deleteObject([
+            'Bucket'     => $data['container'],
+            'Key'        => $key,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -106,6 +148,12 @@ final class AWSS3FileStorage implements StorageInterface
      */
     public function exists($key, $data = [])
     {
-        // TODO: Implement exists() method.
+        try {
+            $file = $this->get($key, $data);
+        } catch (S3Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }
