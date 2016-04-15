@@ -6,7 +6,7 @@ use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Ramsey\Uuid\Uuid;
 
-final class AWSS3FileStorage implements StorageInterface
+final class AwsS3FileStorage implements StorageInterface
 {
 
     /**
@@ -15,7 +15,7 @@ final class AWSS3FileStorage implements StorageInterface
     private $client;
 
     /**
-     * AWSS3FileStorage constructor.
+     * AwsS3FileStorage constructor.
      *
      * @param string $region
      * @param string $apiKey
@@ -24,7 +24,7 @@ final class AWSS3FileStorage implements StorageInterface
     public function __construct($region, $apiKey, $privateKey)
     {
         $this->client = new S3Client([
-            'version'     => 'latest',
+            'version'     => 'v3',
             'region'      => $region,
             'credentials' => [
                 'key'    => $apiKey,

@@ -133,8 +133,8 @@ return [
 
     \Domynation\Storage\StorageInterface::class => function () {
         switch (STORAGE_DRIVER) {
-            case 'aws-s3':
-                return new \Domynation\Storage\AWSS3FileStorage(AWS_S3_REGION, AWS_S3_API_KEY, AWS_S3_SECRET_KEY);
+            case 'aws':
+                return new \Domynation\Storage\AwsS3FileStorage(AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
                 break;
 
             case 'rackspace':
@@ -150,6 +150,10 @@ return [
 
     \Domynation\Communication\MailerInterface::class => function () {
         switch (EMAIL_DRIVER) {
+            case 'aws':
+                return new \Domynation\Communication\AwsSesMailer(AWS_SES_DOMAIN, AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
+                break;
+
             case 'mailgun':
                 $mailer = new Domynation\Communication\MailgunMailer(MAILGUN_API_KEY, MAILGUN_DEFAULT_DOMAIN, EMAIL_DEFAULT_SENDER);
                 break;
