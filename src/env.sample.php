@@ -65,6 +65,9 @@ define('GOOGLE_MAP_API_KEY', 'fill_me');
 define('RACKSPACE_USERNAME', 'fill_me');
 define('RACKSPACE_PASSWORD', 'fill_me');
 
-define('AWS_S3_REGION', 'fill_me');
-define('AWS_S3_API_KEY', 'fill_me');
-define('AWS_S3_SECRET_KEY', 'fill_me');
+// Amazon AWS credentials
+define('AWS_REGION', 'fill_me');
+define('AWS_API_KEY', 'fill_me');
+define('AWS_SECRET_KEY', 'fill_me');
+define('AWS_SES_DOMAIN', 'fill_me');
+
