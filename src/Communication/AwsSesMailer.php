@@ -31,7 +31,7 @@ final class AwsSesMailer implements MailerInterface
         $this->domain = $domain;
 
         $this->client = new SesClient([
-            'version'     => 'v3',
+            'version'     => 'latest',
             'region'      => $region,
             'credentials' => [
                 'key'    => $apiKey,

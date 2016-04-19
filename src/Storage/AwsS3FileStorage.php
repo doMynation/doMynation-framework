@@ -24,7 +24,7 @@ final class AwsS3FileStorage implements StorageInterface
     public function __construct($region, $apiKey, $privateKey)
     {
         $this->client = new S3Client([
-            'version'     => 'v3',
+            'version'     => 'latest',
             'region'      => $region,
             'credentials' => [
                 'key'    => $apiKey,
