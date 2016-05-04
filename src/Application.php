@@ -11,6 +11,7 @@ use Domynation\Http\Router;
 use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 final class Application
 {
@@ -53,8 +54,11 @@ final class Application
         // Boot the session
         $session = $this->bootSession();
 
+        // Boot the HTTP request
+        $request = $this->bootRequest();
+
         // Boot the container
-        $this->container = $this->bootContainer($config, $session);
+        $this->container = $this->bootContainer($config, $session, $request);
     }
 
     /**
@@ -63,9 +67,12 @@ final class Application
      * @param \Domynation\Config\ConfigInterface $config
      * @param \Domynation\Session\SessionInterface $session
      *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
      * @return \DI\Container
+     * @throws \DI\NotFoundException
      */
-    private function bootContainer(ConfigInterface $config, SessionInterface $session)
+    private function bootContainer(ConfigInterface $config, SessionInterface $session, Request $request)
     {
         $builder = new ContainerBuilder();
         $builder->useAnnotations(false);
@@ -78,6 +85,7 @@ final class Application
         // Load all global services
         $builder->addDefinitions(array_merge(require_once __DIR__ . '/Files/container.php', [
             ConfigInterface::class  => $config,
+            Request::class  => $request,
             SessionInterface::class => $session
         ]));
 
@@ -171,4 +179,13 @@ final class Application
 
         // @todo: Set the error handling
     }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    private function bootRequest()
+    {
+        return Request::createFromGlobals();
+    }
+
 }

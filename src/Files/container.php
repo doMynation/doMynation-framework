@@ -70,6 +70,10 @@ return [
         );
     },
 
+    \Domynation\Http\SymfonyRouter::class => function (\Symfony\Component\HttpFoundation\Request $request) {
+        return new \Domynation\Http\SymfonyRouter($request);
+    },
+
     \Domynation\Cache\CacheInterface::class => function () {
         switch (CACHE_DRIVER) {
             case 'redis':
