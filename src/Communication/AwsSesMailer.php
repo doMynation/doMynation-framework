@@ -51,14 +51,14 @@ final class AwsSesMailer implements MailerInterface
     public function send(EmailMessage $email, $data = [])
     {
         $response = $this->client->sendEmail([
-            'Source'      => $this->domain,
+            'Source'      => EMAIL_NO_REPLY,
             'Destination' => [
                 'ToAddresses' => $email->recipients
             ],
             'Message'     => [
-                'Subject' => ['data' => $email->subject, 'charset' => 'iso-8895-1'],
+                'Subject' => ['Data' => $email->subject, 'charset' => 'latin1'],
                 'Body'    => [
-                    'Text' => ['data' => $email->body, 'charset' => 'iso-8895-1'],
+                    'Text' => ['Data' => $email->body, 'charset' => 'latin1'],
                 ]
             ]
         ]);

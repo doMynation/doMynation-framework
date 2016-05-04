@@ -47,6 +47,7 @@ final class AwsS3FileStorage implements StorageInterface
             throw new \RuntimeException("Container missing");
         }
 
+        // Fetch the object from the container
         $response = $this->client->getObject([
             'Bucket' => $data['container'],
             'Key' => $key
