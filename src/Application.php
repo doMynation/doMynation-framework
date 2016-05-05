@@ -8,6 +8,7 @@ use Domynation\Config\ConfigInterface;
 use Domynation\Config\InMemoryConfigStore;
 use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Http\Router;
+use Domynation\Http\RouterInterface;
 use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
@@ -25,6 +26,11 @@ final class Application
      * @var \Interop\Container\ContainerInterface
      */
     private $container;
+
+    /**
+     * @var Request
+     */
+    private $request;
 
     public function __construct($basePath)
     {
@@ -45,6 +51,9 @@ final class Application
         // Boot the error reporting
         $this->bootErrorReporting();
 
+        // Boot the request
+        $this->request = $this->bootRequest();
+
         // Boot the configuration
         $config = $this->bootConfiguration();
 
@@ -54,11 +63,8 @@ final class Application
         // Boot the session
         $session = $this->bootSession();
 
-        // Boot the HTTP request
-        $request = $this->bootRequest();
-
         // Boot the container
-        $this->container = $this->bootContainer($config, $session, $request);
+        $this->container = $this->bootContainer($config, $session);
     }
 
     /**
@@ -67,12 +73,10 @@ final class Application
      * @param \Domynation\Config\ConfigInterface $config
      * @param \Domynation\Session\SessionInterface $session
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *
      * @return \DI\Container
      * @throws \DI\NotFoundException
      */
-    private function bootContainer(ConfigInterface $config, SessionInterface $session, Request $request)
+    private function bootContainer(ConfigInterface $config, SessionInterface $session)
     {
         $builder = new ContainerBuilder();
         $builder->useAnnotations(false);
@@ -85,7 +89,7 @@ final class Application
         // Load all global services
         $builder->addDefinitions(array_merge(require_once __DIR__ . '/Files/container.php', [
             ConfigInterface::class  => $config,
-            Request::class  => $request,
+            Request::class          => $this->request,
             SessionInterface::class => $session
         ]));
 
@@ -171,6 +175,46 @@ final class Application
     }
 
     /**
+     * Executes the request and returns the response.
+     *
+     * @return mixed
+     */
+    public function run()
+    {
+        $router = $this->container->get(RouterInterface::class);
+
+        // Resolve the controller and arguments for the requested route
+        $response = $router->handle($this->request);
+
+        // Send the response
+        $response->send();
+    }
+
+    private function handleRequest($controller, $arguments)
+    {
+        $invoker = $this->container->get(\DI\InvokerInterface::class);
+
+        try {
+            // Use the container to resolve the controller and inject dependencies
+            return $invoker->call($controller, $arguments);
+        } catch (\Symfony\Component\Routing\Exception\RouteNotFoundException $e) {
+            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_NOT_FOUND);
+        } catch (\Domynation\Exceptions\AuthenticationException $e) {
+            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_AUTHENTICATION_REQUIRED);
+        } catch (AuthorizationException $e) {
+            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_FORBIDDEN);
+        } catch (ValidationException $e) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
+        } catch (EntityNotFoundException $e) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    /**
+     * Boots error reporting.
+     *
      * @return void
      */
     private function bootErrorReporting()
@@ -181,11 +225,12 @@ final class Application
     }
 
     /**
+     * Boots the request.
+     *
      * @return \Symfony\Component\HttpFoundation\Request
      */
     private function bootRequest()
     {
         return Request::createFromGlobals();
     }
-
 }

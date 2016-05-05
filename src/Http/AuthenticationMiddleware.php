@@ -2,7 +2,6 @@
 
 namespace Domynation\Http;
 
-use Domynation\Authentication\AuthenticatorInterface;
 use Domynation\Authentication\UserInterface;
 use Domynation\Exceptions\AuthenticationException;
 

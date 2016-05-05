@@ -7,7 +7,7 @@ use DI\InvokerInterface;
 /**
  * Class HandlingMiddleware
  *
- * This middleware has to be the last in the chain since it returns the final responsen.
+ * This middleware has to be the last in the chain since it returns the final response.
  *
  * @package Domynation\Http
  */

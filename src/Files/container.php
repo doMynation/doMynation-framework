@@ -70,8 +70,16 @@ return [
         );
     },
 
-    \Domynation\Http\SymfonyRouter::class => function (\Symfony\Component\HttpFoundation\Request $request) {
-        return new \Domynation\Http\SymfonyRouter($request);
+    \Domynation\Http\RouterInterface::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config) {
+        // Resolve all middleware through the container
+        $middlewares = array_map(function($middlewareName) use ($container) {
+            return $container->get($middlewareName);
+        }, $config->get('routeMiddlewares'));
+
+        // Append the handling middleware at the end
+        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($container);
+
+        return new \Domynation\Http\SymfonyRouter($middlewares);
     },
 
     \Domynation\Cache\CacheInterface::class => function () {
