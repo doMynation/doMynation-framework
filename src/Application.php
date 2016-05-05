@@ -48,14 +48,14 @@ final class Application
         define('PATH_BASE', $this->basePath);
         define('PATH_HTML', $this->basePath . '/views/');
 
+        // Boot the configuration
+        $config = $this->bootConfiguration();
+
         // Boot the error reporting
         $this->bootErrorReporting();
 
         // Boot the request
         $this->request = $this->bootRequest();
-
-        // Boot the configuration
-        $config = $this->bootConfiguration();
 
         // Set the default timezone
         date_default_timezone_set(DATE_TIMEZONE);
@@ -182,38 +182,32 @@ final class Application
      */
     public function run()
     {
-
-//        $whoops = new \Whoops\Run();
-//        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
-//        $whoops->register();
         $router = $this->container->get(RouterInterface::class);
-//        $exceptionHandler = $this->container->get(ExceptionHandlerInterface::class);
 
         // Resolve the controller and arguments for the requested route
-        try {
-            $response = $router->handle($this->request);
-        } catch (\Exception $e) {
-            echo $e;
-
-            return;
-        }
+        $response = $router->handle($this->request);
 
         // Send the response
         $response->send();
     }
 
+    /**
+     * @param \Exception $e
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     private function handleException(\Exception $e)
     {
         if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
-            return new \Symfony\Component\HttpFoundation\Response('', HTTP_NOT_FOUND);
+            return new \Symfony\Component\HttpFoundation\Response('Page not found', HTTP_NOT_FOUND);
         }
 
         if ($e instanceof \Domynation\Exceptions\AuthenticationException) {
-            return new \Symfony\Component\HttpFoundation\Response('', HTTP_AUTHENTICATION_REQUIRED);
+            return new \Symfony\Component\HttpFoundation\Response('Forbidden', HTTP_AUTHENTICATION_REQUIRED);
         }
 
         if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
-            return new \Symfony\Component\HttpFoundation\Response('', HTTP_FORBIDDEN);
+            return new \Symfony\Component\HttpFoundation\Response('Unauthorized', HTTP_FORBIDDEN);
         }
 
         if ($e instanceof \Domynation\Exceptions\ValidationException) {
@@ -237,6 +231,19 @@ final class Application
         error_reporting(-1);
 
         // @todo: Set the error handling
+
+        if (IS_PRODUCTION) {
+            set_exception_handler(function($e) {
+                $response = $this->handleException($e);
+                $response->send();
+            });
+            return;
+        }
+
+        // Use whoops when we're not in production
+        $whoops = new \Whoops\Run();
+        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+        $whoops->register();
     }
 
     /**
