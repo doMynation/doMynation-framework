@@ -4,6 +4,7 @@ namespace Domynation\Core;
 
 use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Http\Router;
+use Domynation\Http\RouterInterface;
 use Domynation\View\ViewFactoryInterface;
 
 /**
@@ -18,15 +19,11 @@ abstract class ServiceProvider implements ServiceProviderInterface
 {
 
     /**
-     * Starts the module.
-     *
-     * @param \Domynation\Http\Router $router
-     * @param \Domynation\View\ViewFactoryInterface $view
-     * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
+     * {@inheritdoc}
      */
-    public function start(Router $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher)
+    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher, Router $oldRouter)
     {
-        $this->registerRoutes($router);
+        $this->registerRoutes($oldRouter, $router);
         $this->registerViews($view);
         $this->registerListeners($dispatcher);
     }

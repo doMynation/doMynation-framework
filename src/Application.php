@@ -118,9 +118,10 @@ final class Application
         foreach ($providers as $provider) {
             // Start the provider
             $provider->start(
-                $container->get(Router::class),
+                $container->get(RouterInterface::class),
                 $container->get(ViewFactoryInterface::class),
-                $container->get(EventDispatcherInterface::class)
+                $container->get(EventDispatcherInterface::class),
+                $container->get(Router::class)
             );
 
             // Use reflection to get a closure copy of the `boot` method
@@ -181,35 +182,49 @@ final class Application
      */
     public function run()
     {
+
+//        $whoops = new \Whoops\Run();
+//        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+//        $whoops->register();
         $router = $this->container->get(RouterInterface::class);
+//        $exceptionHandler = $this->container->get(ExceptionHandlerInterface::class);
 
         // Resolve the controller and arguments for the requested route
-        $response = $router->handle($this->request);
+        try {
+            $response = $router->handle($this->request);
+        } catch (\Exception $e) {
+            echo $e;
+
+            return;
+        }
 
         // Send the response
         $response->send();
     }
 
-    private function handleRequest($controller, $arguments)
+    private function handleException(\Exception $e)
     {
-        $invoker = $this->container->get(\DI\InvokerInterface::class);
-
-        try {
-            // Use the container to resolve the controller and inject dependencies
-            return $invoker->call($controller, $arguments);
-        } catch (\Symfony\Component\Routing\Exception\RouteNotFoundException $e) {
-            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_NOT_FOUND);
-        } catch (\Domynation\Exceptions\AuthenticationException $e) {
-            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_AUTHENTICATION_REQUIRED);
-        } catch (AuthorizationException $e) {
-            return new \Symfony\Component\HttpFoundation\Response(null, HTTP_FORBIDDEN);
-        } catch (ValidationException $e) {
-            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
-        } catch (EntityNotFoundException $e) {
-            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
-            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
+        if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
+            return new \Symfony\Component\HttpFoundation\Response('', HTTP_NOT_FOUND);
         }
+
+        if ($e instanceof \Domynation\Exceptions\AuthenticationException) {
+            return new \Symfony\Component\HttpFoundation\Response('', HTTP_AUTHENTICATION_REQUIRED);
+        }
+
+        if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
+            return new \Symfony\Component\HttpFoundation\Response('', HTTP_FORBIDDEN);
+        }
+
+        if ($e instanceof \Domynation\Exceptions\ValidationException) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
+        }
+
+        if ($e instanceof \Domynation\Exceptions\EntityNotFoundException) {
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
+        }
+
+        return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**

@@ -4,21 +4,23 @@ namespace Domynation\Core;
 
 use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Http\Router;
+use Domynation\Http\RouterInterface;
 use Domynation\View\ViewFactoryInterface;
 
 interface ServiceProviderInterface
 {
 
     /**
-     * Starts the service provider.
+     * Starts the module.
      *
-     * @param \Domynation\Http\Router $router
+     * @todo: Remove the old router
+     *
+     * @param RouterInterface $router
      * @param \Domynation\View\ViewFactoryInterface $view
      * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
-     *
-     * @return void
+     * @param \Domynation\Http\Router $router2 (old router for backward compatibility)
      */
-    public function start(Router $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher);
+    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher, Router $router2);
 
     /**
      * Registers the module's container definitions.

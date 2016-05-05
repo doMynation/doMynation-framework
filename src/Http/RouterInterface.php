@@ -2,7 +2,6 @@
 
 namespace Domynation\Http;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 interface RouterInterface
