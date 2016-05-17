@@ -23,7 +23,7 @@ abstract class ServiceProvider implements ServiceProviderInterface
      */
     public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher, Router $oldRouter)
     {
-        $this->registerRoutes($oldRouter, $router);
+        $this->registerRoutes($router, $oldRouter);
         $this->registerViews($view);
         $this->registerListeners($dispatcher);
     }

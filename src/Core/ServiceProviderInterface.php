@@ -32,11 +32,11 @@ interface ServiceProviderInterface
     /**
      * Registers the module's routes.
      *
-     * @param \Domynation\Http\Router $router
+     * @param \Domynation\Http\Router $oldRouter
+     * @param \Domynation\Http\Router|\Domynation\Http\RouterInterface $router
      *
-     * @return void
      */
-    public function registerRoutes(Router $router);
+    public function registerRoutes(RouterInterface $router, Router $oldRouter);
 
     /**
      * Registers the module's views.
