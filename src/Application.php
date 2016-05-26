@@ -13,6 +13,9 @@ use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Whoops\Handler\Handler;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 final class Application
 {
@@ -192,11 +195,11 @@ final class Application
     }
 
     /**
-     * @param \Exception $e
+     * @param \Exception|\Throwable $e
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    private function handleException(\Exception $e)
+    private function handleException(\Throwable $e)
     {
         if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
             return new \Symfony\Component\HttpFoundation\Response('Page not found', HTTP_NOT_FOUND);
@@ -218,7 +221,9 @@ final class Application
             return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
         }
 
-        return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
+//        return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
+
+        return false;
     }
 
     /**
@@ -228,21 +233,22 @@ final class Application
      */
     private function bootErrorReporting()
     {
+        // Report all errors
         error_reporting(-1);
 
-        // @todo: Set the error handling
+        $debugHandler = DEBUG ? new PrettyPageHandler : function($exception, $inspector, $run) {
+            echo "Whoops, it appears a worker is sleeping on the job...";
+        };
 
-        if (IS_PRODUCTION) {
-            set_exception_handler(function($e) {
-                $response = $this->handleException($e);
+        $whoops = new Run();
+        $whoops->pushHandler($debugHandler);
+        $whoops->pushHandler(function($exception, $inspector, $run) {
+            if ($response = $this->handleException($exception)) {
                 $response->send();
-            });
-            return;
-        }
+                return Handler::QUIT;
+            }
+        });
 
-        // Use whoops when we're not in production
-        $whoops = new \Whoops\Run();
-        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
         $whoops->register();
     }
 

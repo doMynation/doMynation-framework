@@ -33,7 +33,7 @@ final class SymfonyRouter implements RouterInterface
     public function __construct($middlewares)
     {
         $this->middleware = $this->buildMiddlewareChain($middlewares);
-        $this->routes      = new RouteCollection;
+        $this->routes     = new RouteCollection;
     }
 
     /**
@@ -60,8 +60,8 @@ final class SymfonyRouter implements RouterInterface
      */
     public function addRoute($method, $path, callable $controller, $name = null)
     {
-        // Default the name to the path
-        $name = $name ?: $path;
+        // Default the name to the path + method to avoid duplicate
+        $name = $name ?: "$path-$method";
 
         $domynationRoute = new Route($name, $controller, $method);
 
