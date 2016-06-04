@@ -1,6 +1,10 @@
 <?php
 
 return [
+    \Interop\Container\ContainerInterface::class => function (\Interop\Container\ContainerInterface $container) {
+        return $container;
+    },
+
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
         $devMode = !IS_PRODUCTION;
 
@@ -72,7 +76,7 @@ return [
 
     \Domynation\Http\RouterInterface::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config) {
         // Resolve all middleware through the container
-        $middlewares = array_map(function($middlewareName) use ($container) {
+        $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
         }, $config->get('routeMiddlewares'));
 

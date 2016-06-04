@@ -90,11 +90,11 @@ final class SymfonyRouter implements RouterInterface
             throw new RouteNotFoundException($request->getPathInfo());
         }
 
-        // Let the middlewares do their jobs
+        // Let the middlewares do their job
         $response = $this->middleware->handle($resolvedRoute, $request);
 
         // Parse the response
-        return $this->parseResponse($response);
+        return $this->parseResponse($request, $response);
     }
 
     /**
@@ -122,12 +122,21 @@ final class SymfonyRouter implements RouterInterface
      * Parses the response using a series of helper functions to facilitate the
      * generation of a response from within the controller.
      *
+     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param mixed $response
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
-    private function parseResponse($response)
+    private function parseResponse(Request $request, $response)
     {
+        if (is_null($response)) {
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse;
+            }
+
+            return new Response;
+        }
+
         if ($response instanceof Response) {
             return $response;
         }

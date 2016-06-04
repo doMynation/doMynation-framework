@@ -12,7 +12,10 @@ use Domynation\Http\RouterInterface;
 use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -197,28 +200,36 @@ final class Application
     /**
      * @param \Exception|\Throwable $e
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     private function handleException(\Throwable $e)
     {
         if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
-            return new \Symfony\Component\HttpFoundation\Response('Page not found', HTTP_NOT_FOUND);
+            return new Response('Page not found', HTTP_NOT_FOUND);
         }
 
         if ($e instanceof \Domynation\Exceptions\AuthenticationException) {
-            return new \Symfony\Component\HttpFoundation\Response('Forbidden', HTTP_AUTHENTICATION_REQUIRED);
+            if ($this->request->isXmlHttpRequest()) {
+                return new Response('Forbidden', HTTP_AUTHENTICATION_REQUIRED);
+            }
+
+            return new RedirectResponse('/login');
         }
 
         if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
-            return new \Symfony\Component\HttpFoundation\Response('Unauthorized', HTTP_FORBIDDEN);
+            if ($this->request->isXmlHttpRequest()) {
+                return new Response('Unauthorized', HTTP_FORBIDDEN);
+            }
+
+            return new RedirectResponse('/403');
         }
 
         if ($e instanceof \Domynation\Exceptions\ValidationException) {
-            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
+            return new JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
         }
 
         if ($e instanceof \Domynation\Exceptions\EntityNotFoundException) {
-            return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
+            return new JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
         }
 
 //        return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
