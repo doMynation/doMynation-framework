@@ -26,7 +26,7 @@ final class AuthorizationMiddleware extends RouterMiddleware
         $permissions = $route->getRequiredPermissions();
 
         if (!empty($permissions)) {
-            if ($this->user->hasPermission($permissions)) {
+            if (!$this->user->hasPermission($permissions)) {
                 throw new AuthorizationException;
             }
         }
