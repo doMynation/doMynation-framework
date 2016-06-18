@@ -125,10 +125,8 @@ function lang($line, $placeholders = [])
 {
     $line = \Language::get($line);
 
-    if (!empty($placeholders)) {
-        foreach ($placeholders as $key => $value) {
-            $line = str_replace("{" . $key . "}", $value, $line);
-        }
+    foreach ($placeholders as $key => $value) {
+        $line = str_replace("{" . $key . "}", $value, $line);
     }
 
     return $line;

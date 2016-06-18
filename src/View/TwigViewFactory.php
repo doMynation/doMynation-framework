@@ -12,27 +12,37 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     private $twig;
 
-    public function __construct(Twig_Environment $twig)
+    /**
+     * @var string
+     */
+    private $fileExtension;
+
+    public function __construct(Twig_Environment $twig, $defaultFileExtension)
     {
         $this->twig = $twig;
+
+        // Always preprend a dot (.)
+        $this->fileExtension = '.' . ltrim($defaultFileExtension, '.');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function render($viewName, $data = [])
     {
-        return $this->twig->render($viewName, $data);
+        return $this->twig->render($viewName.$this->fileExtension, $data);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addNamespace($path, $name)
     {
         $this->twig->getLoader()->addPath($path, $name);
     }
 
     /**
-     * Adds a global variable that will be injected
-     * in all views.
-     *
-     * @param string $name
-     * @param string $value
+     * {@inheritdoc}
      */
     public function addGlobal($name, $value)
     {
@@ -40,11 +50,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     }
 
     /**
-     * Adds a function to the list of functions
-     * available from the views.
-     *
-     * @param string $name
-     * @param callable $closure
+     * {@inheritdoc}
      */
     public function addFunction($name, callable $closure)
     {
@@ -52,11 +58,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     }
 
     /**
-     * Adds a filter to the list of functions
-     * available from the views.
-     *
-     * @param string $name
-     * @param callable $closure
+     * {@inheritdoc}
      */
     public function addFilter($name, callable $closure)
     {

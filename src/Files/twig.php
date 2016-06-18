@@ -42,7 +42,17 @@ $twig->addFunction(new Twig_SimpleFunction('getLang', function () {
 /***********************************************************
  * FILTERS
  */
+
 $twig->addFilter(new Twig_SimpleFilter('translate', function ($key, $placeholders = []) {
+    return lang($key, $placeholders);
+}));
+
+// Aliases for convenience
+$twig->addFilter(new Twig_SimpleFilter('trans', function ($key, $placeholders = []) {
+    return lang($key, $placeholders);
+}));
+
+$twig->addFilter(new Twig_SimpleFilter('tr', function ($key, $placeholders = []) {
     return lang($key, $placeholders);
 }));
 

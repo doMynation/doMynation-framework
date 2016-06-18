@@ -189,7 +189,7 @@ return [
         return new \Domynation\Communication\DebugMailer($mailer, EMAIL_DEBUG);
     },
 
-    \Domynation\View\ViewFactoryInterface::class => function () {
+    \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         if (IS_PRODUCTION) {
             $twig = new Twig_Environment(
                 new Twig_Loader_Filesystem(PATH_HTML),
@@ -213,7 +213,7 @@ return [
             );
         }
 
-        $instance = new \Domynation\View\TwigViewFactory($twig);
+        $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
 
         include_once __DIR__ . '/twig.php';
 
