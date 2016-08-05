@@ -7,6 +7,12 @@ use Domynation\Exceptions\AuthenticationException;
 use Domynation\Security\PasswordInterface;
 use Domynation\Session\SessionInterface;
 
+/**
+ * A basic authenticator implementation.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicAuthenticator implements AuthenticatorInterface
 {
 
