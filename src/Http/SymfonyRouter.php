@@ -4,6 +4,7 @@ namespace Domynation\Http;
 
 use Domynation\Http\Middlewares\RouteMiddleware;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -135,6 +136,14 @@ final class SymfonyRouter implements RouterInterface
             }
 
             return new Response;
+        }
+
+        // Convert a redirect to a regular response for ajax requests
+        if ($response instanceof RedirectResponse && $request->isXmlHttpRequest()) {
+            $newResponse = new Response('', $response->getStatusCode());
+            $newResponse->headers->set('Location', $response->getTargetUrl());
+
+            return $newResponse;
         }
 
         if ($response instanceof Response) {

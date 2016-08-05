@@ -8,6 +8,13 @@ use Domynation\Http\ResolvedRoute;
 use Interop\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * A route middleware that handles validation.
+ *
+ * @see Domynation\Validation\RouteValidator
+ *
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class ValidationMiddleware extends RouteMiddleware
 {
 

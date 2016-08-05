@@ -2,6 +2,11 @@
 
 namespace Domynation\Authentication;
 
+/**
+ * Interface UserInterface
+ *
+ * @package Domynation\Authentication
+ */
 interface UserInterface
 {
 
@@ -28,7 +33,7 @@ interface UserInterface
     public function hasPermission($code);
 
     /**
-     * @return array
+     * @return \Domynation\Authorization\PermissionInterface[]
      */
     public function getPermissions();
 

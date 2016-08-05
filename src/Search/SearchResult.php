@@ -44,6 +44,7 @@ final class SearchResult
 
     /**
      * @return array
+     *
      * @deprecated
      */
     public function getRows()

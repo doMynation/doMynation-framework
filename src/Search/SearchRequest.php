@@ -73,7 +73,7 @@ final class SearchRequest
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
     public function getFilters()
     {

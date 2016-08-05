@@ -27,7 +27,7 @@ final class DatabaseFilterMapper
      *
      * @param array $filters
      *
-     * @return array
+     * @return DatabaseFilter[]
      */
     public function map($filters)
     {
