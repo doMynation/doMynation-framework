@@ -3,9 +3,10 @@
 namespace Domynation\Authentication;
 
 /**
- * Interface UserInterface
+ * A user definition.
  *
  * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 interface UserInterface
 {

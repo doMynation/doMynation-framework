@@ -5,6 +5,12 @@ namespace Domynation\Authentication;
 use Domynation\Authorization\PermissionInterface;
 use Domynation\Entities\Entity;
 
+/**
+ * A default user implementation.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 class User extends Entity implements UserInterface
 {
 
@@ -55,6 +61,9 @@ class User extends Entity implements UserInterface
         $this->fullName = $fullName;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toArray()
     {
         return [];
@@ -91,6 +100,8 @@ class User extends Entity implements UserInterface
     }
 
     /**
+     * Gets the value of password.
+     *
      * @return string
      */
     public function getPassword()
@@ -135,7 +146,7 @@ class User extends Entity implements UserInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getPermissions()
     {
@@ -143,7 +154,7 @@ class User extends Entity implements UserInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getUsername()
     {
@@ -151,9 +162,7 @@ class User extends Entity implements UserInterface
     }
 
     /**
-     * @param string $code
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasPermission($code)
     {
@@ -172,7 +181,7 @@ class User extends Entity implements UserInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isAuthenticated()
     {

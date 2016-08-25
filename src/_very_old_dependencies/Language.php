@@ -3,7 +3,9 @@
 use Domynation\Session\SessionInterface;
 
 /**
- * @todo: Extremely old code. Refactor all of this crap.
+ * @todo Extremely old code. Refactor all of this crap.
+ *
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class Language
 {

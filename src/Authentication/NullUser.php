@@ -2,11 +2,17 @@
 
 namespace Domynation\Authentication;
 
+/**
+ * A non-authenticated user.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class NullUser implements UserInterface
 {
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -14,7 +20,7 @@ final class NullUser implements UserInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getFullName()
     {
@@ -22,7 +28,7 @@ final class NullUser implements UserInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getUsername()
     {
@@ -30,9 +36,7 @@ final class NullUser implements UserInterface
     }
 
     /**
-     * @param string|string[] $code
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasPermission($code)
     {
@@ -40,7 +44,7 @@ final class NullUser implements UserInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getPermissions()
     {
@@ -48,7 +52,7 @@ final class NullUser implements UserInterface
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isAuthenticated()
     {
