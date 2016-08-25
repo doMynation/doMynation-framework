@@ -38,6 +38,11 @@ final class Application
      */
     private $request;
 
+    /**
+     * Application constructor.
+     *
+     * @param $basePath The root path of the application.
+     */
     public function __construct($basePath)
     {
         $this->basePath = $basePath;
