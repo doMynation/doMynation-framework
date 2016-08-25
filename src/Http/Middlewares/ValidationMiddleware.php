@@ -9,11 +9,12 @@ use Interop\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * A route middleware that handles validation.
+ * A middleware responsible for calling the appropriate validator
+ * for a request.
  *
  * @see Domynation\Validation\RouteValidator
- *
  * @author Dominique Sarrazin <domynation@gmail.com>
+ * @package Domynation\Http\Middlewares
  */
 final class ValidationMiddleware extends RouteMiddleware
 {
