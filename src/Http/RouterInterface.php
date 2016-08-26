@@ -4,6 +4,12 @@ namespace Domynation\Http;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Interface RouterInterface
+ *
+ * @package Domynation\Http
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface RouterInterface
 {
 

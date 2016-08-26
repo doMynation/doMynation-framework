@@ -2,6 +2,12 @@
 
 namespace Domynation\Http;
 
+/**
+ * The description of a route.
+ *
+ * @package Domynation\Http
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Route
 {
 

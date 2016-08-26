@@ -2,6 +2,12 @@
 
 namespace Domynation\Utils;
 
+/**
+ * Class MessageRecorderTrait
+ *
+ * @package Domynation\Utils
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 trait MessageRecorderTrait
 {
 

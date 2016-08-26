@@ -4,6 +4,12 @@ namespace Domynation\Validation;
 
 use Domynation\Utils\MessageRecorderTrait;
 
+/**
+ * Class RouteValidator
+ *
+ * @package Domynation\Validation
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class RouteValidator
 {
 

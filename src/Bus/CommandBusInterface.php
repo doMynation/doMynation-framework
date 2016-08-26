@@ -2,6 +2,12 @@
 
 namespace Domynation\Bus;
 
+/**
+ * Interface CommandBusInterface
+ *
+ * @package Domynation\Bus
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface CommandBusInterface
 {
     /**
