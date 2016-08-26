@@ -2,6 +2,12 @@
 
 namespace Domynation\Search;
 
+/**
+ * The response of a search request.
+ *
+ * @package Domynation\Search
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class SearchResult
 {
 

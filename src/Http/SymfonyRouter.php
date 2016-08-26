@@ -13,6 +13,12 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route as SymfonyRoute;
 use Symfony\Component\Routing\RouteCollection;
 
+/**
+ * Class SymfonyRouter
+ *
+ * @package Domynation\Http
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class SymfonyRouter implements RouterInterface
 {
 

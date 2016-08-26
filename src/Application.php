@@ -20,6 +20,12 @@ use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
+/**
+ * Class Application
+ *
+ * @package Domynation
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Application
 {
 
