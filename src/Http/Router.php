@@ -6,6 +6,12 @@ use Domynation\Bus\CommandBusInterface;
 use Domynation\View\ViewFactoryInterface;
 use Interop\Container\ContainerInterface;
 
+/**
+ * The old router implementation.
+ *
+ * @package Domynation\Http
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Router
 {
 

@@ -54,6 +54,13 @@ class User extends Entity implements UserInterface
      */
     protected $passwordExpiresAt;
 
+    /**
+     * User constructor.
+     *
+     * @param $id
+     * @param $username
+     * @param $fullName
+     */
     public function __construct($id, $username, $fullName)
     {
         $this->id       = $id;

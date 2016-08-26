@@ -5,6 +5,12 @@ namespace Domynation\Bus;
 use Domynation\Eventing\EventDispatcherInterface;
 use Interop\Container\ContainerInterface;
 
+/**
+ * A basic implementation of a command bus.
+ *
+ * @package Domynation\Bus
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicCommandBus implements CommandBusInterface
 {
 

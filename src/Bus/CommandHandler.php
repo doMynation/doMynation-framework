@@ -5,6 +5,12 @@ namespace Domynation\Bus;
 use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Utils\EventGeneratorTrait;
 
+/**
+ * Class CommandHandler
+ *
+ * @package Domynation\Bus
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class CommandHandler
 {
 
