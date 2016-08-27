@@ -22,7 +22,8 @@ return [
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
-            'password' => DB_PASSWORD
+            'password' => DB_PASSWORD,
+            'charset' => 'utf8'
         ], $config);
     },
 
@@ -31,7 +32,8 @@ return [
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
-            'password' => DB_PASSWORD
+            'password' => DB_PASSWORD,
+            'charset' => 'utf8'
         ], new \Doctrine\DBAL\Configuration());
 
         // @todo: Extremely ugly hack until all the event listeners are refactored.
@@ -219,7 +221,6 @@ return [
 
         return $instance;
     },
-
 
     \Domynation\Eventing\EventDispatcherInterface::class => function (\Interop\Container\ContainerInterface $container) {
         return new \Domynation\Eventing\BasicEventDispatcher($container);

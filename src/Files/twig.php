@@ -63,4 +63,3 @@ $twig->addFilter(new Twig_SimpleFilter('escapeInput', function ($value) {
 $twig->addFilter(new Twig_SimpleFilter('dateHr', function ($date, $showTime = true) {
     return formatDate($date, $showTime);
 }));
-
