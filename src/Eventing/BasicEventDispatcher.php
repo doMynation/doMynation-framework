@@ -4,6 +4,12 @@ namespace Domynation\Eventing;
 
 use DI\InvokerInterface;
 
+/**
+ * A basic implementation of the event dispatcher.
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicEventDispatcher implements EventDispatcherInterface
 {
 

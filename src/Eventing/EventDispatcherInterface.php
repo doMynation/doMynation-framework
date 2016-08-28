@@ -3,6 +3,12 @@
 namespace Domynation\Eventing;
 
 
+/**
+ * Interface EventDispatcherInterface
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface EventDispatcherInterface
 {
 
