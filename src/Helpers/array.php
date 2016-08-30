@@ -1,11 +1,6 @@
 <?php
 
 /**
- * A bunch of array utility functions to compensate for the lack of
- * consistency and some of the horrible design decisions in the native PHP functions.
- */
-
-/**
  * Returns true if at least one value in the array satisfy the predicate.
  *
  * @param array $array
