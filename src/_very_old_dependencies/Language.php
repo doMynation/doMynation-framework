@@ -3,7 +3,7 @@
 use Domynation\Session\SessionInterface;
 
 /**
- * @todo Extremely old code. Refactor all of this crap.
+ * @todo Extremely old code. Refactor this.
  *
  * @author Dominique Sarrazin <domynation@gmail.com>
  */

@@ -5,6 +5,7 @@ use Doctrine\DBAL\Connection;
 /**
  * @todo Replace this very old class with the EventDispatcherInterface.
  *
+ *
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class Event
