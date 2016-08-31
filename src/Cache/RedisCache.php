@@ -4,6 +4,12 @@ namespace Domynation\Cache;
 
 use Predis\Client;
 
+/**
+ * Class RedisCache
+ *
+ * @package Domynation\Cache
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class RedisCache implements CacheInterface
 {
 

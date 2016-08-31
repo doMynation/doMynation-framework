@@ -5,6 +5,12 @@ namespace Domynation\Bus\Middlewares;
 use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 
+/**
+ * Class CommandBusMiddleware
+ *
+ * @package Domynation\Bus\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class CommandBusMiddleware
 {
     /**

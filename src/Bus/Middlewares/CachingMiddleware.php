@@ -7,6 +7,13 @@ use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 use Domynation\Cache\CacheInterface;
 
+/**
+ * Command middleware responsible for caching command
+ * responses.
+ *
+ * @package Domynation\Bus\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class CachingMiddleware extends CommandBusMiddleware
 {
     /**

@@ -52,7 +52,8 @@
     "mailgun/mailgun-php": "1.7.2",
     "aws/aws-sdk-php": "^3.17",
     "symfony/routing": "^3.0",
-    "filp/whoops": "^2.1"
+    "filp/whoops": "^2.1",
+    "php-ds/php-ds": "^1.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.2",

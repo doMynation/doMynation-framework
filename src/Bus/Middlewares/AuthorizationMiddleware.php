@@ -6,6 +6,12 @@ use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 use Domynation\Exceptions\AuthorizationException;
 
+/**
+ * Command middleware responsible for authorizing the execution.
+ *
+ * @package Domynation\Bus\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class AuthorizationMiddleware extends CommandBusMiddleware
 {
 

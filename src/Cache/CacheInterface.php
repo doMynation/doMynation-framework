@@ -2,6 +2,12 @@
 
 namespace Domynation\Cache;
 
+/**
+ * Interface CacheInterface
+ *
+ * @package Domynation\Cache
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface CacheInterface
 {
 
