@@ -23,7 +23,7 @@ return [
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
             'password' => DB_PASSWORD,
-            'charset' => 'utf8'
+            'charset'  => 'utf8'
         ], $config);
     },
 
@@ -33,7 +33,7 @@ return [
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
             'password' => DB_PASSWORD,
-            'charset' => 'utf8'
+            'charset'  => 'utf8'
         ], new \Doctrine\DBAL\Configuration());
 
         // @todo: Extremely ugly hack until all the event listeners are refactored.
@@ -192,28 +192,19 @@ return [
     },
 
     \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
-        if (IS_PRODUCTION) {
-            $twig = new Twig_Environment(
-                new Twig_Loader_Filesystem(PATH_HTML),
-                [
-                    'cache'            => PATH_BASE . '/cache',
-                    'debug'            => false,
-                    'strict_variables' => true,
-                    'charset'          => 'iso-8859-1'
-                ]
-            );
-        } else {
-            $twig = new Twig_Environment(
-                new Twig_Loader_Filesystem(PATH_HTML),
-                [
-                    'cache'            => PATH_BASE . '/cache',
-                    'debug'            => true,
-                    'strict_variables' => true,
-                    'auto_reload'      => true,
-                    'charset'          => 'iso-8859-1'
-                ]
-            );
+        $options = [
+            'cache'            => PATH_BASE . '/cache',
+            'debug'            => false,
+            'strict_variables' => true,
+            'charset'          => 'iso-8859-1'
+        ];
+
+        if (!IS_PRODUCTION) {
+            $options['debug']       = true;
+            $options['auto_reload'] = true;
         }
+
+        $twig = new Twig_Environment(new Twig_Loader_Filesystem(PATH_HTML), $options);
 
         $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
 

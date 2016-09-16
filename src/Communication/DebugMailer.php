@@ -30,7 +30,6 @@ final class DebugMailer implements MailerInterface
         $formatRecipients = compose($commaSeparated, map($recipient));
         $recipientsString = $formatRecipients($message->recipients);
 
-
         // Append the original recipients to the end of the email for debug purposes
         $message->body .= <<<EOT
 
