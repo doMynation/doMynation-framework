@@ -23,6 +23,12 @@ final class RedisCache implements CacheInterface
      */
     private $prefix;
 
+    /**
+     * RedisCache constructor.
+     *
+     * @param string $host
+     * @param string $port
+     */
     public function __construct(string $host, string $port)
     {
         $this->predis = new Client([

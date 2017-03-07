@@ -5,6 +5,12 @@ namespace Domynation\Communication;
 use Domynation\Exceptions\ApiException;
 use GuzzleHttp\Client;
 
+/**
+ * Class ApiClient
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class ApiClient
 {
     /**

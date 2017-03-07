@@ -4,6 +4,12 @@ namespace Domynation\Communication;
 
 use Assert\Assertion;
 
+/**
+ * Class EmailMessage
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class EmailMessage
 {
 
@@ -15,6 +21,8 @@ final class EmailMessage
     public $bcc;
 
     /**
+     * EmailMessage constructor
+     *
      * @param Email|Email[] $recipients
      * @param string $subject
      * @param string $body
@@ -40,7 +48,7 @@ final class EmailMessage
     /**
      * @return string
      */
-    public function getFullSender()
+    public function getFullSender(): string
     {
         $name = $this->fromName ? $this->fromName . ' ' : '';
 

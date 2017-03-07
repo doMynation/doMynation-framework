@@ -4,6 +4,12 @@ namespace Domynation\Communication;
 
 use Aws\Ses\SesClient;
 
+/**
+ * Class AwsSesMailer
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class AwsSesMailer implements MailerInterface
 {
 

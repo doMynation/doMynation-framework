@@ -21,6 +21,9 @@ final class InMemoryCache implements CacheInterface
      */
     private $prefix;
 
+    /**
+     * InMemoryCache constructor.
+     */
     public function __construct()
     {
         $this->store  = [];
