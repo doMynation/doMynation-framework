@@ -204,9 +204,6 @@ final class Application
         // Resolve the controller and arguments for the requested route
         $response = $router->handle($this->request);
 
-        // @todo Remove this when done with local dev
-        header("Access-Control-Allow-Origin: *");
-
         // Send the response
         $response->send();
     }
