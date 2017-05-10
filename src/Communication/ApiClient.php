@@ -82,9 +82,6 @@ final class ApiClient
      */
     public function post($url, $postData = [], $getData = [])
     {
-        $getData  = $this->encode($getData);
-        $postData = $this->encode($postData);
-
         $response = $this->client->post($url, [
             'query' => $this->prepareQuery($getData),
             'body'  => $postData
@@ -96,7 +93,7 @@ final class ApiClient
             throw new ApiException($json['error']['message'], $json['error']['code']);
         }
 
-        return utf8_decode_array($json);
+        return $json;
     }
 
     /**

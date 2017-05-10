@@ -4,6 +4,7 @@ namespace Domynation\Http;
 
 use Domynation\Http\Middlewares\RouteMiddleware;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -92,10 +93,14 @@ final class SymfonyRouter implements RouterInterface
     {
         // Resolve the route definition
         try {
-            $resolvedRoute = $this->resolve($request);
+            $context       = (new RequestContext)->fromRequest($request);
+            $resolvedRoute = $this->resolve($context);
         } catch (ResourceNotFoundException $e) {
             throw new RouteNotFoundException($request->getPathInfo());
         }
+
+        // Add the routing uri (e.g. "/customers/{id}") to the request object
+        $request->attributes = new ParameterBag($resolvedRoute->getParameters());
 
         // Let the middlewares do their job
         $response = $this->middleware->handle($resolvedRoute, $request);
@@ -107,15 +112,15 @@ final class SymfonyRouter implements RouterInterface
     /**
      * Resolves a route for the provided request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Symfony\Component\Routing\RequestContext $context
      *
-     * @return ResolvedRoute
+     * @return \Domynation\Http\ResolvedRoute
      */
-    private function resolve(Request $request)
+    private function resolve(RequestContext $context)
     {
         // Attempt to match the request to a route
-        $matcher   = new UrlMatcher($this->routes, (new RequestContext)->fromRequest($request));
-        $matchInfo = $matcher->match($request->getPathInfo());
+        $matcher   = new UrlMatcher($this->routes, $context);
+        $matchInfo = $matcher->match($context->getPathInfo());
 
         // Extract the URI parameters (e.g. {id}) to be to be injected in the controller
         $parameters = array_filter($matchInfo, function ($key) {
@@ -211,5 +216,27 @@ final class SymfonyRouter implements RouterInterface
     public function patch($path, callable $controller, $name = null)
     {
         return $this->addRoute('PATCH', $path, $controller, $name);
+    }
+
+    public function forward(Request $request, $route)
+    {
+        $context = (new RequestContext)->fromRequest($request);
+        $context->setPathInfo($route);
+
+        // Resolve the route definition
+        try {
+            $resolvedRoute = $this->resolve($context);
+        } catch (ResourceNotFoundException $e) {
+            throw new RouteNotFoundException($request->getPathInfo());
+        }
+
+        // Add the routing uri (e.g. "/customers/{id}") to the request object
+        $request->attributes = new ParameterBag($resolvedRoute->getParameters());
+
+        // Let the middlewares do their job
+        $response = $this->middleware->handle($resolvedRoute, $request);
+
+        // Parse the response
+        return $this->parseResponse($request, $response);
     }
 }

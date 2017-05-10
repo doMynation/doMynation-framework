@@ -144,7 +144,7 @@ function formatDate(DateTime $date, $showTime = true)
 {
     $carbon = Carbon\Carbon::instance($date);
 
-    $format = $showTime ? "%d %B %Y à %Hh%M" : "%d %B %Y";
+    $format = $showTime ? "%d %B %Y Ã  %Hh%M" : "%d %B %Y";
     if (\Language::lang() === 'fr') {
         return $carbon->formatLocalized($format);
     }

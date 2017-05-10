@@ -41,7 +41,14 @@ final class ValidationMiddleware extends RouteMiddleware
             $validator = $this->container->get($route->getValidator());
 
             try {
-                $validator->validate($request->request->all());
+                if (method_exists($validator, 'validateRequest')) {
+                    // If a `validateRequest` method exists on the validator, call it.
+                    $validator->validateRequest($request);
+                } else {
+                    // Fall back to the traditional `validate` method.
+
+                    $validator->validate($request->request->all());
+                }
             } catch (AssertionFailedException $e) {
                 throw new ValidationException([$e->getMessage()]);
             }

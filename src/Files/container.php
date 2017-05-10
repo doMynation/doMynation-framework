@@ -13,16 +13,16 @@ return [
         if (IS_PRODUCTION) {
             $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
             $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
-            $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
-
-            // Second level cache configuration
-            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
-                new \Doctrine\ORM\Cache\RegionsConfiguration,
-                new \Doctrine\Common\Cache\ApcuCache()
-            );
-
-            $config->setSecondLevelCacheEnabled();
-            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
+//            $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
+//
+//            // Second level cache configuration
+//            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
+//                new \Doctrine\ORM\Cache\RegionsConfiguration,
+//                new \Doctrine\Common\Cache\ApcuCache()
+//            );
+//
+//            $config->setSecondLevelCacheEnabled();
+//            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
         }
 
         // Uncomment the following to debug every request made to the DB

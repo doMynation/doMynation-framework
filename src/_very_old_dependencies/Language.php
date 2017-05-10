@@ -1,7 +1,5 @@
 <?php
 
-use Domynation\Session\SessionInterface;
-
 /**
  * @todo Extremely old code. Refactor this.
  *
@@ -13,16 +11,14 @@ final class Language
     private static $language = [];
     private static $lang;
 
-    public static function initialize(SessionInterface $session, $inputLang = null)
+    public static function initialize($language)
     {
-        $lang = $inputLang ? $inputLang : DEFAULT_LANG;
+        // Store in cookies
+        $_COOKIE['lang'] = $language;
+        setcookie('lang', $language, null, '/');
 
-        if (!$session->has('lang') || $session->get('lang') != $lang) {
-            $session->set('lang', $lang);
-        }
-
-        static::load($lang);
-        static::$lang = $lang;
+        static::$lang = $language;
+        static::load($language);
     }
 
     public static function lang()
@@ -35,20 +31,12 @@ final class Language
         $fileName = $langCode . '.php';
 
         if (file_exists(PATH_BASE . '/config/languages/' . $fileName)) {
-            $lang = include_once(PATH_BASE . '/config/languages/' . $fileName);
-
-            static::$language = array_merge(static::$language, $lang);
-
-            static::$lang = $langCode;
+            static::$language = require_once PATH_BASE . '/config/languages/' . $fileName;
         } else {
             $fileName = DEFAULT_LANG . '.php';
 
             if (file_exists(PATH_BASE . '/config/languages/' . $fileName)) {
-                $lang = include_once(PATH_BASE . '/config/languages/' . $fileName);
-
-                static::$language = array_merge(static::$language, $lang);
-
-                static::$lang = DEFAULT_LANG;
+                static::$language = require_once PATH_BASE . '/config/languages/' . $fileName;
             } else {
                 die('Unable to load the requested language file: ' . $fileName);
             }

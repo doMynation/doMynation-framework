@@ -95,4 +95,14 @@ interface RouterInterface
      * @return \Domynation\Http\Middlewares\RouteMiddleware
      */
     public function getMiddleware();
+
+    /**
+     * Forwards a request to a different route.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $route
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function forward(Request $request, $route);
 }

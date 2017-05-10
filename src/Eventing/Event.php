@@ -2,6 +2,12 @@
 
 namespace Domynation\Eventing;
 
+/**
+ * Class Event
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class Event
 {
     /**
