@@ -28,6 +28,11 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      */
     private $raisedEvents;
 
+    /**
+     * BasicEventDispatcher constructor.
+     *
+     * @param \DI\InvokerInterface $invoker
+     */
     public function __construct(InvokerInterface $invoker)
     {
         $this->invoker      = $invoker;
@@ -35,11 +40,17 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         $this->raisedEvents = [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function raise(Event $event, $priority = null)
     {
         $this->raisedEvents[] = $event;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function listen($eventName, callable $callable, $priority = null)
     {
         $listener = [
@@ -57,6 +68,9 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         $this->listeners[$eventName] = [$listener];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch()
     {
         // Clear the list of raised events.
@@ -81,14 +95,20 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getRaisedEvents()
     {
         return $this->raisedEvents;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getListeners($eventName = null)
     {
-        if (is_null($eventName)) {
+        if ($eventName == null) {
             return $this->listeners;
         }
 

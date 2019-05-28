@@ -29,6 +29,7 @@ return [
         //$config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
 
         return Doctrine\ORM\EntityManager::create([
+            'host'     => DB_HOST,
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
@@ -39,6 +40,7 @@ return [
 
     \Doctrine\DBAL\Connection::class => function () {
         $db = \Doctrine\DBAL\DriverManager::getConnection([
+            'host'     => DB_HOST,
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
