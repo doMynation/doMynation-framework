@@ -30,6 +30,7 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     public function render($viewName, $data = [])
     {
+        $viewName = str_replace(".html.twig", "", $viewName);
         return $this->twig->render($viewName.$this->fileExtension, $data);
     }
 
