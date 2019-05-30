@@ -77,6 +77,10 @@ final class Application
         // Set the default timezone
         date_default_timezone_set(DATE_TIMEZONE);
 
+        if (!IS_PRODUCTION) {
+            ini_set('opcache.revalidate_freq', 0);
+        }
+
         // Boot the session
         $session = $this->bootSession();
 
@@ -100,7 +104,7 @@ final class Application
 
         // Cache the definitions in production
         if (IS_PRODUCTION) {
-            $builder->setDefinitionCache(new ApcuCache());
+            $builder->enableCompilation($this->basePath . '/cache');
         }
 
         // Load all global services
@@ -258,15 +262,16 @@ final class Application
         // Report all errors
         error_reporting(-1);
 
-        $debugHandler = DEBUG ? new PrettyPageHandler : function($exception, $inspector, $run) {
-            echo "Whoops, it appears a worker is sleeping on the job...";
+        $debugHandler = DEBUG ? new PrettyPageHandler : function ($exception, $inspector, $run) {
+            echo "Whoops, something went wrong...";
         };
 
         $whoops = new Run();
         $whoops->pushHandler($debugHandler);
-        $whoops->pushHandler(function($exception, $inspector, $run) {
+        $whoops->pushHandler(function ($exception, $inspector, $run) {
             if ($response = $this->handleException($exception)) {
                 $response->send();
+
                 return Handler::QUIT;
             }
         });

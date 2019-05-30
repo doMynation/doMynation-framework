@@ -42,7 +42,7 @@
     "beberlei/assert": "^2.3",
     "nesbot/carbon": "~1.14",
     "monolog/monolog": "^1.15",
-    "php-di/php-di": "^5.1",
+    "php-di/php-di": "^6.0.8",
     "mathiasverraes/money": "^1.2",
     "ramsey/uuid": "^3.0",
     "erusev/parsedown": "^1.6",
