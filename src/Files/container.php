@@ -1,14 +1,13 @@
 <?php
 
 return [
-    \Interop\Container\ContainerInterface::class => function (\Interop\Container\ContainerInterface $container) {
+    Psr\Container\ContainerInterface::class => function (Psr\Container\ContainerInterface $container) {
         return $container;
     },
 
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
         $devMode = !IS_PRODUCTION;
-
-        $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
+        $config  = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
 
         if (IS_PRODUCTION) {
             $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
@@ -26,7 +25,7 @@ return [
         }
 
         // Uncomment the following to debug every request made to the DB
-        //$config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+//        $config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
 
         return Doctrine\ORM\EntityManager::create([
             'host'     => DB_HOST,
@@ -55,7 +54,7 @@ return [
     },
 
     \Domynation\Bus\CommandBusInterface::class => function (
-        \Interop\Container\ContainerInterface $container,
+        Psr\Container\ContainerInterface $container,
         \Domynation\Authentication\AuthenticatorInterface $auth,
         \Domynation\Eventing\EventDispatcherInterface $dispatcher,
         \Domynation\Cache\CacheInterface $cache
@@ -74,7 +73,7 @@ return [
             ]);
     },
 
-    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\UserInterface $user) {
+    \Domynation\Http\Router::class => function (Psr\Container\ContainerInterface $container, \Invoker\InvokerInterface $invoker, \Domynation\Authentication\UserInterface $user) {
         $routerLogger = new Monolog\Logger('Router_logger');
         $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
 
@@ -84,18 +83,18 @@ return [
             new \Domynation\Http\AuthorizationMiddleware($user),
             new \Domynation\Http\ValidationMiddleware($container),
             new \Domynation\Http\LoggingMiddleware($routerLogger, $user),
-            new \Domynation\Http\HandlingMiddleware($container)
+            new \Domynation\Http\HandlingMiddleware($invoker)
         );
     },
 
-    \Domynation\Http\RouterInterface::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config) {
+    \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker) {
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
         }, $config->get('routeMiddlewares'));
 
         // Append the handling middleware at the end
-        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($container);
+        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker);
 
         return new \Domynation\Http\SymfonyRouter($middlewares);
     },
@@ -225,8 +224,8 @@ return [
         return $instance;
     },
 
-    \Domynation\Eventing\EventDispatcherInterface::class => function (\Interop\Container\ContainerInterface $container) {
-        return new \Domynation\Eventing\BasicEventDispatcher($container);
+    \Domynation\Eventing\EventDispatcherInterface::class => function (\Invoker\InvokerInterface $invoker) {
+        return new \Domynation\Eventing\BasicEventDispatcher($invoker);
     },
 
     \Domynation\Entities\EntityRegistry::class => function () {

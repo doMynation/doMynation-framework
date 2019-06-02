@@ -35,7 +35,7 @@ final class Application
     private $basePath;
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     private $container;
 
@@ -77,10 +77,6 @@ final class Application
         // Set the default timezone
         date_default_timezone_set(DATE_TIMEZONE);
 
-        if (!IS_PRODUCTION) {
-            ini_set('opcache.revalidate_freq', 0);
-        }
-
         // Boot the session
         $session = $this->bootSession();
 
@@ -105,6 +101,7 @@ final class Application
         // Cache the definitions in production
         if (IS_PRODUCTION) {
             $builder->enableCompilation($this->basePath . '/cache');
+            $builder->enableDefinitionCache();
         }
 
         // Load all global services
@@ -179,7 +176,7 @@ final class Application
     }
 
     /**
-     * @return \Interop\Container\ContainerInterface
+     * @return \Psr\Container\ContainerInterface
      */
     public function getContainer()
     {

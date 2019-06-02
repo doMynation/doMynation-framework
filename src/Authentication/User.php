@@ -73,7 +73,11 @@ class User extends Entity implements UserInterface
      */
     public function toArray()
     {
-        return [];
+        return [
+            'id'       => $this->id,
+            'username' => $this->username,
+            'fullName' => $this->fullName,
+        ];
     }
 
     /**

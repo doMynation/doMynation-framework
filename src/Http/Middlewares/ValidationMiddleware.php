@@ -5,7 +5,7 @@ namespace Domynation\Http\Middlewares;
 use Assert\AssertionFailedException;
 use Domynation\Exceptions\ValidationException;
 use Domynation\Http\ResolvedRoute;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,7 +20,7 @@ final class ValidationMiddleware extends RouteMiddleware
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     private $container;
 

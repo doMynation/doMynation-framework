@@ -2,7 +2,6 @@
 
 namespace Domynation\Http\Middlewares;
 
-use DI\InvokerInterface;
 use Domynation\Http\ResolvedRoute;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -17,11 +16,16 @@ final class HandlingMiddleware extends RouteMiddleware
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var \Invoker\InvokerInterface
      */
     private $invoker;
 
-    public function __construct(InvokerInterface $invoker)
+    /**
+     * HandlingMiddleware constructor.
+     *
+     * @param \Invoker\InvokerInterface $invoker
+     */
+    public function __construct(\Invoker\InvokerInterface $invoker)
     {
         $this->invoker = $invoker;
     }

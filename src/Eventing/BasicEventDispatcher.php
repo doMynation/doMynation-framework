@@ -2,7 +2,7 @@
 
 namespace Domynation\Eventing;
 
-use DI\InvokerInterface;
+use Invoker\InvokerInterface;
 
 /**
  * A basic implementation of the event dispatcher.
@@ -14,7 +14,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
 {
 
     /**
-     * @var \DI\InvokerInterface
+     * @var \Invoker\InvokerInterface
      */
     private $invoker;
 
@@ -31,7 +31,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * BasicEventDispatcher constructor.
      *
-     * @param \DI\InvokerInterface $invoker
+     * @param \Invoker\InvokerInterface $invoker
      */
     public function __construct(InvokerInterface $invoker)
     {

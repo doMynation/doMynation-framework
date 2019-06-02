@@ -4,7 +4,7 @@ namespace Domynation\Http;
 
 use Domynation\Bus\CommandBusInterface;
 use Domynation\View\ViewFactoryInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * The old router implementation.
@@ -16,7 +16,7 @@ final class Router
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     private $container;
 

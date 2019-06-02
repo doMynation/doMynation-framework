@@ -3,7 +3,7 @@
 namespace Domynation\Bus;
 
 use Domynation\Eventing\EventDispatcherInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * A basic implementation of a command bus.
@@ -20,7 +20,7 @@ final class BasicCommandBus implements CommandBusInterface
     private $middlewareChain;
 
     /**
-     * @var ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     private $container;
 

@@ -2,7 +2,7 @@
 
 namespace Domynation\Http;
 
-use DI\InvokerInterface;
+use Invoker\InvokerInterface;
 
 /**
  * Class HandlingMiddleware
@@ -15,11 +15,16 @@ final class HandlingMiddleware extends RouterMiddleware
 {
 
     /**
-     * @var \Interop\Container\ContainerInterface
+     * @var \Invoker\InvokerInterface
      */
     private $invoker;
 
-    public function __construct(InvokerInterface $invoker)
+    /**
+     * HandlingMiddleware constructor.
+     *
+     * @param \Invoker\InvokerInterface $invoker
+     */
+    public function __construct(\Invoker\InvokerInterface $invoker)
     {
         $this->invoker = $invoker;
     }

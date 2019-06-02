@@ -4,13 +4,13 @@ namespace Domynation\Http;
 
 use Assert\AssertionFailedException;
 use Domynation\Exceptions\ValidationException;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 final class ValidationMiddleware extends RouterMiddleware
 {
 
     /**
-     * @var ContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     private $container;
 
