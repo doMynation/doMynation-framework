@@ -61,10 +61,6 @@ final class Application
      */
     public function boot()
     {
-        // @todo: Remove this once we get rid of global constants and replace them with dotenv
-        define('PATH_BASE', $this->basePath);
-        define('PATH_HTML', $this->basePath . '/views/');
-
         // Boot the configuration
         $config = $this->bootConfiguration();
 
@@ -188,6 +184,11 @@ final class Application
      */
     private function bootConfiguration()
     {
+        // @todo: Remove this once we get rid of global constants and replace them with dotenv
+        define('PASSWORD_DRIVER', 'native');
+        define('PATH_BASE', $this->basePath);
+        define('PATH_HTML', $this->basePath . '/views/');
+
         require_once $this->basePath . '/env.php';
 
         return new InMemoryConfigStore(require_once $this->basePath . '/config/application.php');
@@ -217,12 +218,12 @@ final class Application
     private function handleException(\Throwable $e)
     {
         if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
-            return new Response('Page not found', HTTP_NOT_FOUND);
+            return new Response('Page not found', Response::HTTP_NOT_FOUND);
         }
 
         if ($e instanceof \Domynation\Exceptions\AuthenticationException) {
             if ($this->request->isXmlHttpRequest()) {
-                return new Response('Forbidden', HTTP_AUTHENTICATION_REQUIRED);
+                return new Response('Forbidden', Response::HTTP_UNAUTHORIZED);
             }
 
             return new RedirectResponse('/login');
@@ -230,21 +231,23 @@ final class Application
 
         if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
             if ($this->request->isXmlHttpRequest()) {
-                return new Response('Unauthorized', HTTP_FORBIDDEN);
+                return new Response('Unauthorized', Response::HTTP_FORBIDDEN);
             }
 
             return new RedirectResponse('/403');
         }
 
         if ($e instanceof \Domynation\Exceptions\ValidationException) {
-            return new JsonResponse(['errors' => $e->errors()], HTTP_BAD_REQUEST);
+            return new JsonResponse(['errors' => $e->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         if ($e instanceof \Domynation\Exceptions\EntityNotFoundException) {
-            return new JsonResponse(['errors' => [$e->getMessage()]], HTTP_BAD_REQUEST);
+            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
         }
 
-//        return new \Symfony\Component\HttpFoundation\JsonResponse(['errors' => [$e->getMessage()]], HTTP_UNPROCESSABLE_ENTITY);
+        if ($e instanceof \Solarius\Common\Exceptions\DomainException) {
+            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         return false;
     }

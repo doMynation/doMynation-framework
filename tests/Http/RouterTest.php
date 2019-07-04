@@ -7,7 +7,7 @@ use Domynation\Http\AuthorizationMiddleware;
 use Domynation\Http\HandlingMiddleware;
 use Domynation\Http\Router;
 use Domynation\Http\ValidationMiddleware;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class RouterTest extends PHPUnit_Framework_TestCase
 {

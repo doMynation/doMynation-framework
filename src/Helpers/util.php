@@ -30,20 +30,8 @@ function redirect($uri)
  */
 function forbidden()
 {
-    redirect('forbidden.php?p=' . $_SERVER['REQUEST_URI']);
+    redirect('/403');
     exit;
-}
-
-/**
- * Generates a random string.
- *
- * @param int $l
- *
- * @return string
- */
-function uniqueId($l = 8)
-{
-    return substr(md5(uniqid(mt_rand(), true)), 0, $l);
 }
 
 /**

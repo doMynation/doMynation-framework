@@ -2,6 +2,12 @@
 
 namespace Domynation\Http;
 
+/**
+ * Class RouterMiddleware
+ *
+ * @package Domynation\Http
+ * @deprecated Use RouteMiddleware instead
+ */
 abstract class RouterMiddleware
 {
     /**

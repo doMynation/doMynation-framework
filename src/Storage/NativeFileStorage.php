@@ -4,6 +4,12 @@ namespace Domynation\Storage;
 
 use Ramsey\Uuid\Uuid;
 
+/**
+ * Class NativeFileStorage
+ *
+ * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class NativeFileStorage implements StorageInterface
 {
     /**
@@ -16,6 +22,12 @@ final class NativeFileStorage implements StorageInterface
      */
     private $uri;
 
+    /**
+     * NativeFileStorage constructor.
+     *
+     * @param string $folder
+     * @param string $uri
+     */
     public function __construct($folder, $uri)
     {
         $this->folder = $folder;

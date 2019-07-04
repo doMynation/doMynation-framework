@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
  * for a request.
  *
  * @see Domynation\Validation\RouteValidator
- * @author Dominique Sarrazin <domynation@gmail.com>
  * @package Domynation\Http\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class ValidationMiddleware extends RouteMiddleware
 {
@@ -24,6 +24,11 @@ final class ValidationMiddleware extends RouteMiddleware
      */
     private $container;
 
+    /**
+     * ValidationMiddleware constructor.
+     *
+     * @param \Psr\Container\ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -46,7 +51,6 @@ final class ValidationMiddleware extends RouteMiddleware
                     $validator->validateRequest($request);
                 } else {
                     // Fall back to the traditional `validate` method.
-
                     $validator->validate($request->request->all());
                 }
             } catch (AssertionFailedException $e) {
@@ -55,6 +59,6 @@ final class ValidationMiddleware extends RouteMiddleware
         }
 
         // Pass the request to the next middleware
-        return !is_null($this->next) ? $this->next->handle($resolvedRoute, $request) : null;
+        return $this->next !== null ? $this->next->handle($resolvedRoute, $request) : null;
     }
 }

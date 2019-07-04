@@ -2,6 +2,12 @@
 
 namespace Domynation\Security;
 
+/**
+ * Class BasicPasswordGenerator
+ *
+ * @package Domynation\Security
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicPasswordGenerator implements PasswordGeneratorInterface
 {
 

@@ -7,7 +7,7 @@ return [
 
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
         $devMode = !IS_PRODUCTION;
-        $config  = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
+        $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
 
         if (IS_PRODUCTION) {
             $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
@@ -129,9 +129,6 @@ return [
 
     \Domynation\Security\PasswordInterface::class => function () {
         switch (PASSWORD_DRIVER) {
-            case 'md5':
-                return new \Domynation\Security\Md5Password;
-                break;
             case 'native':
             default:
                 return new \Domynation\Security\NativePassword;
@@ -207,11 +204,10 @@ return [
             'cache'            => PATH_BASE . '/cache',
             'debug'            => false,
             'strict_variables' => true,
-            'charset'          => 'iso-8859-1'
         ];
 
         if (!IS_PRODUCTION) {
-            $options['debug']       = true;
+            $options['debug'] = true;
             $options['auto_reload'] = true;
         }
 
@@ -229,7 +225,7 @@ return [
     },
 
     \Domynation\Entities\EntityRegistry::class => function () {
-        return new \Domynation\Entities\EntityRegistry();
+        return new \Domynation\Entities\EntityRegistry;
     },
 
     \Domynation\Search\SearchInterface::class => function () {

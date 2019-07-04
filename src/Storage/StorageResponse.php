@@ -2,6 +2,12 @@
 
 namespace Domynation\Storage;
 
+/**
+ * Class StorageResponse
+ *
+ * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class StorageResponse
 {
     /**
@@ -14,16 +20,22 @@ final class StorageResponse
      */
     private $url;
 
-    public function __construct($name, $url)
+    /**
+     * StorageResponse constructor.
+     *
+     * @param string $name
+     * @param string $url
+     */
+    public function __construct(string $name, string $url)
     {
         $this->name = $name;
-        $this->url = $url;
+        $this->url  = $url;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -31,7 +43,7 @@ final class StorageResponse
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }

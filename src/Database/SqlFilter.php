@@ -4,6 +4,12 @@ namespace Domynation\Database;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * Interface SqlFilter
+ *
+ * @package Domynation\Database
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface SqlFilter
 {
     /**

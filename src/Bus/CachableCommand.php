@@ -11,7 +11,7 @@ namespace Domynation\Bus;
 interface CachableCommand
 {
     /**
-     * Gets the cache entry name.
+     * Returns the cache entry name.
      *
      * @return string
      */

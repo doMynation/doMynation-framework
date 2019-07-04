@@ -6,6 +6,13 @@ use Assert\AssertionFailedException;
 use Domynation\Exceptions\ValidationException;
 use Psr\Container\ContainerInterface;
 
+
+/**
+ * Class ValidationMiddleware
+ *
+ * @package Domynation\Http
+ * @deprecated Use Domynation\Http\Middlewares\ValidationMiddleware instead
+ */
 final class ValidationMiddleware extends RouterMiddleware
 {
 
