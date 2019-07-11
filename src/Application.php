@@ -7,7 +7,6 @@ use Doctrine\Common\Cache\ApcuCache;
 use Domynation\Config\ConfigInterface;
 use Domynation\Config\InMemoryConfigStore;
 use Domynation\Eventing\EventDispatcherInterface;
-use Domynation\Http\Router;
 use Domynation\Http\RouterInterface;
 use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
@@ -134,8 +133,7 @@ final class Application
             $provider->start(
                 $container->get(RouterInterface::class),
                 $container->get(ViewFactoryInterface::class),
-                $container->get(EventDispatcherInterface::class),
-                $container->get(Router::class)
+                $container->get(EventDispatcherInterface::class)
             );
 
             // Use reflection to get a closure copy of the `boot` method
@@ -245,7 +243,7 @@ final class Application
             return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
         }
 
-        if ($e instanceof \Solarius\Common\Exceptions\DomainException) {
+        if ($e instanceof \Sushi\Common\Exceptions\DomainException) {
             return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 

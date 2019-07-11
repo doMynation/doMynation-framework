@@ -58,7 +58,7 @@ final class ElasticSearch implements SearchInterface
             'index' => $index,
             'type'  => $type,
             'id'    => $documentId,
-            'body'  => utf8_encode_array($data)
+            'body'  => $data
         ]);
     }
 
@@ -68,7 +68,7 @@ final class ElasticSearch implements SearchInterface
             'index' => $index,
             'type'  => $type,
             'id'    => $documentId,
-            'body'  => utf8_encode_array($data)
+            'body'  => $data
         ]);
     }
 }

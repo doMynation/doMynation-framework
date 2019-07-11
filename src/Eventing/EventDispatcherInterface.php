@@ -45,6 +45,13 @@ interface EventDispatcherInterface
     public function dispatch();
 
     /**
+     * Clears the list of raised events.
+     *
+     * @return void
+     */
+    public function clearEvents();
+
+    /**
      * Returns all the events that have been raised.
      *
      * @return Event[]

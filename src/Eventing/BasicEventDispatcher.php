@@ -35,8 +35,8 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      */
     public function __construct(InvokerInterface $invoker)
     {
-        $this->invoker      = $invoker;
-        $this->listeners    = [];
+        $this->invoker = $invoker;
+        $this->listeners = [];
         $this->raisedEvents = [];
     }
 
@@ -74,7 +74,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     public function dispatch()
     {
         // Clear the list of raised events.
-        $raisedEvents       = $this->raisedEvents;
+        $raisedEvents = $this->raisedEvents;
         $this->raisedEvents = [];
 
         foreach ($raisedEvents as $event) {
@@ -93,6 +93,14 @@ final class BasicEventDispatcher implements EventDispatcherInterface
                 $this->invoker->call($listenerData['closure'], [$event]);
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearEvents()
+    {
+        $this->raisedEvents = [];
     }
 
     /**

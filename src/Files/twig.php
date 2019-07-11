@@ -19,10 +19,6 @@ $twig->addFunction(new Twig_SimpleFunction('call', function ($function, $value) 
     return $function($value);
 }));
 
-$twig->addFunction(new Twig_SimpleFunction('href', function ($uri, $lang = null) {
-    return href($uri, $lang);
-}));
-
 $twig->addFunction(new Twig_SimpleFunction('ceil', function ($value) {
     return ceil($value);
 }));

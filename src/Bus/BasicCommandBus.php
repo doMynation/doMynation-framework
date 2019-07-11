@@ -32,19 +32,14 @@ final class BasicCommandBus implements CommandBusInterface
     public function __construct(ContainerInterface $container, EventDispatcherInterface $dispatcher, array $middlewares)
     {
         $this->middlewareChain = $this->buildMiddlewareChain($middlewares);
-        $this->container       = $container;
-        $this->dispatcher      = $dispatcher;
+        $this->container = $container;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
-     * Executes the command.
-     *
-     * @param \Domynation\Bus\Command $command
-     *
-     * @return mixed
-     * @throws \Exception
+     * {@inheritdoc}
      */
-    public function execute(Command $command)
+    public function execute(Command $command, bool $ignoreEvents = false)
     {
         // Resolve the handler class
         $handler = $this->resolveHandlerClass($command);
@@ -54,6 +49,11 @@ final class BasicCommandBus implements CommandBusInterface
 
         // Pass the command and its handler in the middleware chain
         $response = $this->middlewareChain->handle($command, $handler);
+
+        // Clear the raised events if requested
+        if ($ignoreEvents) {
+            $this->dispatcher->clearEvents();
+        }
 
         // Dispatch raised events
         $this->dispatcher->dispatch();
@@ -95,8 +95,8 @@ final class BasicCommandBus implements CommandBusInterface
     private function resolveHandlerClass(Command $command)
     {
         $reflectionObject = new \ReflectionObject($command);
-        $shortName        = $reflectionObject->getShortName();
-        $className        = $reflectionObject->getNamespaceName() . '\\Handlers\\' . $shortName . 'Handler';
+        $shortName = $reflectionObject->getShortName();
+        $className = $reflectionObject->getNamespaceName() . '\\Handlers\\' . $shortName . 'Handler';
 
         if (!class_exists($className)) {
             throw new \Exception("Command handler {$className} not found.");

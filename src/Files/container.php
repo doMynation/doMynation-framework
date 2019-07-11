@@ -73,20 +73,6 @@ return [
             ]);
     },
 
-    \Domynation\Http\Router::class => function (Psr\Container\ContainerInterface $container, \Invoker\InvokerInterface $invoker, \Domynation\Authentication\UserInterface $user) {
-        $routerLogger = new Monolog\Logger('Router_logger');
-        $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
-
-        return new \Domynation\Http\Router(
-            $container,
-            new \Domynation\Http\AuthenticationMiddleware($user),
-            new \Domynation\Http\AuthorizationMiddleware($user),
-            new \Domynation\Http\ValidationMiddleware($container),
-            new \Domynation\Http\LoggingMiddleware($routerLogger, $user),
-            new \Domynation\Http\HandlingMiddleware($invoker)
-        );
-    },
-
     \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker) {
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
