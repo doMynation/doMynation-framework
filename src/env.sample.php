@@ -7,7 +7,6 @@
  */
 
 // Application version
-define('APP_VERSION', '1.0');
 define('APP_BUILD', 'b22');
 
 // Settings this to `true` will activate caching mechanisms and disable debug mode on various

@@ -21,11 +21,19 @@ final class CachingMiddleware extends CommandBusMiddleware
      */
     private $cache;
 
+    /**
+     * CachingMiddleware constructor.
+     *
+     * @param \Domynation\Cache\CacheInterface $cache
+     */
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function handle(Command $command, CommandHandler $handler)
     {
         // Attempt to find a cached version of the response

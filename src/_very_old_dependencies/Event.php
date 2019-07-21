@@ -77,11 +77,11 @@ final class Event
     {
         if (is_null($contentType)) {
             // @deprecated Attempt to guess the content type. "customer" by default (adapter from old version)
-            $categoryCode = static::$db->executeQuery('select ec.code FROM events as e left join event_categories ec ON e.category_id = ec.id WHERE e.code = ?', [$eventCode])->fetchColumn();
-            $contentType  = $categoryCode !== false ? $categoryCode : "customer";
+            $categoryCode = static::$db->executeQuery('select ec.code FROM dmn_events as e left join dmn_event_categories ec ON e.category_id = ec.id WHERE e.code = ?', [$eventCode])->fetchColumn();
+            $contentType = $categoryCode !== false ? $categoryCode : "customer";
         }
 
-        static::$db->insert('user_activities', [
+        static::$db->insert('dmn_user_events', [
             'code'         => $eventCode,
             'author_id'    => $eventSourceID,
             'content_type' => $contentType,

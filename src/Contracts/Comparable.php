@@ -2,6 +2,12 @@
 
 namespace Domynation\Contracts;
 
+/**
+ * Interface Comparable
+ *
+ * @package Domynation\Contracts
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface Comparable
 {
     /**
