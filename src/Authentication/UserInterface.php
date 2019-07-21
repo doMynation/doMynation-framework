@@ -2,6 +2,12 @@
 
 namespace Domynation\Authentication;
 
+/**
+ * A user definition.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface UserInterface
 {
 
@@ -28,7 +34,7 @@ interface UserInterface
     public function hasPermission($code);
 
     /**
-     * @return array
+     * @return \Domynation\Authorization\PermissionInterface[]
      */
     public function getPermissions();
 

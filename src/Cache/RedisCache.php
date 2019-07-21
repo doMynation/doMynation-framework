@@ -4,6 +4,12 @@ namespace Domynation\Cache;
 
 use Predis\Client;
 
+/**
+ * Class RedisCache
+ *
+ * @package Domynation\Cache
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class RedisCache implements CacheInterface
 {
 
@@ -17,6 +23,12 @@ final class RedisCache implements CacheInterface
      */
     private $prefix;
 
+    /**
+     * RedisCache constructor.
+     *
+     * @param string $host
+     * @param string $port
+     */
     public function __construct(string $host, string $port)
     {
         $this->predis = new Client([

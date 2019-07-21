@@ -102,10 +102,7 @@ final class RackspaceFileStorage implements StorageInterface
         $object->load_from_filename($filePath);
         $uri = $container->make_public();
 
-        return [
-            'url'  => $object->public_ssl_uri(),
-            'name' => $object->name
-        ];
+        return new StorageResponse($object->name, $object->public_ssl_uri());
     }
 
     public function delete($key, $data = [])

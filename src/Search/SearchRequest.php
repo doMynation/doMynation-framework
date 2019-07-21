@@ -4,6 +4,12 @@ namespace Domynation\Search;
 
 use Assert\Assertion;
 
+/**
+ * Class SearchRequest
+ *
+ * @package Domynation\Search
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class SearchRequest
 {
     const ORDER_ASC  = 'asc';
@@ -73,7 +79,7 @@ final class SearchRequest
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
     public function getFilters()
     {

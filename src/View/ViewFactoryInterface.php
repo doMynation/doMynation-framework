@@ -2,6 +2,12 @@
 
 namespace Domynation\View;
 
+/**
+ * Interface ViewFactoryInterface
+ *
+ * @package Domynation\View
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface ViewFactoryInterface
 {
     /**

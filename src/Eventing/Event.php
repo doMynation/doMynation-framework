@@ -2,6 +2,12 @@
 
 namespace Domynation\Eventing;
 
+/**
+ * Class Event
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class Event
 {
     /**
@@ -12,7 +18,7 @@ abstract class Event
     /**
      * @return boolean
      */
-    public function isPropagationStopped()
+    public function isPropagationStopped(): bool
     {
         return $this->propagationStopped;
     }
@@ -22,7 +28,7 @@ abstract class Event
      *
      * @return void
      */
-    public function stopPropagation()
+    public function stopPropagation(): void
     {
         $this->propagationStopped = true;
     }

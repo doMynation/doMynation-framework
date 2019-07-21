@@ -2,13 +2,19 @@
 
 namespace Domynation\Eventing;
 
-use DI\InvokerInterface;
+use Invoker\InvokerInterface;
 
+/**
+ * A basic implementation of the event dispatcher.
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicEventDispatcher implements EventDispatcherInterface
 {
 
     /**
-     * @var \DI\InvokerInterface
+     * @var \Invoker\InvokerInterface
      */
     private $invoker;
 
@@ -22,18 +28,29 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      */
     private $raisedEvents;
 
+    /**
+     * BasicEventDispatcher constructor.
+     *
+     * @param \Invoker\InvokerInterface $invoker
+     */
     public function __construct(InvokerInterface $invoker)
     {
-        $this->invoker      = $invoker;
-        $this->listeners    = [];
+        $this->invoker = $invoker;
+        $this->listeners = [];
         $this->raisedEvents = [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function raise(Event $event, $priority = null)
     {
         $this->raisedEvents[] = $event;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function listen($eventName, callable $callable, $priority = null)
     {
         $listener = [
@@ -51,10 +68,13 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         $this->listeners[$eventName] = [$listener];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch()
     {
         // Clear the list of raised events.
-        $raisedEvents       = $this->raisedEvents;
+        $raisedEvents = $this->raisedEvents;
         $this->raisedEvents = [];
 
         foreach ($raisedEvents as $event) {
@@ -75,14 +95,28 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function clearEvents()
+    {
+        $this->raisedEvents = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRaisedEvents()
     {
         return $this->raisedEvents;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getListeners($eventName = null)
     {
-        if (is_null($eventName)) {
+        if ($eventName == null) {
             return $this->listeners;
         }
 

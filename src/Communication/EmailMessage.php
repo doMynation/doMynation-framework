@@ -4,6 +4,12 @@ namespace Domynation\Communication;
 
 use Assert\Assertion;
 
+/**
+ * Class EmailMessage
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class EmailMessage
 {
 
@@ -15,6 +21,8 @@ final class EmailMessage
     public $bcc;
 
     /**
+     * EmailMessage constructor
+     *
      * @param Email|Email[] $recipients
      * @param string $subject
      * @param string $body
@@ -22,7 +30,7 @@ final class EmailMessage
      * @param string $fromName
      * @param array $bcc
      */
-    public function __construct($recipients, $subject, $body = '', $from = null, $fromName = null, $bcc = [])
+    public function __construct($recipients, string $subject, string $body = '', ?string $from = null, ?string $fromName = null, array $bcc = [])
     {
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
@@ -30,17 +38,17 @@ final class EmailMessage
         Assertion::allIsInstanceOf($transformedRecipients, Email::class, "Invalid recipient(s)");
 
         $this->recipients = $transformedRecipients;
-        $this->subject    = $subject;
-        $this->body       = $body;
-        $this->from       = $from;
-        $this->fromName   = $fromName;
-        $this->bcc        = $bcc;
+        $this->subject = $subject;
+        $this->body = $body;
+        $this->from = $from;
+        $this->fromName = $fromName;
+        $this->bcc = $bcc;
     }
 
     /**
      * @return string
      */
-    public function getFullSender()
+    public function getFullSender(): string
     {
         $name = $this->fromName ? $this->fromName . ' ' : '';
 
@@ -50,8 +58,8 @@ final class EmailMessage
     /**
      * @return bool
      */
-    public function hasSender()
+    public function hasSender(): bool
     {
-        return !is_null($this->from);
+        return $this->from !== null;
     }
 }

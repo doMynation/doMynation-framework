@@ -3,6 +3,12 @@
 namespace Domynation\Eventing;
 
 
+/**
+ * Interface EventDispatcherInterface
+ *
+ * @package Domynation\Eventing
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface EventDispatcherInterface
 {
 
@@ -37,6 +43,13 @@ interface EventDispatcherInterface
      * @return void
      */
     public function dispatch();
+
+    /**
+     * Clears the list of raised events.
+     *
+     * @return void
+     */
+    public function clearEvents();
 
     /**
      * Returns all the events that have been raised.

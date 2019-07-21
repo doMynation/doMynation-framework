@@ -2,6 +2,12 @@
 
 namespace Domynation\Authentication;
 
+/**
+ * Interface for the authentication logic.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface AuthenticatorInterface
 {
 

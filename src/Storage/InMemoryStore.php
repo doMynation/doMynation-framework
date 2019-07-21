@@ -2,6 +2,12 @@
 
 namespace Domynation\Storage;
 
+/**
+ * Class InMemoryStore
+ *
+ * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 class InMemoryStore implements StoreInterface
 {
 

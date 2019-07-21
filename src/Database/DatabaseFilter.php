@@ -2,6 +2,12 @@
 
 namespace Domynation\Database;
 
+/**
+ * Class DatabaseFilter
+ *
+ * @package Domynation\Database
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class DatabaseFilter
 {
 
@@ -10,6 +16,11 @@ abstract class DatabaseFilter
      */
     protected $value;
 
+    /**
+     * DatabaseFilter constructor.
+     *
+     * @param $value
+     */
     public function __construct($value)
     {
         $this->value = is_array($value) ? $value : [$value];

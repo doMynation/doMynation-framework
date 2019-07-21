@@ -5,6 +5,12 @@ namespace Domynation\Communication;
 use Domynation\Exceptions\ApiException;
 use GuzzleHttp\Client;
 
+/**
+ * Class ApiClient
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class ApiClient
 {
     /**
@@ -12,6 +18,13 @@ final class ApiClient
      */
     private $client;
 
+    /**
+     * ApiClient constructor.
+     *
+     * @param $baseUrl
+     * @param $headers
+     * @param array $defaultQueryParameters
+     */
     public function __construct($baseUrl, $headers, $defaultQueryParameters = [])
     {
         $this->client = new Client([
@@ -48,8 +61,6 @@ final class ApiClient
      */
     public function get($url, $data = [])
     {
-        $data = $this->encode($data);
-
         $response = $this->client->get($url, [
             'query' => $this->prepareQuery($data)
         ]);
@@ -60,7 +71,7 @@ final class ApiClient
             throw new ApiException($json['error']['message'], $json['error']['code']);
         }
 
-        return utf8_decode_array($json);
+        return $json;
     }
 
 
@@ -76,9 +87,6 @@ final class ApiClient
      */
     public function post($url, $postData = [], $getData = [])
     {
-        $getData  = $this->encode($getData);
-        $postData = $this->encode($postData);
-
         $response = $this->client->post($url, [
             'query' => $this->prepareQuery($getData),
             'body'  => $postData
@@ -90,18 +98,6 @@ final class ApiClient
             throw new ApiException($json['error']['message'], $json['error']['code']);
         }
 
-        return utf8_decode_array($json);
-    }
-
-    /**
-     * Encdes the data t UTF-8.
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    private function encode($data = [])
-    {
-        return utf8_encode_array($data);
+        return $json;
     }
 }

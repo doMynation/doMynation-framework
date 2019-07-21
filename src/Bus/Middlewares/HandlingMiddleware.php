@@ -6,11 +6,10 @@ use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 
 /**
- * Class HandlingMiddleware
- *
- * This middleware has to be the last in the chain since it returns the final responsen.
+ * This middleware has to be the last in the chain since it returns the final response.
  *
  * @package Domynation\Bus\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class HandlingMiddleware extends CommandBusMiddleware
 {

@@ -2,13 +2,19 @@
 
 namespace Domynation\Http;
 
+/**
+ * The description of a route.
+ *
+ * @package Domynation\Http
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Route
 {
 
     /**
      * @var string
      */
-    private $type;
+    private $method;
 
     /**
      * @var string
@@ -37,9 +43,16 @@ final class Route
      */
     private $isSecure;
 
-    public function __construct($name, \Closure $handler)
+    /**
+     * Route constructor.
+     *
+     * @param string name
+     * @param callable $handler
+     * @param string $method
+     */
+    public function __construct($name, callable $handler, $method = 'GET')
     {
-        $this->type                = "GET"; // @todo implement this
+        $this->method              = strtoupper($method);
         $this->name                = $name;
         $this->handler             = $handler;
         $this->validator           = null;
@@ -92,13 +105,13 @@ final class Route
     }
 
     /**
-     * Gets the value of type.
+     * Gets the value of method.
      *
      * @return string
      */
-    public function getType()
+    public function getMethod()
     {
-        return $this->type;
+        return $this->method;
     }
 
     /**
@@ -157,5 +170,17 @@ final class Route
     public function isSecure()
     {
         return $this->isSecure;
+    }
+
+    /**
+     * @param string $method
+     *
+     * @return $this
+     */
+    public function setMethod($method)
+    {
+        $this->method = $method;
+
+        return $this;
     }
 }

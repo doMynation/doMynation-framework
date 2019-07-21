@@ -7,6 +7,13 @@ use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Command middleware that handles the logging of each
+ * command passed to the bus.
+ *
+ * @package Domynation\Bus\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class LoggingMiddleware extends CommandBusMiddleware
 {
 

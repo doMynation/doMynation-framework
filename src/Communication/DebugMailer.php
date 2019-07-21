@@ -2,6 +2,12 @@
 
 namespace Domynation\Communication;
 
+/**
+ * Class DebugMailer
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class DebugMailer implements MailerInterface
 {
     /**
@@ -14,12 +20,21 @@ final class DebugMailer implements MailerInterface
      */
     private $destinationEmail;
 
+    /**
+     * DebugMailer constructor.
+     *
+     * @param \Domynation\Communication\MailerInterface $mailer
+     * @param string $destinationEmail
+     */
     public function __construct(MailerInterface $mailer, $destinationEmail)
     {
         $this->mailer           = $mailer;
         $this->destinationEmail = $destinationEmail;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function send(EmailMessage $message, $data = [])
     {
         $recipient = function (Email $email) {
@@ -29,7 +44,6 @@ final class DebugMailer implements MailerInterface
         $commaSeparated   = curry('implode', ', ');
         $formatRecipients = compose($commaSeparated, map($recipient));
         $recipientsString = $formatRecipients($message->recipients);
-
 
         // Append the original recipients to the end of the email for debug purposes
         $message->body .= <<<EOT

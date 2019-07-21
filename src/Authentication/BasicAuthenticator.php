@@ -7,6 +7,12 @@ use Domynation\Exceptions\AuthenticationException;
 use Domynation\Security\PasswordInterface;
 use Domynation\Session\SessionInterface;
 
+/**
+ * A basic authenticator implementation.
+ *
+ * @package Domynation\Authentication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class BasicAuthenticator implements AuthenticatorInterface
 {
 
@@ -32,8 +38,8 @@ final class BasicAuthenticator implements AuthenticatorInterface
 
     public function __construct(Connection $db, SessionInterface $session, PasswordInterface $passwordManager)
     {
-        $this->db              = $db;
-        $this->session         = $session;
+        $this->db = $db;
+        $this->session = $session;
         $this->passwordManager = $passwordManager;
 
         $this->user = null;
@@ -47,7 +53,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
         // Fetch the user
         $user = $this->db->createQueryBuilder()
             ->select('user.id, user.password')
-            ->from('users', 'user')
+            ->from('dmn_users', 'user')
             ->andWhere('user.username = :username')
             ->setParameter('username', $username)
             ->execute()->fetch();
@@ -70,7 +76,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
     public function authenticate($userId)
     {
         // Fetch the user
-        $userInfo = $this->db->fetchAssoc('SELECT * FROM users WHERE id = ?', [$userId]);
+        $userInfo = $this->db->fetchAssoc('SELECT * FROM dmn_users WHERE id = ?', [$userId]);
 
         if ($userInfo === false) {
             throw new AuthenticationException("Authentication failed");
@@ -84,7 +90,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
 
         // Update the user's info in the database
         $now = (new \DateTime)->format("Y-m-d H:i:s");
-        $this->db->update('users', [
+        $this->db->update('dmn_users', [
             'ip_address'         => $_SERVER['REMOTE_ADDR'],
             'is_online'          => 1,
             'ss_fprint'          => $sessionFingerprint,
@@ -119,12 +125,12 @@ final class BasicAuthenticator implements AuthenticatorInterface
     {
         $userId = $this->session->get('ID');
 
-        if (is_null($userId) || !is_numeric($userId) || !$this->checkSession()) {
+        if ($userId === null || !is_numeric($userId) || !$this->checkSession()) {
             return;
         }
 
         // Fetch the user info
-        $userInfo = $this->db->fetchAssoc('SELECT * FROM users WHERE is_online = 1 AND id = ?', [$userId]);
+        $userInfo = $this->db->fetchAssoc('SELECT * FROM dmn_users WHERE is_online = 1 AND id = ?', [$userId]);
 
         if (empty($userInfo)) {
             return null;
@@ -141,12 +147,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
      */
     public function deauthenticate()
     {
-        $this->db->update('users', [
-            'is_online' => false
-        ], ['id' => $this->session->get('ID')]);
-
         $this->session->remove('ID');
-
         $this->user = null;
     }
 
@@ -155,7 +156,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
      */
     public function isAuthenticated()
     {
-        return !is_null($this->user);
+        return $this->user !== null;
     }
 
     /**

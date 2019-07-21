@@ -2,7 +2,12 @@
 
 namespace Domynation\Authorization;
 
-
+/**
+ * Interface PermissionInterface
+ *
+ * @package Domynation\Authorization
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface PermissionInterface
 {
 

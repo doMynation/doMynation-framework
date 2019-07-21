@@ -10,6 +10,7 @@ namespace Domynation\Utils;
  * enforce immutability but we don't want to have to generate setters individualy.
  *
  * @package Domynation\Utils
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 trait ProtectedGetterTrait
 {

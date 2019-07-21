@@ -2,6 +2,12 @@
 
 namespace Domynation\Database;
 
+/**
+ * A class that maps the filter names to their implementation.
+ *
+ * @package Domynation\Database
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class DatabaseFilterMapper
 {
 
@@ -27,7 +33,7 @@ final class DatabaseFilterMapper
      *
      * @param array $filters
      *
-     * @return array
+     * @return DatabaseFilter[]
      */
     public function map($filters)
     {

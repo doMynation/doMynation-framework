@@ -7,7 +7,6 @@
  */
 
 // Application version
-define('APP_VERSION', '1.0');
 define('APP_BUILD', 'b22');
 
 // Settings this to `true` will activate caching mechanisms and disable debug mode on various
@@ -64,3 +63,10 @@ define('GOOGLE_MAP_API_KEY', 'fill_me');
 // Rackspace cloudfiles API. Uncomment this if you chose `rackspace` as the storage driver.
 define('RACKSPACE_USERNAME', 'fill_me');
 define('RACKSPACE_PASSWORD', 'fill_me');
+
+// Amazon AWS credentials
+define('AWS_REGION', 'fill_me');
+define('AWS_API_KEY', 'fill_me');
+define('AWS_SECRET_KEY', 'fill_me');
+define('AWS_SES_DOMAIN', 'fill_me');
+

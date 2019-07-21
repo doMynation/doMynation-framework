@@ -3,8 +3,8 @@
 use Domynation\Bus\Command;
 use Domynation\Bus\Middlewares\CommandBusMiddleware;
 use Domynation\Eventing\EventDispatcherInterface;
-use Interop\Container\ContainerInterface;
 use Domynation\Bus\BasicCommandBus;
+use Psr\Container\ContainerInterface;
 
 class BasicCommandBusTest extends PHPUnit_Framework_TestCase
 {

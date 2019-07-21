@@ -1,5 +1,11 @@
 <?php namespace Domynation\Utils;
 
+/**
+ * Class Downloadify
+ *
+ * @package Domynation\Utils
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Downloadify
 {
 
@@ -24,10 +30,14 @@ final class Downloadify
      */
     private $pdfFilters;
 
+    /**
+     * Downloadify constructor.
+     *
+     * @param string $uploadPath
+     */
     public function __construct($uploadPath)
     {
-        // Make sure the path has a trailing slash
-        $this->uploadPath   = rtrim($uploadPath, '/') . '/';
+        $this->uploadPath   = rtrim($uploadPath, '/');
         $this->imageFilters = [];
         $this->pdfFilters   = [];
     }
@@ -134,7 +144,7 @@ final class Downloadify
      */
     private function formatFilePath($name)
     {
-        return $this->uploadPath . $name;
+        return $this->uploadPath . '/' . $name;
     }
 
     /**

@@ -2,6 +2,12 @@
 
 namespace Domynation\Cache;
 
+/**
+ * Class InMemoryCache
+ *
+ * @package Domynation\Cache
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class InMemoryCache implements CacheInterface
 {
 
@@ -15,6 +21,9 @@ final class InMemoryCache implements CacheInterface
      */
     private $prefix;
 
+    /**
+     * InMemoryCache constructor.
+     */
     public function __construct()
     {
         $this->store  = [];

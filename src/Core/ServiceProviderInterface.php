@@ -3,22 +3,26 @@
 namespace Domynation\Core;
 
 use Domynation\Eventing\EventDispatcherInterface;
-use Domynation\Http\Router;
+use Domynation\Http\RouterInterface;
 use Domynation\View\ViewFactoryInterface;
 
+/**
+ * Interface ServiceProviderInterface
+ *
+ * @package Domynation\Core
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface ServiceProviderInterface
 {
 
     /**
-     * Starts the service provider.
+     * Starts the module.
      *
-     * @param \Domynation\Http\Router $router
+     * @param RouterInterface $router
      * @param \Domynation\View\ViewFactoryInterface $view
      * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
-     *
-     * @return void
      */
-    public function start(Router $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher);
+    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher);
 
     /**
      * Registers the module's container definitions.
@@ -30,11 +34,10 @@ interface ServiceProviderInterface
     /**
      * Registers the module's routes.
      *
-     * @param \Domynation\Http\Router $router
+     * @param \Domynation\Http\RouterInterface $router
      *
-     * @return void
      */
-    public function registerRoutes(Router $router);
+    public function registerRoutes(RouterInterface $router);
 
     /**
      * Registers the module's views.

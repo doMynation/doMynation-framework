@@ -1,33 +1,50 @@
 <?php
 
 return [
+    Psr\Container\ContainerInterface::class => function (Psr\Container\ContainerInterface $container) {
+        return $container;
+    },
+
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
         $devMode = !IS_PRODUCTION;
-
         $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
 
         if (IS_PRODUCTION) {
             $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
             $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
+//            $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
+//
+//            // Second level cache configuration
+//            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
+//                new \Doctrine\ORM\Cache\RegionsConfiguration,
+//                new \Doctrine\Common\Cache\ApcuCache()
+//            );
+//
+//            $config->setSecondLevelCacheEnabled();
+//            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
         }
 
         // Uncomment the following to debug every request made to the DB
-        //$config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+//        $config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
 
         return Doctrine\ORM\EntityManager::create([
+            'host'     => DB_HOST,
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
-            'password' => DB_PASSWORD
+            'password' => DB_PASSWORD,
+            'charset'  => 'utf8'
         ], $config);
     },
 
     \Doctrine\DBAL\Connection::class => function () {
         $db = \Doctrine\DBAL\DriverManager::getConnection([
+            'host'     => DB_HOST,
             'driver'   => DB_DRIVER,
             'dbname'   => DB_DATABASE,
             'user'     => DB_USER,
-            'password' => DB_PASSWORD
+            'password' => DB_PASSWORD,
+            'charset'  => 'utf8'
         ], new \Doctrine\DBAL\Configuration());
 
         // @todo: Extremely ugly hack until all the event listeners are refactored.
@@ -37,7 +54,7 @@ return [
     },
 
     \Domynation\Bus\CommandBusInterface::class => function (
-        \Interop\Container\ContainerInterface $container,
+        Psr\Container\ContainerInterface $container,
         \Domynation\Authentication\AuthenticatorInterface $auth,
         \Domynation\Eventing\EventDispatcherInterface $dispatcher,
         \Domynation\Cache\CacheInterface $cache
@@ -56,18 +73,16 @@ return [
             ]);
     },
 
-    \Domynation\Http\Router::class => function (\Interop\Container\ContainerInterface $container, \Domynation\Authentication\UserInterface $user) {
-        $routerLogger = new Monolog\Logger('Router_logger');
-        $routerLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/router.log', Monolog\Logger::INFO));
+    \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker) {
+        // Resolve all middleware through the container
+        $middlewares = array_map(function ($middlewareName) use ($container) {
+            return $container->get($middlewareName);
+        }, $config->get('routeMiddlewares'));
 
-        return new \Domynation\Http\Router(
-            $container,
-            new \Domynation\Http\AuthenticationMiddleware($user),
-            new \Domynation\Http\AuthorizationMiddleware($user),
-            new \Domynation\Http\ValidationMiddleware($container),
-            new \Domynation\Http\LoggingMiddleware($routerLogger, $user),
-            new \Domynation\Http\HandlingMiddleware($container)
-        );
+        // Append the handling middleware at the end
+        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker);
+
+        return new \Domynation\Http\SymfonyRouter($middlewares);
     },
 
     \Domynation\Cache\CacheInterface::class => function () {
@@ -100,9 +115,6 @@ return [
 
     \Domynation\Security\PasswordInterface::class => function () {
         switch (PASSWORD_DRIVER) {
-            case 'md5':
-                return new \Domynation\Security\Md5Password;
-                break;
             case 'native':
             default:
                 return new \Domynation\Security\NativePassword;
@@ -133,6 +145,10 @@ return [
 
     \Domynation\Storage\StorageInterface::class => function () {
         switch (STORAGE_DRIVER) {
+            case 'aws':
+                return new \Domynation\Storage\AwsS3FileStorage(AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
+                break;
+
             case 'rackspace':
                 return new Domynation\Storage\RackspaceFileStorage(RACKSPACE_USERNAME, RACKSPACE_PASSWORD);
                 break;
@@ -146,6 +162,10 @@ return [
 
     \Domynation\Communication\MailerInterface::class => function () {
         switch (EMAIL_DRIVER) {
+            case 'aws':
+                return new \Domynation\Communication\AwsSesMailer(AWS_SES_DOMAIN, AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
+                break;
+
             case 'mailgun':
                 $mailer = new Domynation\Communication\MailgunMailer(MAILGUN_API_KEY, MAILGUN_DEFAULT_DOMAIN, EMAIL_DEFAULT_SENDER);
                 break;
@@ -165,44 +185,33 @@ return [
         return new \Domynation\Communication\DebugMailer($mailer, EMAIL_DEBUG);
     },
 
-    \Domynation\View\ViewFactoryInterface::class => function () {
-        if (IS_PRODUCTION) {
-            $twig = new Twig_Environment(
-                new Twig_Loader_Filesystem(PATH_HTML),
-                [
-                    'cache'            => PATH_BASE . '/cache',
-                    'debug'            => false,
-                    'strict_variables' => true,
-                    'charset'          => 'iso-8859-1'
-                ]
-            );
-        } else {
-            $twig = new Twig_Environment(
-                new Twig_Loader_Filesystem(PATH_HTML),
-                [
-                    'cache'            => PATH_BASE . '/cache',
-                    'debug'            => true,
-                    'strict_variables' => true,
-                    'auto_reload'      => true,
-                    'charset'          => 'iso-8859-1'
-                ]
-            );
+    \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        $options = [
+            'cache'            => PATH_BASE . '/cache',
+            'debug'            => false,
+            'strict_variables' => true,
+        ];
+
+        if (!IS_PRODUCTION) {
+            $options['debug'] = true;
+            $options['auto_reload'] = true;
         }
 
-        $instance = new \Domynation\View\TwigViewFactory($twig);
+        $twig = new Twig_Environment(new Twig_Loader_Filesystem(PATH_HTML), $options);
+
+        $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
 
         include_once __DIR__ . '/twig.php';
 
         return $instance;
     },
 
-
-    \Domynation\Eventing\EventDispatcherInterface::class => function (\Interop\Container\ContainerInterface $container) {
-        return new \Domynation\Eventing\BasicEventDispatcher($container);
+    \Domynation\Eventing\EventDispatcherInterface::class => function (\Invoker\InvokerInterface $invoker) {
+        return new \Domynation\Eventing\BasicEventDispatcher($invoker);
     },
 
     \Domynation\Entities\EntityRegistry::class => function () {
-        return new \Domynation\Entities\EntityRegistry();
+        return new \Domynation\Entities\EntityRegistry;
     },
 
     \Domynation\Search\SearchInterface::class => function () {

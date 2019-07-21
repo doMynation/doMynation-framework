@@ -6,7 +6,6 @@
 
 // HTTP STATUS CODES
 define('HTTP_OK', 200);
-define('HTTP_NOT_MODIFIED', 304);
 define('HTTP_FORCE_REDIRECT', 307);
 define('HTTP_BAD_REQUEST', 400);
 define('HTTP_AUTHENTICATION_REQUIRED', 401); // custom
