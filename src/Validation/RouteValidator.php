@@ -2,8 +2,6 @@
 
 namespace Domynation\Validation;
 
-use Domynation\Utils\MessageRecorderTrait;
-
 /**
  * Class RouteValidator
  *
@@ -12,8 +10,6 @@ use Domynation\Utils\MessageRecorderTrait;
  */
 abstract class RouteValidator
 {
-
-    use MessageRecorderTrait;
 
     /**
      * Validates the inputs and returns true if all inputs

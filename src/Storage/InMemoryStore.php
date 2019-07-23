@@ -16,6 +16,11 @@ class InMemoryStore implements StoreInterface
      */
     private $store;
 
+    /**
+     * InMemoryStore constructor.
+     *
+     * @param array $initialData
+     */
     public function __construct(array $initialData = [])
     {
         $this->store = $initialData;

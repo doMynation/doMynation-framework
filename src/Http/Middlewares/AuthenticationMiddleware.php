@@ -7,6 +7,12 @@ use Domynation\Exceptions\AuthenticationException;
 use Domynation\Http\ResolvedRoute;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class AuthenticationMiddleware
+ *
+ * @package Domynation\Http\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class AuthenticationMiddleware extends RouteMiddleware
 {
 
@@ -15,6 +21,11 @@ final class AuthenticationMiddleware extends RouteMiddleware
      */
     private $user;
 
+    /**
+     * AuthenticationMiddleware constructor.
+     *
+     * @param \Domynation\Authentication\UserInterface $user
+     */
     public function __construct(UserInterface $user)
     {
         $this->user = $user;
@@ -29,6 +40,6 @@ final class AuthenticationMiddleware extends RouteMiddleware
             throw new AuthenticationException;
         }
 
-        return !is_null($this->next) ? $this->next->handle($resolvedRoute, $request) : null;
+        return $this->next !== null ? $this->next->handle($resolvedRoute, $request) : null;
     }
 }

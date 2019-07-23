@@ -4,6 +4,12 @@ namespace Domynation\View;
 
 use Twig_Environment;
 
+/**
+ * Class TwigViewFactory
+ *
+ * @package Domynation\View
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class TwigViewFactory implements ViewFactoryInterface
 {
 
@@ -17,7 +23,13 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     private $fileExtension;
 
-    public function __construct(Twig_Environment $twig, $defaultFileExtension)
+    /**
+     * TwigViewFactory constructor.
+     *
+     * @param \Twig_Environment $twig
+     * @param string $defaultFileExtension
+     */
+    public function __construct(Twig_Environment $twig, string $defaultFileExtension)
     {
         $this->twig = $twig;
 
@@ -31,7 +43,8 @@ final class TwigViewFactory implements ViewFactoryInterface
     public function render($viewName, $data = [])
     {
         $viewName = str_replace(".html.twig", "", $viewName);
-        return $this->twig->render($viewName.$this->fileExtension, $data);
+
+        return $this->twig->render($viewName . $this->fileExtension, $data);
     }
 
     /**

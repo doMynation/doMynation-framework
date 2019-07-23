@@ -21,9 +21,15 @@ final class DatabaseFilterMapper
      */
     private $allowedFilters;
 
+    /**
+     * DatabaseFilterMapper constructor.
+     *
+     * @param $namespace
+     * @param $allowedFilters
+     */
     public function __construct($namespace, $allowedFilters)
     {
-        $this->namespace      = $namespace;
+        $this->namespace = $namespace;
         $this->allowedFilters = $allowedFilters;
     }
 
@@ -55,7 +61,6 @@ final class DatabaseFilterMapper
 
         return $classes;
     }
-
 
     /**
      * Resolves the filter class based on its name.

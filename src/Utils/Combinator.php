@@ -2,6 +2,15 @@
 
 namespace Domynation\Utils;
 
+/**
+ * A data structure that automatically combines similar values and
+ * counts occurrences.
+ *
+ * @todo: This is too specific and probably belongs to userland
+ *
+ * @package Domynation\Utils
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class Combinator
 {
     /**
@@ -9,6 +18,9 @@ final class Combinator
      */
     private $values;
 
+    /**
+     * Combinator constructor.
+     */
     public function __construct()
     {
         $this->values = [];

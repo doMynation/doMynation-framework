@@ -7,8 +7,8 @@ use Ramsey\Uuid\Uuid;
 /**
  * Class RackspaceFileStorage
  *
- *
  * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class RackspaceFileStorage implements StorageInterface
 {
@@ -23,12 +23,21 @@ final class RackspaceFileStorage implements StorageInterface
      */
     private $apiKey;
 
-    public function __construct($username, $apiKey)
+    /**
+     * RackspaceFileStorage constructor.
+     *
+     * @param string $username
+     * @param string $apiKey
+     */
+    public function __construct(string $username, string $apiKey)
     {
         $this->username = $username;
-        $this->apiKey   = $apiKey;
+        $this->apiKey = $apiKey;
     }
 
+    /**
+     * @return \CF_Connection
+     */
     private function authenticate()
     {
         $auth = new \CF_Authentication($this->username, $this->apiKey);
@@ -38,6 +47,9 @@ final class RackspaceFileStorage implements StorageInterface
         return new \CF_Connection($auth);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAll($data = [])
     {
         if (array_key_exists('container', $data)) {
@@ -49,7 +61,7 @@ final class RackspaceFileStorage implements StorageInterface
         $connection = $this->authenticate();
 
         $container = $connection->get_container($data['container']);
-        $items     = $container->get_objects($limit, null);
+        $items = $container->get_objects($limit, null);
 
         return array_map(function ($item) {
             return [
@@ -59,6 +71,9 @@ final class RackspaceFileStorage implements StorageInterface
         }, $items);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get($key, $data = [])
     {
         if (array_key_exists('container', $data)) {
@@ -69,7 +84,7 @@ final class RackspaceFileStorage implements StorageInterface
 
         try {
             $container = $connection->get_container($data['container']);
-            $file      = $container->get_object($key);
+            $file = $container->get_object($key);
         } catch (\Exception $e) {
             $file = null;
         }
@@ -77,6 +92,9 @@ final class RackspaceFileStorage implements StorageInterface
         return $file;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function exists($key, $data = [])
     {
         if (array_key_exists('container', $data)) {
@@ -86,6 +104,9 @@ final class RackspaceFileStorage implements StorageInterface
         return !is_null($this->get($key, $data));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function put($filePath, $data = [])
     {
         if (array_key_exists('container', $data)) {
@@ -93,9 +114,9 @@ final class RackspaceFileStorage implements StorageInterface
         }
 
         $connection = $this->authenticate();
-        $container  = $connection->get_container($data['container']);
+        $container = $connection->get_container($data['container']);
 
-        $ext      = pathinfo($filePath, PATHINFO_EXTENSION);
+        $ext = pathinfo($filePath, PATHINFO_EXTENSION);
         $fileName = Uuid::uuid4() . '.' . $ext;
 
         $object = $container->create_object($fileName);
@@ -105,6 +126,9 @@ final class RackspaceFileStorage implements StorageInterface
         return new StorageResponse($object->name, $object->public_ssl_uri());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function delete($key, $data = [])
     {
         if (array_key_exists('container', $data)) {
@@ -112,7 +136,7 @@ final class RackspaceFileStorage implements StorageInterface
         }
 
         $connection = $this->authenticate();
-        $container  = $connection->get_container($data['container']);
+        $container = $connection->get_container($data['container']);
         $container->delete_object($key);
     }
 }

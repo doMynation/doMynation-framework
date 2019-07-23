@@ -45,14 +45,20 @@ final class SearchRequest
      */
     private $isPaginated;
 
-    public function __construct($filters, $offset, $limit, $sortField, $sortOrder, $isPaginated)
+    /**
+     * SearchRequest constructor.
+     *
+     * @param array $filters
+     * @param int $offset
+     * @param int $limit
+     * @param null|string $sortField
+     * @param null|string $sortOrder
+     * @param bool $isPaginated
+     */
+    public function __construct(array $filters, int $offset, int $limit, ?string $sortField, ?string $sortOrder, bool $isPaginated)
     {
-        Assertion::isArray($filters, "Invalid filters");
-        Assertion::integerish($limit, "Invalid limit");
-        Assertion::integerish($offset, "Invalid offset");
         Assertion::nullOrString($sortField, "Invalid sort field");
         Assertion::choice($sortOrder, [null, self::ORDER_ASC, self::ORDER_DESC], "Invalid sort order");
-        Assertion::boolean($isPaginated, "Invalid value for isPaginated");
 
         if ($limit < 0) {
             throw new \InvalidArgumentException("Invalid limit");
@@ -62,12 +68,12 @@ final class SearchRequest
             throw new \InvalidArgumentException("Invalid offset");
         }
 
-        $this->filters     = $filters;
-        $this->offset      = (int)$offset;
-        $this->limit       = (int)$limit;
-        $this->sortField   = $sortField;
-        $this->sortOrder   = $sortOrder;
-        $this->isPaginated = (bool)$isPaginated;
+        $this->filters = $filters;
+        $this->offset = $offset;
+        $this->limit = $limit;
+        $this->sortField = $sortField;
+        $this->sortOrder = $sortOrder;
+        $this->isPaginated = $isPaginated;
     }
 
     /**
@@ -154,11 +160,11 @@ final class SearchRequestBuilder
 
     public function __construct()
     {
-        $this->filters     = [];
-        $this->offset      = 0;
-        $this->limit       = 0;
-        $this->sortField   = null;
-        $this->sortOrder   = null;
+        $this->filters = [];
+        $this->offset = 0;
+        $this->limit = 0;
+        $this->sortField = null;
+        $this->sortOrder = null;
         $this->isPaginated = false;
     }
 

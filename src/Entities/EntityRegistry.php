@@ -13,6 +13,9 @@ final class EntityRegistry
 {
     protected $definitions;
 
+    /**
+     * EntityRegistry constructor.
+     */
     public function __construct()
     {
         $this->definitions = [];

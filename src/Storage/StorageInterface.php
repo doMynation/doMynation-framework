@@ -6,6 +6,7 @@ namespace Domynation\Storage;
  * Interface StorageInterface
  *
  * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 interface StorageInterface
 {

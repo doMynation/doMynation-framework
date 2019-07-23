@@ -1,10 +1,9 @@
 <?php
 
+//Psr\Container\ContainerInterface::class => function (Psr\Container\ContainerInterface $container) {
+//    return $container;
+//},
 return [
-    Psr\Container\ContainerInterface::class => function (Psr\Container\ContainerInterface $container) {
-        return $container;
-    },
-
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
         $devMode = !IS_PRODUCTION;
         $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
@@ -57,27 +56,34 @@ return [
         Psr\Container\ContainerInterface $container,
         \Domynation\Authentication\AuthenticatorInterface $auth,
         \Domynation\Eventing\EventDispatcherInterface $dispatcher,
-        \Domynation\Cache\CacheInterface $cache
+        \Domynation\Cache\CacheInterface $cache,
+        \Domynation\Config\ConfigInterface $config
     ) {
+        // Configure logger
+        $busConfigs = $config->get('bus');
+        $logsPath = PATH_BASE . ($busConfigs['logsPath'] ?? '/bus.log');
         $busLogger = new Monolog\Logger('Bus_logger');
-        $busLogger->pushHandler(new Monolog\Handler\StreamHandler(PATH_BASE . '/logs/bus.log', Monolog\Logger::INFO));
+        $busLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::INFO));
 
         return new Domynation\Bus\BasicCommandBus(
             $container,
             $dispatcher,
             [
                 new \Domynation\Bus\Middlewares\AuthorizationMiddleware($auth),
-                new \Domynation\Bus\Middlewares\CachingMiddleware($cache),
+                new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
                 new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $auth),
                 new \Domynation\Bus\Middlewares\HandlingMiddleware
-            ]);
+            ]
+        );
     },
 
     \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker) {
+        $routingConfig = $config->get('routing');
+
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
-        }, $config->get('routeMiddlewares'));
+        }, $routingConfig['middlewares']);
 
         // Append the handling middleware at the end
         $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker);
@@ -120,10 +126,6 @@ return [
                 return new \Domynation\Security\NativePassword;
                 break;
         }
-    },
-
-    \Domynation\Security\PasswordGeneratorInterface::class => function () {
-        return new \Domynation\Security\BasicPasswordGenerator;
     },
 
     \Domynation\Authentication\AuthenticatorInterface::class => function (\Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
@@ -219,7 +221,4 @@ return [
             \Elasticsearch\ClientBuilder::create()->build()
         );
     },
-
-    // aliases
-    'view'                                    => \DI\get(\Domynation\View\ViewFactoryInterface::class),
 ];

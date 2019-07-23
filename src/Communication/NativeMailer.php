@@ -2,9 +2,20 @@
 
 namespace Domynation\Communication;
 
+/**
+ * Class NativeMailer
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class NativeMailer implements MailerInterface
 {
 
+    /**
+     * @param array $headers
+     *
+     * @return array
+     */
     private function getDefaultHeaders($headers = [])
     {
         return [
@@ -12,10 +23,12 @@ final class NativeMailer implements MailerInterface
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function send(EmailMessage $email, $data = [])
     {
         $headers = $this->getDefaultHeaders();
-
         $specialParams = '';
 
         if ($email->from) {

@@ -29,6 +29,13 @@ final class BasicCommandBus implements CommandBusInterface
      */
     private $dispatcher;
 
+    /**
+     * BasicCommandBus constructor.
+     *
+     * @param \Psr\Container\ContainerInterface $container
+     * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
+     * @param array $middlewares
+     */
     public function __construct(ContainerInterface $container, EventDispatcherInterface $dispatcher, array $middlewares)
     {
         $this->middlewareChain = $this->buildMiddlewareChain($middlewares);

@@ -15,11 +15,21 @@ namespace Domynation\Utils;
 trait ProtectedGetterTrait
 {
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
     public function __isset($key)
     {
         return isset($this->$key);
     }
 
+    /**
+     * @param $key
+     *
+     * @return mixed
+     */
     public function __get($key)
     {
         return $this->$key;

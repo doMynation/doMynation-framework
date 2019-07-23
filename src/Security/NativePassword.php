@@ -2,6 +2,12 @@
 
 namespace Domynation\Security;
 
+/**
+ * Class NativePassword
+ *
+ * @package Domynation\Security
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class NativePassword implements PasswordInterface
 {
 

@@ -2,6 +2,12 @@
 
 namespace Domynation\Communication;
 
+/**
+ * Interface WebSocketInterface
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface WebSocketInterface
 {
 

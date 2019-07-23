@@ -21,9 +21,15 @@ final class SearchResult
      */
     private $count;
 
-    public function __construct(array $hits, $count)
+    /**
+     * SearchResult constructor.
+     *
+     * @param array $hits
+     * @param int $count
+     */
+    public function __construct(array $hits, int $count)
     {
-        $this->hits  = $hits;
+        $this->hits = $hits;
         $this->count = $count;
     }
 

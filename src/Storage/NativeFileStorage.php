@@ -31,18 +31,27 @@ final class NativeFileStorage implements StorageInterface
     public function __construct($folder, $uri)
     {
         $this->folder = $folder;
-        $this->uri    = $uri;
+        $this->uri = $uri;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get($key, $data = [])
     {
 
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAll($data = [])
     {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function put($filePath, $data = [])
     {
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -55,10 +64,16 @@ final class NativeFileStorage implements StorageInterface
         return new StorageResponse($newFileName, "{$this->uri}/{$newFileName}");
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function delete($key, $data = [])
     {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function exists($key, $data = [])
     {
         return file_exists("{$this->folder}/{$key}");

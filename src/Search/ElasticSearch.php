@@ -7,9 +7,10 @@ use Elasticsearch\Client;
 /**
  * Class ElasticSearch
  *
- * @todo: Still in progress. Don't use this.
+ * @todo: Work in progress. Don't use this.
  *
  * @package Domynation\Search
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class ElasticSearch implements SearchInterface
 {
@@ -19,6 +20,11 @@ final class ElasticSearch implements SearchInterface
      */
     private $client;
 
+    /**
+     * ElasticSearch constructor.
+     *
+     * @param \Elasticsearch\Client $client
+     */
     public function __construct(Client $client)
     {
         $this->client = $client;

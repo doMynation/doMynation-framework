@@ -5,6 +5,12 @@ namespace Domynation\Http\Middlewares;
 use Domynation\Http\ResolvedRoute;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class RouteMiddleware
+ *
+ * @package Domynation\Http\Middlewares
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class RouteMiddleware
 {
 

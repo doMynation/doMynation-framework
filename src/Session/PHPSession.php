@@ -2,6 +2,12 @@
 
 namespace Domynation\Session;
 
+/**
+ * Class PHPSession
+ *
+ * @package Domynation\Session
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class PHPSession implements SessionInterface
 {
     /**

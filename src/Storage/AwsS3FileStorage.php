@@ -6,6 +6,12 @@ use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * Class AwsS3FileStorage
+ *
+ * @package Domynation\Storage
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class AwsS3FileStorage implements StorageInterface
 {
 
@@ -50,13 +56,13 @@ final class AwsS3FileStorage implements StorageInterface
         // Fetch the object from the container
         $response = $this->client->getObject([
             'Bucket' => $data['container'],
-            'Key' => $key
+            'Key'    => $key
         ]);
 
         return [
-            'name' => $key,
-            'url' => $response['@metadata']['effectiveUri'],
-            'size' => (int)$response['ContentLength'],
+            'name'     => $key,
+            'url'      => $response['@metadata']['effectiveUri'],
+            'size'     => (int)$response['ContentLength'],
             'mimeType' => $response['ContentType'],
             'metadata' => $response['Metadata']
         ];
@@ -72,15 +78,15 @@ final class AwsS3FileStorage implements StorageInterface
     public function getAll($data = [])
     {
         $response = $this->client->listObjects([
-            'Bucket' => $data['container'],
+            'Bucket'  => $data['container'],
             'MaxKeys' => isset($data['limit']) ? $data['limit'] : 1000
         ]);
 
-        return array_map(function($file) use ($data) {
+        return array_map(function ($file) use ($data) {
             return [
                 'name' => $file['Key'],
                 'size' => $file['Size'],
-                'url' => "https://s3.amazonaws.com/{$data['container']}/{$file['Key']}"
+                'url'  => "https://s3.amazonaws.com/{$data['container']}/{$file['Key']}"
             ];
         }, $response['Contents']);
     }
@@ -132,8 +138,8 @@ final class AwsS3FileStorage implements StorageInterface
         }
 
         $response = $this->client->deleteObject([
-            'Bucket'     => $data['container'],
-            'Key'        => $key,
+            'Bucket' => $data['container'],
+            'Key'    => $key,
         ]);
 
         return $response;

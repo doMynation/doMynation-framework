@@ -27,12 +27,21 @@ final class LoggingMiddleware extends CommandBusMiddleware
      */
     private $auth;
 
+    /**
+     * LoggingMiddleware constructor.
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Domynation\Authentication\AuthenticatorInterface $auth
+     */
     public function __construct(LoggerInterface $logger, AuthenticatorInterface $auth)
     {
         $this->logger = $logger;
         $this->auth = $auth;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function handle(Command $command, CommandHandler $handler)
     {
         // Prepare the data
@@ -44,7 +53,7 @@ final class LoggingMiddleware extends CommandBusMiddleware
 
             $data['user'] = [
                 'id'   => $user->getId(),
-                'name' => utf8_encode($user->getFullName())
+                'name' => $user->getFullName()
             ];
         }
 
@@ -55,11 +64,16 @@ final class LoggingMiddleware extends CommandBusMiddleware
         $this->logger->addInfo("Command: ", $data);
 
         // Pass the request to the next handler
-        return !is_null($this->next) ? $this->next->handle($command, $handler) : null;
+        return $this->next !== null ? $this->next->handle($command, $handler) : null;
     }
 
+    /**
+     * @param \Domynation\Bus\Command $command
+     *
+     * @return string
+     */
     public function serialize(Command $command)
     {
-        return utf8_encode(serialize($command));
+        return serialize($command);
     }
 }

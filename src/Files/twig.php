@@ -52,10 +52,6 @@ $twig->addFilter(new Twig_SimpleFilter('tr', function ($key, $placeholders = [])
     return lang($key, $placeholders);
 }));
 
-$twig->addFilter(new Twig_SimpleFilter('escapeInput', function ($value) {
-    return htmlspecialchars($value);
-}));
-
 $twig->addFilter(new Twig_SimpleFilter('dateHr', function ($date, $showTime = true) {
     return formatDate($date, $showTime);
 }));

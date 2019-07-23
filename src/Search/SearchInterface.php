@@ -5,21 +5,14 @@ namespace Domynation\Search;
 /**
  * Interface SearchInterface
  *
- * @todo: Still in progress. Don't use this.
+ * @todo: Work in progress. Don't use this.
  *
  * @package Domynation\Search
+ * @author Dominique Sarrazin <domynation@gmail.com>
  */
 interface SearchInterface
 {
 
-    /**
-     * @param $needle
-     * @param $index
-     * @param array $types
-     * @param array $options
-     *
-     * @return SearchResult
-     */
     public function search($needle, $index, array $types, array $options = []);
 
     public function index($index, $type, $documentId, $data);

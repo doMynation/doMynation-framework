@@ -3,7 +3,6 @@
 namespace Domynation;
 
 use DI\ContainerBuilder;
-use Doctrine\Common\Cache\ApcuCache;
 use Domynation\Config\ConfigInterface;
 use Domynation\Config\InMemoryConfigStore;
 use Domynation\Eventing\EventDispatcherInterface;
@@ -11,6 +10,7 @@ use Domynation\Http\RouterInterface;
 use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,16 +39,16 @@ final class Application
     private $container;
 
     /**
-     * @var Request
+     * @var \Symfony\Component\HttpFoundation\Request
      */
     private $request;
 
     /**
      * Application constructor.
      *
-     * @param $basePath The root path of the application.
+     * @param string $basePath The root path of the application.
      */
-    public function __construct($basePath)
+    public function __construct(string $basePath)
     {
         $this->basePath = $basePath;
     }
@@ -58,7 +58,7 @@ final class Application
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // Boot the configuration
         $config = $this->bootConfiguration();
@@ -85,10 +85,9 @@ final class Application
      * @param \Domynation\Config\ConfigInterface $config
      * @param \Domynation\Session\SessionInterface $session
      *
-     * @return \DI\Container
-     * @throws \DI\NotFoundException
+     * @return \Psr\Container\ContainerInterface
      */
-    private function bootContainer(ConfigInterface $config, SessionInterface $session)
+    private function bootContainer(ConfigInterface $config, SessionInterface $session): ContainerInterface
     {
         $builder = new ContainerBuilder();
         $builder->useAnnotations(false);
@@ -114,7 +113,7 @@ final class Application
 
             // Instanciate the provider
             $reflection = new \ReflectionClass($name);
-            $provider   = $reflection->newInstanceArgs();
+            $provider = $reflection->newInstanceArgs();
 
             // Load the provider's container definitions
             $builder->addDefinitions($provider->registerContainerDefinitions());
@@ -138,7 +137,7 @@ final class Application
 
             // Use reflection to get a closure copy of the `boot` method
             $reflection = new \ReflectionClass(get_class($provider));
-            $closure    = $reflection->getMethod('boot')->getClosure($provider);
+            $closure = $reflection->getMethod('boot')->getClosure($provider);
 
             // Let the container inject the dependency needed by the closure
             $container->call($closure);
@@ -150,9 +149,9 @@ final class Application
     /**
      * Boots the session.
      *
-     * @return \Domynation\Session\PHPSession
+     * @return \Domynation\Session\SessionInterface
      */
-    private function bootSession()
+    private function bootSession(): SessionInterface
     {
         $session = new PHPSession;
 
@@ -164,7 +163,7 @@ final class Application
     /**
      * @return string
      */
-    public function getBasePath()
+    public function getBasePath(): string
     {
         return $this->basePath;
     }
@@ -172,15 +171,17 @@ final class Application
     /**
      * @return \Psr\Container\ContainerInterface
      */
-    public function getContainer()
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
 
     /**
-     * @return void
+     * Boots the configuration store.
+     *
+     * @return \Domynation\Config\ConfigInterface
      */
-    private function bootConfiguration()
+    private function bootConfiguration(): ConfigInterface
     {
         // @todo: Remove this once we get rid of global constants and replace them with dotenv
         define('PASSWORD_DRIVER', 'native');
@@ -209,9 +210,11 @@ final class Application
     }
 
     /**
+     * @todo: Move this to userland and allow customization.
+     *
      * @param \Exception|\Throwable $e
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     private function handleException(\Throwable $e)
     {
@@ -236,7 +239,7 @@ final class Application
         }
 
         if ($e instanceof \Domynation\Exceptions\ValidationException) {
-            return new JsonResponse(['errors' => $e->errors()], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
         }
 
         if ($e instanceof \Domynation\Exceptions\EntityNotFoundException) {
@@ -255,7 +258,7 @@ final class Application
      *
      * @return void
      */
-    private function bootErrorReporting()
+    private function bootErrorReporting(): void
     {
         // Report all errors
         error_reporting(-1);
@@ -282,7 +285,7 @@ final class Application
      *
      * @return \Symfony\Component\HttpFoundation\Request
      */
-    private function bootRequest()
+    private function bootRequest(): Request
     {
         return Request::createFromGlobals();
     }

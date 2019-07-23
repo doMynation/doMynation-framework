@@ -8,7 +8,7 @@ namespace Domynation\Exceptions;
  * @package Domynation\Exceptions
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-class EntityNotFoundException extends \Exception
+final class EntityNotFoundException extends \Exception
 {
 
 }

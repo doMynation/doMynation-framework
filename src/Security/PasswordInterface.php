@@ -2,6 +2,12 @@
 
 namespace Domynation\Security;
 
+/**
+ * Interface PasswordInterface
+ *
+ * @package Domynation\Security
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 interface PasswordInterface
 {
 

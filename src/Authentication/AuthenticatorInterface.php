@@ -38,7 +38,7 @@ interface AuthenticatorInterface
     public function deauthenticate();
 
     /**
-     * Remmembers the currently authenticated user.
+     * Remembers the currently authenticated user.
      *
      * @return UserInterface
      */

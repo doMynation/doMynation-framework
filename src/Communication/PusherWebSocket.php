@@ -5,6 +5,12 @@ namespace Domynation\Communication;
 use Assert\Assertion;
 use Pusher;
 
+/**
+ * Class PusherWebSocket
+ *
+ * @package Domynation\Communication
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 final class PusherWebSocket implements WebSocketInterface
 {
     /**
@@ -12,6 +18,13 @@ final class PusherWebSocket implements WebSocketInterface
      */
     private $pusher;
 
+    /**
+     * PusherWebSocket constructor.
+     *
+     * @param string $publicKey
+     * @param string $privateKey
+     * @param string $appId
+     */
     public function __construct(string $publicKey, string $privateKey, string $appId)
     {
         $this->pusher = new Pusher($publicKey, $privateKey, $appId, ['encrypted' => true]);

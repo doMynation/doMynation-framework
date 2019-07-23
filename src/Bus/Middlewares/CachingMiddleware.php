@@ -6,6 +6,7 @@ use Domynation\Bus\CachableCommand;
 use Domynation\Bus\Command;
 use Domynation\Bus\CommandHandler;
 use Domynation\Cache\CacheInterface;
+use Domynation\Config\ConfigInterface;
 
 /**
  * Command middleware responsible for caching command
@@ -22,13 +23,22 @@ final class CachingMiddleware extends CommandBusMiddleware
     private $cache;
 
     /**
+     * How long to cache results, in minutes.
+     *
+     * @var int
+     */
+    private $cacheDuration;
+
+    /**
      * CachingMiddleware constructor.
      *
      * @param \Domynation\Cache\CacheInterface $cache
+     * @param int $cacheDuration
      */
-    public function __construct(CacheInterface $cache)
+    public function __construct(CacheInterface $cache, int $cacheDuration)
     {
         $this->cache = $cache;
+        $this->cacheDuration = $cacheDuration;
     }
 
     /**
@@ -66,7 +76,7 @@ final class CachingMiddleware extends CommandBusMiddleware
         $result = $this->next->handle($command, $handler);
 
         // Save the result in the cache
-        $this->cache->set($key, $result, 60);
+        $this->cache->set($key, $result, $this->cacheDuration);
 
         return $result;
     }

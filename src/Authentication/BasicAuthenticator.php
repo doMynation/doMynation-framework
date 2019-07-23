@@ -36,6 +36,13 @@ final class BasicAuthenticator implements AuthenticatorInterface
      */
     private $user;
 
+    /**
+     * BasicAuthenticator constructor.
+     *
+     * @param \Doctrine\DBAL\Connection $db
+     * @param \Domynation\Session\SessionInterface $session
+     * @param \Domynation\Security\PasswordInterface $passwordManager
+     */
     public function __construct(Connection $db, SessionInterface $session, PasswordInterface $passwordManager)
     {
         $this->db = $db;
