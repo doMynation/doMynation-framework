@@ -176,7 +176,6 @@ return [
             default:
                 $mailer = new \Domynation\Communication\NativeMailer;
                 break;
-
         }
 
         if (IS_PRODUCTION) {

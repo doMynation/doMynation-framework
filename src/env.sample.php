@@ -18,9 +18,6 @@ define('DATE_TIMEZONE', 'America/New_York');
 
 define('DEFAULT_LANG', 'fr');
 
-// The base url of the application
-define('BASEURL', 'http://fill.me/');
-
 // Drivers
 define('EMAIL_DRIVER', 'native'); // Choices: native, mailgun
 define('WEBSOCKET_DRIVER', 'pusher'); // Choices: pusher
@@ -55,7 +52,7 @@ define('EMAIL_DEFAULT_SENDER', 'fill_me <fill@me.com>');
 // Possible values: file, rackspace
 define('STORAGE_DRIVER', 'file');
 define('STORAGE_FILE_DIRECTORY', __DIR__ . '/fill_me');
-define('STORAGE_FILE_URI', BASEURL . 'fill_me');
+define('STORAGE_FILE_URI', 'fill_me');
 
 // Google Map's API
 define('GOOGLE_MAP_API_KEY', 'fill_me');

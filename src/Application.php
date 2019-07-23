@@ -187,6 +187,7 @@ final class Application
         define('PASSWORD_DRIVER', 'native');
         define('PATH_BASE', $this->basePath);
         define('PATH_HTML', $this->basePath . '/views/');
+        define('BASEURL', "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}:{$_SERVER['SERVER_PORT']}/");
 
         require_once $this->basePath . '/env.php';
 
