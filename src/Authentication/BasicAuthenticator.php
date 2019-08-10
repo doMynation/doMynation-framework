@@ -181,13 +181,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
      */
     private function createSessionFingerprint()
     {
-        $ipBlocks = explode('.', $_SERVER['REMOTE_ADDR']);
-
-        // Generate a fingerprint based on a random prefix, the user agent, and a couple of IP blocks
-        $fingerprint = "dmn-{$_SERVER['HTTP_USER_AGENT']}-{$ipBlocks[0]}:{$ipBlocks[1]}:{$ipBlocks[2]}";
-
-        // Hash the result
-        return md5($fingerprint);
+        return md5("dmn-{$_SERVER['HTTP_USER_AGENT']}");
     }
 
     /**

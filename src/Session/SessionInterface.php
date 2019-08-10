@@ -73,4 +73,9 @@ interface SessionInterface
      * @param string $id
      */
     public function setId($id);
+
+    /**
+     * Closes the session.
+     */
+    public function close(): void;
 }

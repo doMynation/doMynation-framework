@@ -97,4 +97,12 @@ final class PHPSession implements SessionInterface
 
         session_id($id);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close(): void
+    {
+        session_write_close();
+    }
 }

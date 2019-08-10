@@ -39,3 +39,13 @@ function formatDate(DateTime $date, $showTime = true)
     return $carbon->formatLocalized($format);
 }
 
+/**
+ * Dumps data and exits.
+ *
+ * @param mixed $data
+ */
+function dd($data): void
+{
+    dump($data);
+    exit;
+}

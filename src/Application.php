@@ -95,7 +95,6 @@ final class Application
         // Cache the definitions in production
         if (IS_PRODUCTION) {
             $builder->enableCompilation($this->basePath . '/cache');
-            $builder->enableDefinitionCache();
         }
 
         // Load all global services

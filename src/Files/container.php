@@ -77,7 +77,7 @@ return [
         );
     },
 
-    \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker) {
+    \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker, \Domynation\Session\SessionInterface $session) {
         $routingConfig = $config->get('routing');
 
         // Resolve all middleware through the container
@@ -86,7 +86,7 @@ return [
         }, $routingConfig['middlewares']);
 
         // Append the handling middleware at the end
-        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker);
+        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker, $session);
 
         return new \Domynation\Http\SymfonyRouter($middlewares);
     },
@@ -199,7 +199,6 @@ return [
         }
 
         $twig = new Twig_Environment(new Twig_Loader_Filesystem(PATH_HTML), $options);
-
         $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
 
         include_once __DIR__ . '/twig.php';

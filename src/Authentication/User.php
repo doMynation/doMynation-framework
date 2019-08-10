@@ -40,6 +40,11 @@ class User extends Entity implements UserInterface
     protected $password;
 
     /**
+     * @var \DateTime
+     */
+    protected $passwordExpiresAt;
+
+    /**
      * @var PermissionInterface[]
      */
     protected $permissions;
@@ -48,11 +53,6 @@ class User extends Entity implements UserInterface
      * @var array
      */
     protected $groups;
-
-    /**
-     * @var \DateTime
-     */
-    protected $passwordExpiresAt;
 
     /**
      * User constructor.

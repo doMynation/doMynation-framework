@@ -44,6 +44,13 @@ final class Route
     private $isSecure;
 
     /**
+     * Indicates whether the request is read-only.
+     *
+     * @var bool
+     */
+    private $isReadOnly;
+
+    /**
      * Route constructor.
      *
      * @param string name
@@ -52,12 +59,13 @@ final class Route
      */
     public function __construct($name, callable $handler, $method = 'GET')
     {
-        $this->method              = strtoupper($method);
-        $this->name                = $name;
-        $this->handler             = $handler;
-        $this->validator           = null;
-        $this->isSecure            = true;
+        $this->method = strtoupper($method);
+        $this->name = $name;
+        $this->handler = $handler;
+        $this->validator = null;
+        $this->isSecure = true;
         $this->requiredPermissions = [];
+        $this->isReadOnly = false;
     }
 
     /**
@@ -173,6 +181,14 @@ final class Route
     }
 
     /**
+     * @return boolean
+     */
+    public function isReadOnly(): bool
+    {
+        return $this->isReadOnly;
+    }
+
+    /**
      * @param string $method
      *
      * @return $this
@@ -180,6 +196,16 @@ final class Route
     public function setMethod($method)
     {
         $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * @return \Domynation\Http\Route
+     */
+    public function readOnly(): self
+    {
+        $this->isReadOnly = true;
 
         return $this;
     }

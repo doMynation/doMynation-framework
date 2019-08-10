@@ -41,7 +41,7 @@ final class SymfonyRouter implements RouterInterface
     public function __construct($middlewares)
     {
         $this->middleware = $this->buildMiddlewareChain($middlewares);
-        $this->routes     = new RouteCollection;
+        $this->routes = new RouteCollection;
     }
 
     /**
@@ -93,7 +93,7 @@ final class SymfonyRouter implements RouterInterface
     {
         // Resolve the route definition
         try {
-            $context       = (new RequestContext)->fromRequest($request);
+            $context = (new RequestContext)->fromRequest($request);
             $resolvedRoute = $this->resolve($context);
         } catch (ResourceNotFoundException $e) {
             throw new RouteNotFoundException($request->getPathInfo());
@@ -119,7 +119,7 @@ final class SymfonyRouter implements RouterInterface
     private function resolve(RequestContext $context)
     {
         // Attempt to match the request to a route
-        $matcher   = new UrlMatcher($this->routes, $context);
+        $matcher = new UrlMatcher($this->routes, $context);
         $matchInfo = $matcher->match($context->getPathInfo());
 
         // Extract the URI parameters (e.g. {id}) to be to be injected in the controller
