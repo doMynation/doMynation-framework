@@ -1,6 +1,15 @@
 <?php
 
 return [
+    \Psr\Log\LoggerInterface::class                => function (\Domynation\Config\ConfigInterface $config) {
+        $loggingConfigs = $config->get('logging');
+        $logsPath = PATH_BASE . ($loggingConfigs['logsPath'] ?? '/app.log');
+
+        $appLogger = new Monolog\Logger('App_Logger');
+        $appLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::DEBUG));
+
+        return $appLogger;
+    },
     \Doctrine\ORM\Cache\Logging\CacheLogger::class => function () {
         return new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
     },
@@ -16,6 +25,9 @@ return [
                 'host'   => REDIS_HOST,
                 'port'   => REDIS_PORT
             ]));
+
+//            $apcuCache->flushAll();
+//            $redisCache->flushAll();
 
             // Second level cache configuration
             $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(

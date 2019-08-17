@@ -99,7 +99,6 @@ final class BasicAuthenticator implements AuthenticatorInterface
         $now = (new \DateTime)->format("Y-m-d H:i:s");
         $this->db->update('dmn_users', [
             'ip_address'         => $_SERVER['REMOTE_ADDR'],
-            'is_online'          => 1,
             'ss_fprint'          => $sessionFingerprint,
             'last_login_date'    => $now,
             'last_activity_date' => $now
@@ -137,7 +136,7 @@ final class BasicAuthenticator implements AuthenticatorInterface
         }
 
         // Fetch the user info
-        $userInfo = $this->db->fetchAssoc('SELECT * FROM dmn_users WHERE is_online = 1 AND id = ?', [$userId]);
+        $userInfo = $this->db->fetchAssoc('SELECT * FROM dmn_users WHERE id = ?', [$userId]);
 
         if (empty($userInfo)) {
             return null;

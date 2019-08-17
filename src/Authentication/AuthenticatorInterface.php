@@ -17,7 +17,7 @@ interface AuthenticatorInterface
      * @param string $username
      * @param string $password
      *
-     * @return int|bool The user id or FALSE if the authentication failed
+     * @return int|bool The user id or `false` if the authentication failed
      */
     public function attempt($username, $password);
 
