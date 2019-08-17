@@ -1,26 +1,34 @@
 <?php
 
-//Psr\Container\ContainerInterface::class => function (Psr\Container\ContainerInterface $container) {
-//    return $container;
-//},
 return [
-    \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config) {
+    \Doctrine\ORM\Cache\Logging\CacheLogger::class => function () {
+        return new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
+    },
+
+    \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config, \Doctrine\ORM\Cache\Logging\CacheLogger $cacherLogger) {
         $devMode = !IS_PRODUCTION;
         $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
 
         if (IS_PRODUCTION) {
-            $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
-            $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
-//            $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
-//
-//            // Second level cache configuration
-//            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
-//                new \Doctrine\ORM\Cache\RegionsConfiguration,
-//                new \Doctrine\Common\Cache\ApcuCache()
-//            );
-//
-//            $config->setSecondLevelCacheEnabled();
-//            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
+            $apcuCache = new \Doctrine\Common\Cache\ApcuCache();
+            $redisCache = new \Doctrine\Common\Cache\PredisCache(new \Predis\Client([
+                'scheme' => 'tcp',
+                'host'   => REDIS_HOST,
+                'port'   => REDIS_PORT
+            ]));
+
+            // Second level cache configuration
+            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
+                new \Doctrine\ORM\Cache\RegionsConfiguration,
+                $redisCache
+            );
+
+            $config->setMetadataCacheImpl($apcuCache);
+            $config->setQueryCacheImpl($apcuCache);
+            $config->setResultCacheImpl($redisCache);
+            $config->setSecondLevelCacheEnabled();
+            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
+            $config->getSecondLevelCacheConfiguration()->setCacheLogger($cacherLogger);
         }
 
         // Uncomment the following to debug every request made to the DB
@@ -199,6 +207,7 @@ return [
         }
 
         $twig = new Twig_Environment(new Twig_Loader_Filesystem(PATH_HTML), $options);
+
         $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
 
         include_once __DIR__ . '/twig.php';
