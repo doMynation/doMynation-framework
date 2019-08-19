@@ -17,44 +17,40 @@ interface AuthenticatorInterface
      * @param string $username
      * @param string $password
      *
-     * @return int|bool The user id or `false` if the authentication failed
+     * @return int|null The user id or `null` if the authentication failed
      */
-    public function attempt($username, $password);
+    public function attempt(string $username, string $password): ?int;
 
     /**
      * Authenticates as the user corresponding to the id provided.
      *
      * @param int $userId
-     *
-     * @return UserInterface
      */
-    public function authenticate($userId);
+    public function authenticate(int $userId): void;
 
     /**
      * Deauthenticates the user.
-     *
-     * @return bool
      */
-    public function deauthenticate();
+    public function deauthenticate(): void;
 
     /**
      * Remembers the currently authenticated user.
      *
-     * @return UserInterface
+     * @return int|null
      */
-    public function remember();
+    public function remember(): ?int;
 
     /**
      * Checks if the user is authenticated.
      *
      * @return bool
      */
-    public function isAuthenticated();
+    public function isAuthenticated(): bool;
 
     /**
-     * Returns the authenticated user.
+     * Returns the ID of the authenticated user. Returns `null` if the user isn't authenticated.
      *
-     * @return UserInterface
+     * @return int|null
      */
-    public function getUser();
+    public function getUserId(): ?int;
 }

@@ -32,7 +32,7 @@ final class AuthorizationMiddleware extends CommandBusMiddleware
         }
 
         // Pass to the next middleware
-        return !is_null($this->next) ? $this->next->handle($command, $handler) : null;
+        return $this->next !== null ? $this->next->handle($command, $handler) : null;
     }
 
     /**

@@ -74,7 +74,7 @@ return [
 
     \Domynation\Bus\CommandBusInterface::class => function (
         Psr\Container\ContainerInterface $container,
-        \Domynation\Authentication\AuthenticatorInterface $auth,
+        \Domynation\Authentication\UserInterface $user,
         \Domynation\Eventing\EventDispatcherInterface $dispatcher,
         \Domynation\Cache\CacheInterface $cache,
         \Domynation\Config\ConfigInterface $config
@@ -89,9 +89,9 @@ return [
             $container,
             $dispatcher,
             [
-                new \Domynation\Bus\Middlewares\AuthorizationMiddleware($auth),
+                new \Domynation\Bus\Middlewares\AuthorizationMiddleware,
                 new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
-                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $auth),
+                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $user),
                 new \Domynation\Bus\Middlewares\HandlingMiddleware
             ]
         );
@@ -146,23 +146,6 @@ return [
                 return new \Domynation\Security\NativePassword;
                 break;
         }
-    },
-
-    \Domynation\Authentication\AuthenticatorInterface::class => function (\Doctrine\DBAL\Connection $db, \Domynation\Session\SessionInterface $session, \Domynation\Security\PasswordInterface $password) {
-        $instance = new \Domynation\Authentication\BasicAuthenticator($db, $session, $password);
-
-        // Attempt to remmember an active user session
-        $instance->remember();
-
-        return $instance;
-    },
-
-    \Domynation\Authentication\UserInterface::class => function (\Domynation\Authentication\AuthenticatorInterface $auth) {
-        if (!$auth->isAuthenticated()) {
-            return new \Domynation\Authentication\NullUser;
-        }
-
-        return $auth->getUser();
     },
 
     \Domynation\Storage\StorageInterface::class => function () {
