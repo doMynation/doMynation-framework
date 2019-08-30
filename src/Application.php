@@ -185,10 +185,10 @@ final class Application
         // @todo: Remove this once we get rid of global constants and replace them with dotenv
         define('PASSWORD_DRIVER', 'native');
         define('PATH_BASE', $this->basePath);
-        define('PATH_HTML', $this->basePath . '/views/');
+        define('PATH_HTML', $this->basePath . '/src/views/');
         define('BASEURL', "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}:{$_SERVER['SERVER_PORT']}/");
 
-        require_once $this->basePath . '/env.php';
+        require_once $this->basePath . '/config/env.php';
 
         return new InMemoryConfigStore(require_once $this->basePath . '/config/application.php');
     }
