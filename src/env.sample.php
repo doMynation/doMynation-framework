@@ -22,14 +22,6 @@ define('DEFAULT_LANG', 'fr');
 define('EMAIL_DRIVER', 'native'); // Choices: native, mailgun
 define('WEBSOCKET_DRIVER', 'pusher'); // Choices: pusher
 define('CACHE_DRIVER', 'redis'); // Choices: memory (default), redis
-define('DB_DRIVER', 'pdo_mysql');
-define('PASSWORD_DRIVER', 'native'); // Choices: native, md5
-
-// Database
-define('DB_HOST', 'localhost');
-define('DB_DATABASE', 'fill_me');
-define('DB_USER', 'fill_me');
-define('DB_PASSWORD', 'fill_me');
 
 // Redis configuration
 define('REDIS_HOST', '127.0.0.1');

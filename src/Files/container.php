@@ -3,7 +3,7 @@
 return [
     \Psr\Log\LoggerInterface::class                => function (\Domynation\Config\ConfigInterface $config) {
         $loggingConfigs = $config->get('logging');
-        $logsPath = PATH_BASE . ($loggingConfigs['logsPath'] ?? '/app.log');
+        $logsPath = $config->get('basePath') . ($loggingConfigs['logsPath'] ?? '/app.log');
 
         $appLogger = new Monolog\Logger('App_Logger');
         $appLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::DEBUG));
@@ -15,8 +15,11 @@ return [
     },
 
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config, \Doctrine\ORM\Cache\Logging\CacheLogger $cacherLogger) {
-        $devMode = !IS_PRODUCTION;
-        $config = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration($config->get('entityDirectories'), $devMode);
+        $ormConfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
+            $config->get('entityDirectories'),
+            !IS_PRODUCTION,
+            $config->get('basePath') . '/cache/orm'
+        );
 
         if (IS_PRODUCTION) {
             $apcuCache = new \Doctrine\Common\Cache\ApcuCache();
@@ -35,34 +38,41 @@ return [
                 $redisCache
             );
 
-            $config->setMetadataCacheImpl($apcuCache);
-            $config->setQueryCacheImpl($apcuCache);
-            $config->setResultCacheImpl($redisCache);
-            $config->setSecondLevelCacheEnabled();
-            $config->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
-            $config->getSecondLevelCacheConfiguration()->setCacheLogger($cacherLogger);
+            $ormConfig->setMetadataCacheImpl($apcuCache);
+            $ormConfig->setQueryCacheImpl($apcuCache);
+            $ormConfig->setResultCacheImpl($redisCache);
+            $ormConfig->setSecondLevelCacheEnabled();
+            $ormConfig->getSecondLevelCacheConfiguration()->setCacheFactory($cacheFactory);
+            $ormConfig->getSecondLevelCacheConfiguration()->setCacheLogger($cacherLogger);
         }
 
         // Uncomment the following to debug every request made to the DB
-//        $config->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+//        $ormConfig->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+
+        // Determine which database environnment to load
+        $dbConfig = $config->get('databases');
+        $dbEnv = $config->get('environment') === 'test' ? 'test' : 'web';
 
         return Doctrine\ORM\EntityManager::create([
-            'host'     => DB_HOST,
-            'driver'   => DB_DRIVER,
-            'dbname'   => DB_DATABASE,
-            'user'     => DB_USER,
-            'password' => DB_PASSWORD,
+            'host'     => $dbConfig[$dbEnv]['host'],
+            'driver'   => $dbConfig[$dbEnv]['driver'],
+            'dbname'   => $dbConfig[$dbEnv]['name'],
+            'user'     => $dbConfig[$dbEnv]['user'],
+            'password' => $dbConfig[$dbEnv]['password'],
             'charset'  => 'utf8'
-        ], $config);
+        ], $ormConfig);
     },
 
-    \Doctrine\DBAL\Connection::class => function () {
+    \Doctrine\DBAL\Connection::class => function (\Domynation\Config\ConfigInterface $config) {
+        $dbConfig = $config->get('databases');
+        $dbEnv = $config->get('environment') === 'test' ? 'test' : 'web';
+
         $db = \Doctrine\DBAL\DriverManager::getConnection([
-            'host'     => DB_HOST,
-            'driver'   => DB_DRIVER,
-            'dbname'   => DB_DATABASE,
-            'user'     => DB_USER,
-            'password' => DB_PASSWORD,
+            'host'     => $dbConfig[$dbEnv]['host'],
+            'driver'   => $dbConfig[$dbEnv]['driver'],
+            'dbname'   => $dbConfig[$dbEnv]['name'],
+            'user'     => $dbConfig[$dbEnv]['user'],
+            'password' => $dbConfig[$dbEnv]['password'],
             'charset'  => 'utf8'
         ], new \Doctrine\DBAL\Configuration());
 
@@ -81,7 +91,7 @@ return [
     ) {
         // Configure logger
         $busConfigs = $config->get('bus');
-        $logsPath = PATH_BASE . ($busConfigs['logsPath'] ?? '/bus.log');
+        $logsPath = $config->get('basePath') . ($busConfigs['logsPath'] ?? '/bus.log');
         $busLogger = new Monolog\Logger('Bus_logger');
         $busLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::INFO));
 
@@ -140,12 +150,7 @@ return [
     },
 
     \Domynation\Security\PasswordInterface::class => function () {
-        switch (PASSWORD_DRIVER) {
-            case 'native':
-            default:
-                return new \Domynation\Security\NativePassword;
-                break;
-        }
+        return new \Domynation\Security\NativePassword;
     },
 
     \Domynation\Storage\StorageInterface::class => function () {
@@ -191,7 +196,7 @@ return [
 
     \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         $options = [
-            'cache'            => PATH_BASE . '/cache',
+            'cache'            => $config->get('basePath') . '/cache',
             'debug'            => false,
             'strict_variables' => true,
         ];
@@ -201,9 +206,9 @@ return [
             $options['auto_reload'] = true;
         }
 
-        $twig = new Twig_Environment(new Twig_Loader_Filesystem(PATH_HTML), $options);
-
-        $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('viewFileExtension'));
+        $viewsConfig = $config->get('views');
+        $twig = new Twig_Environment(new Twig_Loader_Filesystem($config->get('basePath') . $viewsConfig['path']), $options);
+        $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('basePath') . $viewsConfig['path'], $viewsConfig['fileExtension']);
 
         include_once __DIR__ . '/twig.php';
 

@@ -34,6 +34,14 @@ final class Application
     private $basePath;
 
     /**
+     * The environment the kernel is operating in.
+     * Possible values: web, test
+     *
+     * @var string
+     */
+    private $environment;
+
+    /**
      * @var \Psr\Container\ContainerInterface
      */
     private $container;
@@ -48,9 +56,10 @@ final class Application
      *
      * @param string $basePath The root path of the application.
      */
-    public function __construct(string $basePath)
+    public function __construct(string $basePath, string $environment = 'web')
     {
-        $this->basePath = $basePath;
+        $this->basePath = realpath($basePath);
+        $this->environment = $environment;
     }
 
     /**
@@ -154,7 +163,9 @@ final class Application
     {
         $session = new PHPSession;
 
-        $session->start();
+        if ($this->environment === 'web') {
+            $session->start();
+        }
 
         return $session;
     }
@@ -182,15 +193,23 @@ final class Application
      */
     private function bootConfiguration(): ConfigInterface
     {
-        // @todo: Remove this once we get rid of global constants and replace them with dotenv
-        define('PASSWORD_DRIVER', 'native');
-        define('PATH_BASE', $this->basePath);
-        define('PATH_HTML', $this->basePath . '/src/views/');
-        define('BASEURL', "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}:{$_SERVER['SERVER_PORT']}/");
+        // Load application configurations
+        $applicationConfig = require_once $this->basePath . '/config/application.php';
+        $applicationConfig['basePath'] = $this->basePath;
+        $applicationConfig['environment'] = $this->environment;
 
+        // @todo: Move BASEURL to userland
+        $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'https';
+        $serverName = $_SERVER['SERVER_NAME'] ?? 'localhost';
+        $serverPort = $_SERVER['SERVER_PORT'] ?? '443';
+
+        define('BASEURL', "{$scheme}://{$serverName}:{$serverPort}/");
+
+        // Load environment configurations
+        // @todo: Move these to application configurations
         require_once $this->basePath . '/config/env.php';
 
-        return new InMemoryConfigStore(require_once $this->basePath . '/config/application.php');
+        return new InMemoryConfigStore($applicationConfig);
     }
 
     /**
@@ -210,11 +229,11 @@ final class Application
     }
 
     /**
-     * @todo: Move this to userland and allow customization.
-     *
      * @param \Exception|\Throwable $e
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     * @todo: Move this to userland and allow customization.
+     *
      */
     private function handleException(\Throwable $e)
     {

@@ -19,6 +19,13 @@ final class TwigViewFactory implements ViewFactoryInterface
     private $twig;
 
     /**
+     * The path where view files are located.
+     *
+     * @var string
+     */
+    private $path;
+
+    /**
      * @var string
      */
     private $fileExtension;
@@ -27,14 +34,14 @@ final class TwigViewFactory implements ViewFactoryInterface
      * TwigViewFactory constructor.
      *
      * @param \Twig_Environment $twig
+     * @param string $path
      * @param string $defaultFileExtension
      */
-    public function __construct(Twig_Environment $twig, string $defaultFileExtension)
+    public function __construct(Twig_Environment $twig, string $path, string $defaultFileExtension)
     {
         $this->twig = $twig;
-
-        // Always preprend a dot (.)
-        $this->fileExtension = '.' . ltrim($defaultFileExtension, '.');
+        $this->path = $path;
+        $this->fileExtension = '.' . ltrim($defaultFileExtension, '.'); // Always preprend a dot (.)
     }
 
     /**
@@ -52,7 +59,7 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     public function addNamespace($path, $name)
     {
-        $this->twig->getLoader()->addPath($path, $name);
+        $this->twig->getLoader()->addPath($this->path . $path, $name);
     }
 
     /**
