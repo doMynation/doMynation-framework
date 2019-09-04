@@ -20,7 +20,7 @@ use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
 /**
- * Class Application
+ * The framework kernel.
  *
  * @package Domynation
  * @author Dominique Sarrazin <domynation@gmail.com>
@@ -29,6 +29,8 @@ final class Application
 {
 
     /**
+     * The root path of the application.
+     *
      * @var string
      */
     private $basePath;
@@ -42,11 +44,15 @@ final class Application
     private $environment;
 
     /**
+     * The dependency injection container.
+     *
      * @var \Psr\Container\ContainerInterface
      */
     private $container;
 
     /**
+     * The current HTTP request.
+     *
      * @var \Symfony\Component\HttpFoundation\Request
      */
     private $request;
@@ -54,7 +60,7 @@ final class Application
     /**
      * Application constructor.
      *
-     * @param string $basePath The root path of the application.
+     * @param string $basePath
      */
     public function __construct(string $basePath, string $environment = 'web')
     {
@@ -63,7 +69,7 @@ final class Application
     }
 
     /**
-     * Boots the application.
+     * Boots the kernel.
      *
      * @return void
      */
@@ -107,7 +113,7 @@ final class Application
         }
 
         // Load all global services
-        $builder->addDefinitions(array_merge(require_once __DIR__ . '/Files/container.php', [
+        $builder->addDefinitions(array_merge(require __DIR__ . '/Files/container.php', [
             ConfigInterface::class  => $config,
             Request::class          => $this->request,
             SessionInterface::class => $session
@@ -194,16 +200,9 @@ final class Application
     private function bootConfiguration(): ConfigInterface
     {
         // Load application configurations
-        $applicationConfig = require_once $this->basePath . '/config/application.php';
+        $applicationConfig = require $this->basePath . '/config/application.php';
         $applicationConfig['basePath'] = $this->basePath;
         $applicationConfig['environment'] = $this->environment;
-
-        // @todo: Move BASEURL to userland
-        $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'https';
-        $serverName = $_SERVER['SERVER_NAME'] ?? 'localhost';
-        $serverPort = $_SERVER['SERVER_PORT'] ?? '443';
-
-        define('BASEURL', "{$scheme}://{$serverName}:{$serverPort}/");
 
         // Load environment configurations
         // @todo: Move these to application configurations

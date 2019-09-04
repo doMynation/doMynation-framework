@@ -122,6 +122,10 @@ return [
     },
 
     \Domynation\Cache\CacheInterface::class => function () {
+        if (!IS_PRODUCTION) {
+            return new \Domynation\Cache\InMemoryCache;
+        }
+       
         switch (CACHE_DRIVER) {
             case 'redis':
                 return new \Domynation\Cache\RedisCache(REDIS_HOST, REDIS_PORT);

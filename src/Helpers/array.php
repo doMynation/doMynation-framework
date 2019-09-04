@@ -230,3 +230,22 @@ function array_unicity(array $array)
     }, []);
 }
 
+/**
+ * Improved version of `array_reduce` that supports passing the key in addition to the value.
+ *
+ * @param array $array
+ * @param callable $closure
+ * @param $initial
+ *
+ * @return mixed
+ */
+function array_fold(array $array, callable $closure, $initial = []): mixed
+{
+    $accumulator = $initial;
+
+    foreach ($array as $key => $value) {
+        $accumulator = $closure($accumulator, $key, $value);
+    }
+
+    return $acc;
+}

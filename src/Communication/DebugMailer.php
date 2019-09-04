@@ -41,9 +41,10 @@ final class DebugMailer implements MailerInterface
             return $email->getValue();
         };
 
-        $commaSeparated   = curry('implode', ', ');
-        $formatRecipients = compose($commaSeparated, map($recipient));
-        $recipientsString = $formatRecipients($message->recipients);
+        $emails = array_map(function (Email $email) {
+            return $email->getValue();
+        }, $message->recipients);
+        $recipientsString = implode(', ', $emails);
 
         // Append the original recipients to the end of the email for debug purposes
         $message->body .= <<<EOT

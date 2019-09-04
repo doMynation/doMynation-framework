@@ -14,6 +14,7 @@ use Doctrine\Migrations\Tools\Console\Command\StatusCommand;
 use Doctrine\Migrations\Tools\Console\Command\VersionCommand;
 use Doctrine\Migrations\Tools\Console\Helper\ConfigurationHelper;
 use Doctrine\ORM\EntityManager;
+use \Doctrine\DBAL\Connection;
 use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -21,6 +22,12 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * Class TestCase
+ *
+ * @package Domynation\Test
+ * @author Dominique Sarrazin <domynation@gmail.com>
+ */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -31,55 +38,78 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected static $isMigrated = false;
 
     /**
+     * The framework kernel.
+     *
+     * @var \Domynation\Application
+     */
+    protected $kernel;
+
+    /**
+     * The dependency injection container.
+     *
+     * @var \Psr\Container\ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * The ORM.
+     *
      * @var EntityManager
      */
     protected $em;
 
     /**
+     * The DBAL.
+     *
      * @var \Doctrine\DBAL\Connection
      */
     protected $db;
 
-    /**
-     * @var \Domynation\Application
-     */
-    protected $kernel;
-
     public function setUp(): void
     {
-        $this->initializeKernel();
-        $this->initializeDatabase();
+        $this->initialize();
 
         // Only migrate and seed the database if it hasn't alread been migrated
         if (!static::$isMigrated) {
-            $this->createSchema();
+            $this->resetDatabase();
 
             static::$isMigrated = true;
         }
-
-        $this->db->beginTransaction();;
     }
 
-    public function tearDown(): void
+    /**
+     * Finds an entry in the DI container and returns it.
+     *
+     * @param string $className
+     *
+     * @return mixed
+     */
+    public function inject($className)
     {
-        $this->db->rollBack();
+        return $this->container->get($className);
     }
 
-    private function initializeKernel()
+    /**
+     * Initializes the framework kernel and a few useful dependencies.
+     */
+    private function initialize()
     {
+        // Boot the kernel
         $this->kernel = new \Domynation\Application(PATH_BASE, 'test');
         $this->kernel->boot();
+
+        $this->container = $this->kernel->getContainer();
+        $this->em = $this->container->get(EntityManager::class);
+        $this->db = $this->container->get(Connection::class);
     }
 
-    private function initializeDatabase()
-    {
-        $config = require $this->kernel->getBasePath() . '/config/application.php';
-
-        $this->em = $this->kernel->getContainer()->get(EntityManager::class);
-        $this->db = $this->em->getConnection();
-    }
-
-    private function createSchema(): void
+    /**
+     * Wipes the database and recreates the schema by running
+     * all database migrations.
+     *
+     * @throws \Exception
+     */
+    private function resetDatabase(): void
     {
         $configuration = new Configuration($this->db);
         $configuration->setName('Integration Test Migrations');
@@ -127,12 +157,5 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'command'          => 'migrations:migrate',
             '--no-interaction' => '',
         ]), $output);
-    }
-
-    protected function assertRecordExists(string $tableName, $id): void
-    {
-        $record = $this->db->fetchAssoc("SELECT * FROM $tableName WHERE id=?", [$id]);
-
-        $this->assertNotEmpty($record, "Failed asserting that record of id $id exists in table $tableName");
     }
 }
