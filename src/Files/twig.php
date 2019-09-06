@@ -23,10 +23,6 @@ $twig->addFunction(new Twig_SimpleFunction('ceil', function ($value) {
     return ceil($value);
 }));
 
-$twig->addFunction(new Twig_SimpleFunction('now', function ($showTime = true) {
-    return formatDate(new \DateTime, $showTime);
-}));
-
 $twig->addFunction(new Twig_SimpleFunction('instanceOf', function ($thing, $class) {
     return $thing instanceof $class;
 }));
@@ -50,8 +46,4 @@ $twig->addFilter(new Twig_SimpleFilter('trans', function ($key, $placeholders = 
 
 $twig->addFilter(new Twig_SimpleFilter('tr', function ($key, $placeholders = []) {
     return lang($key, $placeholders);
-}));
-
-$twig->addFilter(new Twig_SimpleFilter('dateHr', function ($date, $showTime = true) {
-    return formatDate($date, $showTime);
 }));

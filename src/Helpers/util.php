@@ -18,28 +18,6 @@ function lang($line, $placeholders = [])
 }
 
 /**
- * Formats a date according to the locale.
- *
- * @param \DateTime $date
- * @param bool $showTime
- *
- * @return string
- */
-function formatDate(DateTime $date, $showTime = true)
-{
-    $carbon = Carbon\Carbon::instance($date);
-
-    $format = $showTime ? "%d %B %Y à %Hh%M" : "%d %B %Y";
-    if (\Language::lang() === 'fr') {
-        return $carbon->formatLocalized($format);
-    }
-
-    $format = $showTime ? "%B %d, %Y at %H:%M" : "%B %d, %Y";
-
-    return $carbon->formatLocalized($format);
-}
-
-/**
  * Returns a memoized version of the provided function. Memoized remmember the result
  * of previous calls by storing them in memory. This helps preventing the unnecessary execution
  * of expensive functions when the result is already known.

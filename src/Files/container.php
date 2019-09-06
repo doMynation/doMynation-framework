@@ -91,20 +91,23 @@ return [
     ) {
         // Configure logger
         $busConfigs = $config->get('bus');
-        $logsPath = $config->get('basePath') . ($busConfigs['logsPath'] ?? '/bus.log');
-        $busLogger = new Monolog\Logger('Bus_logger');
-        $busLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::INFO));
 
-        return new Domynation\Bus\BasicCommandBus(
-            $container,
-            $dispatcher,
-            [
-                new \Domynation\Bus\Middlewares\AuthorizationMiddleware,
-                new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
-                new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $user),
-                new \Domynation\Bus\Middlewares\HandlingMiddleware
-            ]
-        );
+        $busMiddlewares = [
+            new \Domynation\Bus\Middlewares\AuthorizationMiddleware,
+            new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
+        ];
+
+        if ($busConfigs['enableLogging']) {
+            $logsPath = $config->get('basePath') . ($busConfigs['logsPath'] ?? '/bus.log');
+            $busLogger = new Monolog\Logger('Bus_logger');
+            $busLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::INFO));
+
+            $busMiddlewares[] = new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $user);
+        }
+
+        $busMiddlewares[] = new \Domynation\Bus\Middlewares\HandlingMiddleware;
+
+        return new Domynation\Bus\BasicCommandBus($container, $dispatcher, $busMiddlewares);
     },
 
     \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker, \Domynation\Session\SessionInterface $session) {
@@ -125,7 +128,7 @@ return [
         if (!IS_PRODUCTION) {
             return new \Domynation\Cache\InMemoryCache;
         }
-       
+
         switch (CACHE_DRIVER) {
             case 'redis':
                 return new \Domynation\Cache\RedisCache(REDIS_HOST, REDIS_PORT);
@@ -200,7 +203,7 @@ return [
 
     \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         $options = [
-            'cache'            => $config->get('basePath') . '/cache',
+            'cache'            => $config->get('basePath') . '/cache/views',
             'debug'            => false,
             'strict_variables' => true,
         ];
