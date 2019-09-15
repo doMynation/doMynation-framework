@@ -27,6 +27,11 @@ interface UserInterface
     public function getUsername();
 
     /**
+     * @return string
+     */
+    public function getPassword(): string;
+
+    /**
      * @param string|string[] $code
      *
      * @return bool

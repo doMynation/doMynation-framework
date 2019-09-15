@@ -38,6 +38,14 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
+    public function getPassword(): string
+    {
+        return '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasPermission($code)
     {
         return false;
