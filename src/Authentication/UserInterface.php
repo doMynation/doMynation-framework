@@ -14,17 +14,17 @@ interface UserInterface
     /**
      * @return int
      */
-    public function getId();
+    public function getId(): int;
 
     /**
      * @return string
      */
-    public function getFullName();
+    public function getFullName(): string;
 
     /**
      * @return string
      */
-    public function getUsername();
+    public function getUsername(): string;
 
     /**
      * @return string
@@ -46,5 +46,10 @@ interface UserInterface
     /**
      * @return bool
      */
-    public function isAuthenticated();
+    public function isAuthenticated(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isSuperUser(): bool;
 }

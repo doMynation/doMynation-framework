@@ -7,12 +7,12 @@ use Domynation\Http\RouterInterface;
 use Domynation\View\ViewFactoryInterface;
 
 /**
- * Interface ServiceProviderInterface
+ * Interface ModuleInterface
  *
  * @package Domynation\Core
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-interface ServiceProviderInterface
+interface ModuleInterface
 {
 
     /**

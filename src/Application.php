@@ -119,39 +119,39 @@ final class Application
             SessionInterface::class => $session
         ]));
 
-        // First pass: Instanciate each providers and load their container definitions
-        $providers = array_reduce($config->get('providers'), function ($accumulator, $name) use ($builder) {
+        // First pass: Instanciate each module and load their container definitions
+        $modules = array_reduce($config->get('modules'), function (array $accumulator, string $name) use ($builder) {
             if (!class_exists($name)) {
                 return $accumulator;
             }
 
-            // Instanciate the provider
+            // Instanciate the module
             $reflection = new \ReflectionClass($name);
-            $provider = $reflection->newInstanceArgs();
+            $module = $reflection->newInstanceArgs();
 
-            // Load the provider's container definitions
-            $builder->addDefinitions($provider->registerContainerDefinitions());
+            // Load the module's container definitions
+            $builder->addDefinitions($module->registerContainerDefinitions());
 
-            $accumulator[] = $provider;
+            $accumulator[] = $module;
 
             return $accumulator;
-        });
+        }, []);
 
         // Build the container
         $container = $builder->build();
 
-        // Second pass: Boot each service
-        foreach ($providers as $provider) {
-            // Start the provider
-            $provider->start(
+        // Second pass: Boot each module
+        foreach ($modules as $module) {
+            // Start the module
+            $module->start(
                 $container->get(RouterInterface::class),
                 $container->get(ViewFactoryInterface::class),
                 $container->get(EventDispatcherInterface::class)
             );
 
             // Use reflection to get a closure copy of the `boot` method
-            $reflection = new \ReflectionClass(get_class($provider));
-            $closure = $reflection->getMethod('boot')->getClosure($provider);
+            $reflection = new \ReflectionClass(get_class($module));
+            $closure = $reflection->getMethod('boot')->getClosure($module);
 
             // Let the container inject the dependency needed by the closure
             $container->call($closure);
