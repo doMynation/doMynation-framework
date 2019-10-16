@@ -239,7 +239,7 @@ function array_unicity(array $array)
  *
  * @return mixed
  */
-function array_fold(array $array, callable $closure, $initial = []): mixed
+function array_fold(array $array, callable $closure, $initial = [])
 {
     $accumulator = $initial;
 
@@ -247,5 +247,5 @@ function array_fold(array $array, callable $closure, $initial = []): mixed
         $accumulator = $closure($accumulator, $key, $value);
     }
 
-    return $acc;
+    return $accumulator;
 }

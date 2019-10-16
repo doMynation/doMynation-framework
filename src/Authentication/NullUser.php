@@ -14,7 +14,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): int
     {
         return null;
     }
@@ -22,7 +22,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getFullName()
+    public function getFullName(): string
     {
         return null;
     }
@@ -30,7 +30,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return null;
     }
@@ -62,8 +62,32 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function isAuthenticated()
+    public function isAuthenticated(): bool
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSuperUser(): bool
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTimeZone(): string
+    {
+        return date_default_timezone_get();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocale(): string
+    {
+        return locale_get_default();
     }
 }

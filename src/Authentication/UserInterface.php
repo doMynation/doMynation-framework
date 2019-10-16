@@ -52,4 +52,14 @@ interface UserInterface
      * @return bool
      */
     public function isSuperUser(): bool;
+
+    /**
+     * @return string
+     */
+    public function getTimeZone(): string;
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string;
 }

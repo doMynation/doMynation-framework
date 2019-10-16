@@ -15,6 +15,15 @@ abstract class Entity implements Arrayable, \JsonSerializable
 {
 
     /**
+     * @return \Ramsey\Uuid\UuidInterface
+     * @throws \Exception
+     */
+    public static function generateId()
+    {
+        return \Ramsey\Uuid\Uuid::uuid4()->toString();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function jsonSerialize()
