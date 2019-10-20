@@ -28,7 +28,7 @@ return [
                 'host'   => REDIS_HOST,
                 'port'   => REDIS_PORT
             ]));
-
+            
 //            $apcuCache->flushAll();
 //            $redisCache->flushAll();
 

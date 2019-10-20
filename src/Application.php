@@ -84,9 +84,6 @@ final class Application
         // Boot the request
         $this->request = $this->bootRequest();
 
-        // Set the default timezone
-        date_default_timezone_set(DATE_TIMEZONE);
-
         // Boot the session
         $session = $this->bootSession();
 
@@ -199,6 +196,9 @@ final class Application
      */
     private function bootConfiguration(): ConfigInterface
     {
+        // Set the default timezone
+        date_default_timezone_set('UTC');
+       
         // Load application configurations
         $applicationConfig = require $this->basePath . '/config/application.php';
         $applicationConfig['basePath'] = $this->basePath;

@@ -35,7 +35,6 @@
     "doctrine/orm": "~2.0",
     "guzzlehttp/guzzle": "~5.2",
     "beberlei/assert": "~3.0",
-    "nesbot/carbon": "~1.14",
     "monolog/monolog": "^1.15",
     "php-di/php-di": "^6.0.8",
     "ramsey/uuid": "^3.8",
