@@ -24,22 +24,15 @@ final class MailgunMailer implements MailerInterface
     private $domain;
 
     /**
-     * @var string
-     */
-    private $defaultSender;
-
-    /**
      * MailgunMailer constructor.
      *
      * @param string $apiKey
-     * @param string $defaultDomain
-     * @param string $defaultSender
+     * @param string $domain
      */
-    public function __construct($apiKey, $defaultDomain, $defaultSender)
+    public function __construct(string $apiKey, string $domain)
     {
-        $this->mailgun       = new Mailgun($apiKey);
-        $this->domain        = $defaultDomain;
-        $this->defaultSender = $defaultSender;
+        $this->mailgun = new Mailgun($apiKey);
+        $this->domain = $domain;
     }
 
     /**
@@ -49,19 +42,17 @@ final class MailgunMailer implements MailerInterface
     {
         $messageData = [
             'to'      => $message->recipients,
+            'from'    => $message->getFullSender(),
             'subject' => $message->subject,
             'text'    => $message->body
         ];
-
-        // Set the mailgun domain
-        $domain = !empty($data['domain']) ? $data['domain'] : $this->domain;
 
         if (!empty($message->bcc)) {
             $messageData['bcc'] = $message->bcc;
         }
 
-        // Set the from
-        $messageData['from'] = $message->hasSender() ? $message->getFullSender() : $this->defaultSender;
+        // Set the mailgun domain
+        $domain = !empty($data['domain']) ? $data['domain'] : $this->domain;
 
         // Send the message
         $this->mailgun->sendMessage($domain, $messageData);

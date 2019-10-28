@@ -30,11 +30,11 @@ final class EmailMessage
      * @param string $fromName
      * @param array $bcc
      */
-    public function __construct($recipients, string $subject, string $body = '', ?string $from = null, ?string $fromName = null, array $bcc = [])
+    public function __construct($recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
     {
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
-        Assertion::nullOrEmail($from, "Invalid FROM email");
+        Assertion::email($from, "Invalid FROM email");
         Assertion::allIsInstanceOf($transformedRecipients, Email::class, "Invalid recipient(s)");
 
         $this->recipients = $transformedRecipients;
@@ -53,13 +53,5 @@ final class EmailMessage
         $name = $this->fromName ? $this->fromName . ' ' : '';
 
         return $name . '<' . $this->from . '>';
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasSender(): bool
-    {
-        return $this->from !== null;
     }
 }

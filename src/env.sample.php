@@ -18,44 +18,6 @@ define('DATE_TIMEZONE', 'America/New_York');
 
 define('DEFAULT_LANG', 'fr');
 
-// Drivers
-define('EMAIL_DRIVER', 'native'); // Choices: native, mailgun
-define('WEBSOCKET_DRIVER', 'pusher'); // Choices: pusher
-define('CACHE_DRIVER', 'redis'); // Choices: memory (default), redis
-
-// Redis configuration
-define('REDIS_HOST', '127.0.0.1');
-define('REDIS_PORT', '6379');
-
-// Pusher API
-define('PUSHER_APP_ID', 'fill_me');
-define('PUSHER_API_KEY', 'fill_me');
-define('PUSHER_API_SECRET_KEY', 'fill_me');
-
-// Mailgun API
-define('MAILGUN_API_KEY', 'fill_me');
-define('MAILGUN_DEFAULT_DOMAIN', 'fill_me');
-
-// Email API
-define('EMAIL_DEBUG', 'fill_me');
-define('EMAIL_DEFAULT_SENDER', 'fill_me <fill@me.com>');
-
-
-// Possible values: file, rackspace
-define('STORAGE_DRIVER', 'file');
-define('STORAGE_FILE_DIRECTORY', __DIR__ . '/fill_me');
-define('STORAGE_FILE_URI', 'fill_me');
-
 // Google Map's API
 define('GOOGLE_MAP_API_KEY', 'fill_me');
-
-// Rackspace cloudfiles API. Uncomment this if you chose `rackspace` as the storage driver.
-define('RACKSPACE_USERNAME', 'fill_me');
-define('RACKSPACE_PASSWORD', 'fill_me');
-
-// Amazon AWS credentials
-define('AWS_REGION', 'fill_me');
-define('AWS_API_KEY', 'fill_me');
-define('AWS_SECRET_KEY', 'fill_me');
-define('AWS_SES_DOMAIN', 'fill_me');
 

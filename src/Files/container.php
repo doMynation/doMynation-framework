@@ -22,13 +22,14 @@ return [
         );
 
         if (IS_PRODUCTION) {
+            $cacheConfig = $config->get('cache');
             $apcuCache = new \Doctrine\Common\Cache\ApcuCache();
             $redisCache = new \Doctrine\Common\Cache\PredisCache(new \Predis\Client([
                 'scheme' => 'tcp',
-                'host'   => REDIS_HOST,
-                'port'   => REDIS_PORT
+                'host'   => $cacheConfig['redis']['host'],
+                'port'   => $cacheConfig['redis']['port']
             ]));
-            
+
 //            $apcuCache->flushAll();
 //            $redisCache->flushAll();
 
@@ -124,25 +125,29 @@ return [
         return new \Domynation\Http\SymfonyRouter($middlewares);
     },
 
-    \Domynation\Cache\CacheInterface::class => function () {
+    \Domynation\Cache\CacheInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         if (!IS_PRODUCTION) {
             return new \Domynation\Cache\InMemoryCache;
         }
 
-        switch (CACHE_DRIVER) {
+        $cacheConfig = $config->get('cache');
+
+        switch ($cacheConfig['driver']) {
             case 'redis':
-                return new \Domynation\Cache\RedisCache(REDIS_HOST, REDIS_PORT);
+                return new \Domynation\Cache\RedisCache($cacheConfig['redis']['host'], $cacheConfig['redis']['port']);
             default:
                 return new \Domynation\Cache\InMemoryCache;
                 break;
         }
     },
 
-    \Domynation\Communication\WebSocketInterface::class => function () {
-        switch (WEBSOCKET_DRIVER) {
+    \Domynation\Communication\WebSocketInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        $wsConfig = $config->get('websocket');
+
+        switch ($wsConfig['driver']) {
             case 'pusher':
             default:
-                return new \Domynation\Communication\PusherWebSocket(PUSHER_API_KEY, PUSHER_API_SECRET_KEY, PUSHER_APP_ID);
+                return new \Domynation\Communication\PusherWebSocket($wsConfig['apiKey'], $wsConfig['secretKey'], $wsConfig['appId']);
                 break;
         }
     },
@@ -160,31 +165,35 @@ return [
         return new \Domynation\Security\NativePassword;
     },
 
-    \Domynation\Storage\StorageInterface::class => function () {
-        switch (STORAGE_DRIVER) {
+    \Domynation\Storage\StorageInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        $storageConfig = $config->get('storage');
+
+        switch ($storageConfig['driver']) {
             case 'aws':
-                return new \Domynation\Storage\AwsS3FileStorage(AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
+                return new \Domynation\Storage\AwsS3FileStorage($storageConfig['aws']['region'], $storageConfig['aws']['apiKey'], $storageConfig['aws']['secretKey']);
                 break;
 
             case 'rackspace':
-                return new Domynation\Storage\RackspaceFileStorage(RACKSPACE_USERNAME, RACKSPACE_PASSWORD);
+                return new Domynation\Storage\RackspaceFileStorage($storageConfig['rackspace']['username'], $storageConfig['rackspace']['password']);
                 break;
 
             case 'file':
             default:
-                return new \Domynation\Storage\NativeFileStorage(STORAGE_FILE_DIRECTORY, STORAGE_FILE_URI);
+                return new \Domynation\Storage\NativeFileStorage($storageConfig['file']['directory'], $storageConfig['file']['uri']);
                 break;
         }
     },
 
-    \Domynation\Communication\MailerInterface::class => function () {
-        switch (EMAIL_DRIVER) {
+    \Domynation\Communication\MailerInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        $emailConfig = $config->get('emailing');
+
+        switch ($emailConfig['driver']) {
             case 'aws':
-                return new \Domynation\Communication\AwsSesMailer(AWS_SES_DOMAIN, AWS_REGION, AWS_API_KEY, AWS_SECRET_KEY);
+                return new \Domynation\Communication\AwsSesMailer($emailConfig['domain'], $emailConfig['region'], $emailConfig['apiKey'], $emailConfig['secretKey']);
                 break;
 
             case 'mailgun':
-                $mailer = new Domynation\Communication\MailgunMailer(MAILGUN_API_KEY, MAILGUN_DEFAULT_DOMAIN, EMAIL_DEFAULT_SENDER);
+                $mailer = new Domynation\Communication\MailgunMailer($emailConfig['mailgun']['apiKey'], $emailConfig['mailgun']['domain']);
                 break;
 
             case 'native':
@@ -198,7 +207,7 @@ return [
         }
 
         // In a dev environment, wrap the mailer implementation into the DebugMailer
-        return new \Domynation\Communication\DebugMailer($mailer, EMAIL_DEBUG);
+        return new \Domynation\Communication\DebugMailer($mailer, $emailConfig['debugEmail']);
     },
 
     \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
@@ -217,7 +226,7 @@ return [
         $twig = new Twig_Environment(new Twig_Loader_Filesystem($config->get('basePath') . $viewsConfig['path']), $options);
         $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('basePath') . $viewsConfig['path'], $viewsConfig['fileExtension']);
 
-        include_once __DIR__ . '/twig.php';
+        require_once __DIR__ . '/twig.php';
 
         return $instance;
     },

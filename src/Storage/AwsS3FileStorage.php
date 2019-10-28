@@ -15,10 +15,11 @@ use Ramsey\Uuid\Uuid;
 final class AwsS3FileStorage implements StorageInterface
 {
 
-    /**
-     * @var \Aws\S3\S3Client
-     */
+    /** @var \Aws\S3\S3Client */
     private $client;
+
+    /** @var string */
+    private $defaultBucket;
 
     /**
      * AwsS3FileStorage constructor.
@@ -27,7 +28,7 @@ final class AwsS3FileStorage implements StorageInterface
      * @param string $apiKey
      * @param string $privateKey
      */
-    public function __construct($region, $apiKey, $privateKey)
+    public function __construct(string $region, string $apiKey, string $privateKey, string $bucket)
     {
         $this->client = new S3Client([
             'version'     => 'latest',
@@ -37,6 +38,8 @@ final class AwsS3FileStorage implements StorageInterface
                 'secret' => $privateKey
             ]
         ]);
+        
+        $this->defaultBucket = $bucket;
     }
 
     /**
@@ -49,13 +52,9 @@ final class AwsS3FileStorage implements StorageInterface
      */
     public function get($key, $data = [])
     {
-        if (!isset($data['container'])) {
-            throw new \RuntimeException("Container missing");
-        }
-
         // Fetch the object from the container
         $response = $this->client->getObject([
-            'Bucket' => $data['container'],
+            'Bucket' => $this->defaultBucket,
             'Key'    => $key
         ]);
 
@@ -78,7 +77,7 @@ final class AwsS3FileStorage implements StorageInterface
     public function getAll($data = [])
     {
         $response = $this->client->listObjects([
-            'Bucket'  => $data['container'],
+            'Bucket'  => $this->defaultBucket,
             'MaxKeys' => isset($data['limit']) ? $data['limit'] : 1000
         ]);
 
@@ -86,7 +85,7 @@ final class AwsS3FileStorage implements StorageInterface
             return [
                 'name' => $file['Key'],
                 'size' => $file['Size'],
-                'url'  => "https://s3.amazonaws.com/{$data['container']}/{$file['Key']}"
+                'url'  => "https://s3.amazonaws.com/{$this->defaultBucket}/{$file['Key']}"
             ];
         }, $response['Contents']);
     }
@@ -101,17 +100,13 @@ final class AwsS3FileStorage implements StorageInterface
      */
     public function put($filePath, $data = [])
     {
-        if (!isset($data['container'])) {
-            throw new \RuntimeException("Container missing");
-        }
-
         $fileInfo = pathinfo($filePath);
 
         // Generate a unique name
         $key = Uuid::uuid4() . '.' . $fileInfo['extension'];
 
         $result = $this->client->putObject([
-            'Bucket'     => $data['container'],
+            'Bucket'     => $this->defaultBucket,
             'Key'        => $key,
             'SourceFile' => $filePath,
             'ACL'        => 'public-read',
@@ -133,12 +128,8 @@ final class AwsS3FileStorage implements StorageInterface
      */
     public function delete($key, $data = [])
     {
-        if (!isset($data['container'])) {
-            throw new \RuntimeException("Container missing");
-        }
-
         $response = $this->client->deleteObject([
-            'Bucket' => $data['container'],
+            'Bucket' => $this->defaultBucket,
             'Key'    => $key,
         ]);
 
