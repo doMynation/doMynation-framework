@@ -79,7 +79,7 @@ final class Application
         $config = $this->bootConfiguration();
 
         // Boot the error reporting
-        $this->bootErrorReporting();
+        $this->bootErrorReporting($config);
 
         // Boot the request
         $this->request = $this->bootRequest();
@@ -105,7 +105,7 @@ final class Application
         $builder->useAnnotations(false);
 
         // Cache the definitions in production
-        if (IS_PRODUCTION) {
+        if (!$config->get('isDevMode')) {
             $builder->enableCompilation($this->basePath . '/cache');
         }
 
@@ -198,15 +198,11 @@ final class Application
     {
         // Set the default timezone
         date_default_timezone_set('UTC');
-       
+
         // Load application configurations
         $applicationConfig = require $this->basePath . '/config/application.php';
         $applicationConfig['basePath'] = $this->basePath;
         $applicationConfig['environment'] = $this->environment;
-
-        // Load environment configurations
-        // @todo: Move these to application configurations
-        require_once $this->basePath . '/config/env.php';
 
         return new InMemoryConfigStore($applicationConfig);
     }
@@ -276,12 +272,12 @@ final class Application
      *
      * @return void
      */
-    private function bootErrorReporting(): void
+    private function bootErrorReporting(ConfigInterface $config): void
     {
         // Report all errors
         error_reporting(-1);
 
-        $debugHandler = DEBUG ? new PrettyPageHandler : function ($exception, $inspector, $run) {
+        $debugHandler = $config->get('isDevMode') ? new PrettyPageHandler : function ($exception, $inspector, $run) {
             echo "Whoops, something went wrong...";
         };
 

@@ -17,12 +17,12 @@ return [
     \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config, \Doctrine\ORM\Cache\Logging\CacheLogger $cacherLogger) {
         $ormConfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
             $config->get('entityDirectories'),
-            !IS_PRODUCTION,
+            $config->get('isDevMode'),
             $config->get('basePath') . '/cache/orm'
         );
 
-        if (IS_PRODUCTION) {
-            $cacheConfig = $config->get('cache');
+        if (!$config->get('isDevMode')) {
+            $cacheConfig = $config->get('caching');
             $apcuCache = new \Doctrine\Common\Cache\ApcuCache();
             $redisCache = new \Doctrine\Common\Cache\PredisCache(new \Predis\Client([
                 'scheme' => 'tcp',
@@ -126,11 +126,11 @@ return [
     },
 
     \Domynation\Cache\CacheInterface::class => function (\Domynation\Config\ConfigInterface $config) {
-        if (!IS_PRODUCTION) {
+        if ($config->get('isDevMode')) {
             return new \Domynation\Cache\InMemoryCache;
         }
 
-        $cacheConfig = $config->get('cache');
+        $cacheConfig = $config->get('caching');
 
         switch ($cacheConfig['driver']) {
             case 'redis':
@@ -202,22 +202,22 @@ return [
                 break;
         }
 
-        if (IS_PRODUCTION) {
-            return $mailer;
-        }
-
-        // In a dev environment, wrap the mailer implementation into the DebugMailer
-        return new \Domynation\Communication\DebugMailer($mailer, $emailConfig['debugEmail']);
+        // In dev mode, use the DebugMailer
+        return $config->get('isDevMode')
+            ? new \Domynation\Communication\DebugMailer($mailer, $emailConfig['debugEmail'])
+            : $mailer;
     },
 
     \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        $devConfig = $config->get('dev');
+
         $options = [
             'cache'            => $config->get('basePath') . '/cache/views',
             'debug'            => false,
             'strict_variables' => true,
         ];
 
-        if (!IS_PRODUCTION) {
+        if ($config->get('isDevMode')) {
             $options['debug'] = true;
             $options['auto_reload'] = true;
         }

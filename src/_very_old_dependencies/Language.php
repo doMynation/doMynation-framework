@@ -20,7 +20,7 @@ final class Language
 
         static::$basePath = $basePath;
         static::$lang = $language;
-       
+
         static::load($language);
     }
 
@@ -35,14 +35,6 @@ final class Language
 
         if (file_exists(static::$basePath . '/config/languages/' . $fileName)) {
             static::$language = require_once static::$basePath . '/config/languages/' . $fileName;
-        } else {
-            $fileName = DEFAULT_LANG . '.php';
-
-            if (file_exists(static::$basePath . '/config/languages/' . $fileName)) {
-                static::$language = require_once static::$basePath . '/config/languages/' . $fileName;
-            } else {
-                die('Unable to load the requested language file: ' . $fileName);
-            }
         }
     }
 
