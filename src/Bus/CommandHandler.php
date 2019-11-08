@@ -41,5 +41,5 @@ abstract class CommandHandler
      *
      * @return mixed
      */
-    abstract public function handle($command);
+    abstract public function handle(Command $command);
 }

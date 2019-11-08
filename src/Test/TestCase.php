@@ -69,9 +69,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->initialize();
 
-        // Only migrate and seed the database if it hasn't alread been migrated
+        // Only migrate and seed the database if it hasn't already been migrated
         if (!static::$isMigrated) {
-            $this->resetDatabase();
+            $this->migrateDatabase();
 
             static::$isMigrated = true;
         }
@@ -100,7 +100,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->container = $this->kernel->getContainer();
         $this->em = $this->container->get(EntityManager::class);
-        $this->db = $this->container->get(Connection::class);
+        $this->db = $this->em->getConnection();
     }
 
     /**
@@ -109,7 +109,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      *
      * @throws \Exception
      */
-    private function resetDatabase(): void
+    private function migrateDatabase(): void
     {
         $configuration = new Configuration($this->db);
         $configuration->setName('Integration Test Migrations');
@@ -131,7 +131,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $cli->setCatchExceptions(true);
         $cli->setAutoExit(false);
         $cli->setHelperSet($helperSet);
-
         $cli->addCommands([
             new DumpSchemaCommand(),
             new ExecuteCommand(),
@@ -147,7 +146,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $output = new BufferedOutput();
         $cli->run(new ArrayInput([
             'command'          => 'migrations:execute',
-            'version'          => 'Initial',
+            'version'          => 'Initial1',
             '--down'           => '',
             '--no-interaction' => '',
         ]), $output);
