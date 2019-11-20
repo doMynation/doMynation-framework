@@ -1,7 +1,7 @@
 <?php
 
 return [
-    \Psr\Log\LoggerInterface::class                => function (\Domynation\Config\ConfigInterface $config) {
+    \Psr\Log\LoggerInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         $loggingConfigs = $config->get('logging');
         $logsPath = $config->get('basePath') . ($loggingConfigs['logsPath'] ?? '/app.log');
 
@@ -10,6 +10,7 @@ return [
 
         return $appLogger;
     },
+
     \Doctrine\ORM\Cache\Logging\CacheLogger::class => function () {
         return new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
     },
@@ -64,23 +65,11 @@ return [
         ], $ormConfig);
     },
 
-    \Doctrine\DBAL\Connection::class => function (\Domynation\Config\ConfigInterface $config) {
-        $dbConfig = $config->get('databases');
-        $dbEnv = $config->get('environment') === 'test' ? 'test' : 'web';
-
-        $db = \Doctrine\DBAL\DriverManager::getConnection([
-            'host'     => $dbConfig[$dbEnv]['host'],
-            'driver'   => $dbConfig[$dbEnv]['driver'],
-            'dbname'   => $dbConfig[$dbEnv]['name'],
-            'user'     => $dbConfig[$dbEnv]['user'],
-            'password' => $dbConfig[$dbEnv]['password'],
-            'charset'  => 'utf8'
-        ], new \Doctrine\DBAL\Configuration());
-
+    \Doctrine\DBAL\Connection::class => function (\Doctrine\ORM\EntityManager $em) {
         // @todo: Extremely ugly hack until all the event listeners are refactored.
-        \Event::setDatabase($db);
+        \Event::setDatabase($em->getConnection());
 
-        return $db;
+        return $em->getConnection();
     },
 
     \Domynation\Bus\CommandBusInterface::class => function (
@@ -117,7 +106,7 @@ return [
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
-        }, $routingConfig['middlewares']);
+        }, $routingConfig[$config->get('environment')]['middlewares']);
 
         // Append the handling middleware at the end
         $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker, $session);

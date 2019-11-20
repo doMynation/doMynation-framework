@@ -3,8 +3,6 @@
 namespace Domynation\Validation;
 
 /**
- * Class RouteValidator
- *
  * @package Domynation\Validation
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
@@ -12,12 +10,13 @@ abstract class RouteValidator
 {
 
     /**
-     * Validates the inputs and returns true if all inputs
-     * pass the validation process.
+     * Validates the inputs and throws a ValidationException is it fails.
      *
      * @param array $inputs
      *
-     * @return bool
+     * @throws \Domynation\Exceptions\ValidationException
      */
-    abstract public function validate($inputs);
+    public function validate($inputs)
+    {
+    }
 }

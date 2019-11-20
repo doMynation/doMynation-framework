@@ -36,12 +36,12 @@ interface UserInterface
      *
      * @return bool
      */
-    public function hasPermission($code);
+    public function hasPermission($code): bool;
 
     /**
-     * @return \Domynation\Authorization\PermissionInterface[]
+     * @return array
      */
-    public function getPermissions();
+    public function getPermissions(): array;
 
     /**
      * @return bool

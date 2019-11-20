@@ -27,7 +27,7 @@ final class Route
     private $handler;
 
     /**
-     * @var string
+     * @var callable|string
      */
     private $validator;
 
@@ -89,7 +89,7 @@ final class Route
     /**
      * Sets the validator class for this route.
      *
-     * @param string $validator
+     * @param callable|string $validator
      *
      * @return $this
      */
@@ -137,13 +137,13 @@ final class Route
      */
     public function hasValidator()
     {
-        return !is_null($this->validator);
+        return $this->validator !== null;
     }
 
     /**
      * Gets the value of validator.
      *
-     * @return string
+     * @return callable|string
      */
     public function getValidator()
     {

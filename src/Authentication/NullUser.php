@@ -46,7 +46,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function hasPermission($code)
+    public function hasPermission($code): bool
     {
         return false;
     }
@@ -54,7 +54,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getPermissions()
+    public function getPermissions(): array
     {
         return [];
     }

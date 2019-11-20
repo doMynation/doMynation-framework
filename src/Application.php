@@ -230,7 +230,7 @@ final class Application
      * @todo: Move this to userland and allow customization.
      *
      */
-    private function handleException(\Throwable $e)
+    private function handleException(\Throwable $e, bool $isDevMode)
     {
         if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
             return new Response('Page not found', Response::HTTP_NOT_FOUND);
@@ -246,7 +246,9 @@ final class Application
 
         if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
             if ($this->request->isXmlHttpRequest()) {
-                return new Response('Unauthorized', Response::HTTP_FORBIDDEN);
+                $message = $isDevMode ? $e->getMessage() : '';
+
+                return new Response($message, Response::HTTP_FORBIDDEN);
             }
 
             return new RedirectResponse('/403');
@@ -277,14 +279,15 @@ final class Application
         // Report all errors
         error_reporting(-1);
 
-        $debugHandler = $config->get('isDevMode') ? new PrettyPageHandler : function ($exception, $inspector, $run) {
+        $isDevMode = $config->get('isDevMode');
+        $debugHandler = $isDevMode ? new PrettyPageHandler : function ($exception, $inspector, $run) {
             echo "Whoops, something went wrong...";
         };
 
         $whoops = new Run();
         $whoops->pushHandler($debugHandler);
-        $whoops->pushHandler(function ($exception, $inspector, $run) {
-            if ($response = $this->handleException($exception)) {
+        $whoops->pushHandler(function ($exception, $inspector, $run) use ($isDevMode) {
+            if ($response = $this->handleException($exception, $isDevMode)) {
                 $response->send();
 
                 return Handler::QUIT;
