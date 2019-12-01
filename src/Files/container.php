@@ -83,7 +83,6 @@ return [
         $busConfigs = $config->get('bus');
 
         $busMiddlewares = [
-            new \Domynation\Bus\Middlewares\AuthorizationMiddleware,
             new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
         ];
 
