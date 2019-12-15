@@ -27,13 +27,13 @@
     }
   },
   "require": {
-    "php": ">=7.3.0",
-    "symfony/http-foundation": "^4",
-    "symfony/routing": "^4",
+    "php": ">=7.4.0",
+    "symfony/http-foundation": "^5",
+    "symfony/routing": "^5",
     "symfony/var-dumper": "^4",
     "twig/twig": "~2.0",
     "doctrine/orm": "~2.0",
-    "guzzlehttp/guzzle": "~5.2",
+    "guzzlehttp/guzzle": "^6.5",
     "beberlei/assert": "~3.0",
     "monolog/monolog": "^1.15",
     "php-di/php-di": "^6.0.8",

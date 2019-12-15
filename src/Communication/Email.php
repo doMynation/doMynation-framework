@@ -40,6 +40,14 @@ final class Email
     /**
      * @return string
      */
+    public function get(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->email;

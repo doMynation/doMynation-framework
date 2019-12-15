@@ -88,7 +88,7 @@ final class Event
             'content_id'   => $subjectID,
             'item_id'      => $targetID,
             'item_name'    => $target,
-            'occured_at'   => (new \DateTime)->format("Y-m-d H:i:s")
+            'occurred_at'   => (new \DateTime)->format("Y-m-d H:i:s")
         ]);
     }
 }
