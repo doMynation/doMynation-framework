@@ -29,7 +29,7 @@ final class MailgunMailer implements MailerInterface
     public function send(EmailMessage $message, $data = [])
     {
         $email = (new \Symfony\Component\Mime\Email())
-            ->from($message->getFullSender())
+            ->from(new \Symfony\Component\Mime\Address($message->from, $message->fromName))
             ->to(...$message->recipients)
             ->subject($message->subject)
             ->text($message->body);

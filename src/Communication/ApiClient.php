@@ -6,13 +6,12 @@ use Domynation\Exceptions\ApiException;
 use GuzzleHttp\Client;
 
 /**
- * Class ApiClient
- *
  * @package Domynation\Communication
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class ApiClient
 {
+
     /**
      * @var \GuzzleHttp\Client
      */
@@ -28,12 +27,11 @@ final class ApiClient
     public function __construct($baseUrl, $headers, $defaultQueryParameters = [])
     {
         $this->client = new Client([
-            'base_url' => $baseUrl,
+            'base_uri' => $baseUrl,
+            'headers'  => $headers,
             'defaults' => [
-                'headers'    => $headers,
-                'query'      => $defaultQueryParameters,
-                'exceptions' => false
-            ]
+                'query' => $defaultQueryParameters,
+            ],
         ]);
     }
 
@@ -46,7 +44,7 @@ final class ApiClient
      */
     private function prepareQuery($options = [])
     {
-        return array_merge($this->client->getDefaultOption('query'), $options);
+        return array_merge($this->client->getConfig('defaults')['query'], $options);
     }
 
 
@@ -61,17 +59,21 @@ final class ApiClient
      */
     public function get($url, $data = [])
     {
-        $response = $this->client->get($url, [
-            'query' => $this->prepareQuery($data)
-        ]);
+        try {
+            $response = $this->client->get($url, [
+                'query' => $this->prepareQuery($data),
+            ]);
 
-        $json = $response->json();
+            $json = json_decode($response->getBody(), true);
 
-        if (array_key_exists('error', $json)) {
-            throw new ApiException($json['error']['message'], $json['error']['code']);
+            if (array_key_exists('error', $json)) {
+                throw new ApiException($json['error']['message'], $json['error']['code']);
+            }
+
+            return $json;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            throw new ApiException("Not found", $e->getResponse()->getStatusCode());
         }
-
-        return $json;
     }
 
 
@@ -87,17 +89,21 @@ final class ApiClient
      */
     public function post($url, $postData = [], $getData = [])
     {
-        $response = $this->client->post($url, [
-            'query' => $this->prepareQuery($getData),
-            'body'  => $postData
-        ]);
+        try {
+            $response = $this->client->post($url, [
+                'query'       => $this->prepareQuery($getData),
+                'form_params' => $postData,
+            ]);
 
-        $json = $response->json();
+            $json = json_decode($response->getBody(), true);
 
-        if (array_key_exists('error', $json)) {
-            throw new ApiException($json['error']['message'], $json['error']['code']);
+            if (array_key_exists('error', $json)) {
+                throw new ApiException($json['error']['message'], $json['error']['code']);
+            }
+
+            return $json;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            throw new ApiException("Not found", $e->getResponse()->getStatusCode());
         }
-
-        return $json;
     }
 }
