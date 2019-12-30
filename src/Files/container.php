@@ -66,9 +66,6 @@ return [
     },
 
     \Doctrine\DBAL\Connection::class => function (\Doctrine\ORM\EntityManager $em) {
-        // @todo: Extremely ugly hack until all the event listeners are refactored.
-        \Event::setDatabase($em->getConnection());
-
         return $em->getConnection();
     },
 
