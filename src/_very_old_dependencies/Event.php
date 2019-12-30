@@ -16,9 +16,6 @@ final class Event
      */
     static $db;
 
-    static $raisedEvents = [];
-    static $listeners = [];
-
     /**
      * Ugly hack until I get the time to replace this completely with the EventDispatcher.
      *
@@ -27,50 +24,6 @@ final class Event
     public static function setDatabase(Connection $db)
     {
         static::$db = $db;
-    }
-
-    /**
-     * Raises an event to be dispatched later
-     *
-     * @param $eventName
-     * @param $data
-     */
-    public static function raise($eventName, $data)
-    {
-        static::$raisedEvents[] = [
-            'name' => $eventName,
-            'data' => $data
-        ];
-    }
-
-    /**
-     * Dispatches all raised events
-     */
-    public static function dispatch()
-    {
-        foreach (static::$raisedEvents as $raisedEvent) {
-            static::fire($raisedEvent['name'], $raisedEvent['data']);
-        }
-
-        // Clear the list
-        static::$raisedEvents = [];
-    }
-
-    public static function listen($eventCode, callable $closure)
-    {
-        static::$listeners[] = [
-            'event'   => $eventCode,
-            'closure' => $closure
-        ];
-    }
-
-    public static function fire($eventCode, $eventArgs)
-    {
-        foreach (static::$listeners as $listener) {
-            if ($listener['event'] === $eventCode) {
-                call_user_func_array($listener['closure'], $eventArgs);
-            }
-        }
     }
 
     public static function log($eventCode, $eventSourceID, $subjectID, $targetID, $target, $contentType = null)

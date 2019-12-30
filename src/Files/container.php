@@ -135,7 +135,7 @@ return [
         switch ($wsConfig['driver']) {
             case 'pusher':
             default:
-                return new \Domynation\Communication\PusherWebSocket($wsConfig['apiKey'], $wsConfig['secretKey'], $wsConfig['appId']);
+                return new \Domynation\Communication\PusherWebSocket($wsConfig['pusher']['apiKey'], $wsConfig['pusher']['secretKey'], $wsConfig['pusher']['appId']);
                 break;
         }
     },
@@ -219,8 +219,15 @@ return [
         return $instance;
     },
 
-    \Domynation\Eventing\EventDispatcherInterface::class => function (\Invoker\InvokerInterface $invoker) {
-        return new \Domynation\Eventing\BasicEventDispatcher($invoker);
+    \Domynation\Eventing\EventDispatcherInterface::class => function (\Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker, Psr\Container\ContainerInterface $container) {
+        $eventingConfig = $config->get('eventing');
+
+        // Resolve all middleware through the container
+        $middlewares = array_map(function ($middlewareName) use ($container) {
+            return $container->get($middlewareName);
+        }, $eventingConfig['middlewares'] ?? []);
+
+        return new \Domynation\Eventing\BasicEventDispatcher($invoker, $middlewares);
     },
 
     \Domynation\Entities\EntityRegistry::class => function () {

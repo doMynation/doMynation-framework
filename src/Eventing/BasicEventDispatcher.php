@@ -18,6 +18,8 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      */
     private $invoker;
 
+    private ?EventDispatcherMiddleware $middlewareChain;
+
     /**
      * @var array
      */
@@ -29,15 +31,14 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     private $raisedEvents;
 
     /**
-     * BasicEventDispatcher constructor.
-     *
      * @param \Invoker\InvokerInterface $invoker
      */
-    public function __construct(InvokerInterface $invoker)
+    public function __construct(InvokerInterface $invoker, array $middlewares = [])
     {
         $this->invoker = $invoker;
         $this->listeners = [];
         $this->raisedEvents = [];
+        $this->middlewareChain = $this->buildMiddlewareChain($middlewares);
     }
 
     /**
@@ -78,6 +79,11 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         $this->raisedEvents = [];
 
         foreach ($raisedEvents as $event) {
+            // Pass the event through middlewares first
+            if ($this->middlewareChain) {
+                $this->middlewareChain->handle($event);
+            }
+
             // Get the listeners for this event
             $listeners = $this->getListeners(get_class($event));
 
@@ -135,5 +141,27 @@ final class BasicEventDispatcher implements EventDispatcherInterface
         return array_sort_by($listeners, function ($a, $b) {
             return $a['priority'] <=> $b['priority'];
         });
+    }
+
+    /**
+     * Takes an array of middleware to builds the middleware chain.
+     *
+     * @param array $middlewares
+     *
+     * @return mixed|null
+     */
+    private function buildMiddlewareChain(array $middlewares = [])
+    {
+        if (empty($middlewares)) {
+            return null;
+        }
+
+        // Fetch the first middleware
+        $next = array_shift($middlewares);
+
+        // Set its next middleware
+        $next->setNext($this->buildMiddlewareChain($middlewares));
+
+        return $next;
     }
 }
