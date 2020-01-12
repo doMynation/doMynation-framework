@@ -32,10 +32,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * True when the database was migrated and seeded.
-     *
-     * @var bool
      */
-    protected static $isMigrated = false;
+    protected static bool $isMigrated = false;
 
     /**
      * The framework kernel.
@@ -144,17 +142,29 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         // Revert to the very first migration (wipes all tables)
         $output = new BufferedOutput();
-        $cli->run(new ArrayInput([
+        $exitCode = $cli->run(new ArrayInput([
             'command'          => 'migrations:execute',
-            'version'          => 'Initial1',
+            'version'          => 'Initial',
             '--down'           => '',
             '--no-interaction' => '',
         ]), $output);
 
+        if ($exitCode !== 0) {
+            echo "An error occurred while running migration: {$exitCode}";
+            echo $output->fetch();
+            exit;
+        }
+
         // Re-apply all migrations
-        $cli->run(new ArrayInput([
+        $exitCode = $cli->run(new ArrayInput([
             'command'          => 'migrations:migrate',
             '--no-interaction' => '',
         ]), $output);
+
+        if ($exitCode !== 0) {
+            echo "An error occurred while running migration: {$exitCode}";
+            echo $output->fetch();
+            exit;
+        }
     }
 }

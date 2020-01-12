@@ -222,7 +222,7 @@ return [
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
-        }, $eventingConfig['middlewares'] ?? []);
+        }, $eventingConfig[$config->get('environment')]['middlewares']);
 
         return new \Domynation\Eventing\BasicEventDispatcher($invoker, $middlewares);
     },

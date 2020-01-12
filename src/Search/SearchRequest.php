@@ -77,11 +77,56 @@ final class SearchRequest
     }
 
     /**
-     * @return SearchRequestBuilder
+     * @return \Domynation\Search\SearchRequestBuilder
      */
     public static function make()
     {
         return new SearchRequestBuilder;
+    }
+
+    /**
+     * @param array $queryStrings
+     * @param bool $isPaginated
+     *
+     * @return \Domynation\Search\SearchRequest
+     */
+    public static function fromQueryStrings(array $queryStrings, bool $isPaginated = true): self
+    {
+        // Parse filters
+        $filters = array_fold($queryStrings['filters'] ?? [], function (array $acc, string $name, $value) {
+            if (is_string($value)) {
+                $trimmedValue = trim($value);
+                if ($trimmedValue !== "") {
+                    $acc[$name] = $trimmedValue;
+                }
+            } else {
+                $acc[$name] = $value;
+            }
+
+            return $acc;
+        });
+
+        // Determine pagination
+        $limit = !empty($queryStrings['limit']) ? (int)$queryStrings['limit'] : 25;
+        $page = !empty($queryStrings['page']) && is_numeric($queryStrings['page']) ? (int)$queryStrings['page'] : 1;
+        $offset = $limit * ($page - 1);
+
+        // Determine sorting
+        $sort = null;
+        $order = 'asc';
+
+        if (!empty($queryStrings['sortField'])) {
+            $sort = $queryStrings['sortField'];
+            $order = !empty($queryStrings['sortOrder']) ? $queryStrings['sortOrder'] : null;
+        }
+
+        return self::make()
+            ->filter($filters)
+            ->take($limit)
+            ->skip($offset)
+            ->sort($sort, $order)
+            ->paginate($isPaginated)
+            ->get();
     }
 
     /**
@@ -183,13 +228,15 @@ final class SearchRequestBuilder
     }
 
     /**
-     * Paginates the results.
+     * Sets pagination.
+     *
+     * @param bool $isPaginated
      *
      * @return $this
      */
-    public function paginate()
+    public function paginate(bool $isPaginated = true)
     {
-        $this->isPaginated = true;
+        $this->isPaginated = $isPaginated;
 
         return $this;
     }

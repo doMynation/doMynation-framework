@@ -22,8 +22,6 @@ final class SearchResult
     private $count;
 
     /**
-     * SearchResult constructor.
-     *
      * @param array $hits
      * @param int $count
      */

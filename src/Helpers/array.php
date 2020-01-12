@@ -235,7 +235,7 @@ function array_unicity(array $array)
  *
  * @param array $array
  * @param callable $closure
- * @param $initial
+ * @param mixed $initial
  *
  * @return mixed
  */
