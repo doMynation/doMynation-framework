@@ -25,13 +25,4 @@ abstract class CommandHandler
     {
         $this->dispatcher = $dispatcher;
     }
-
-    /**
-     * Handles the command.
-     *
-     * @param Command $command
-     *
-     * @return mixed
-     */
-    abstract public function handle(Command $command);
 }

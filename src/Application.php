@@ -254,6 +254,16 @@ final class Application
             return new RedirectResponse('/403');
         }
 
+        if ($e instanceof \Domynation\Http\RouteNotFoundException) {
+            if ($this->request->isXmlHttpRequest()) {
+                $message = $isDevMode ? $e->getMessage() : '';
+
+                return new Response($message, Response::HTTP_NOT_FOUND);
+            }
+
+            return new RedirectResponse('/404');
+        }
+
         if ($e instanceof \Domynation\Exceptions\ValidationException) {
             return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
         }

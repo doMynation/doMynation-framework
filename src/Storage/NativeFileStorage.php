@@ -5,8 +5,6 @@ namespace Domynation\Storage;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Class NativeFileStorage
- *
  * @package Domynation\Storage
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
@@ -55,11 +53,10 @@ final class NativeFileStorage implements StorageInterface
     public function put($filePath, $data = [])
     {
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-
         $newFileName = Uuid::uuid4() . '.' . $ext;
 
-        // Move it
-        rename($filePath, "{$this->folder}/{$newFileName}");
+        // Move the file
+        rename($filePath, $this->folder . '/' . $newFileName);
 
         return new StorageResponse($newFileName, "{$this->uri}/{$newFileName}");
     }

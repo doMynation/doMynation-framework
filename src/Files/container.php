@@ -151,6 +151,10 @@ return [
     },
 
     \Domynation\Storage\StorageInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+        if ($config->get('environment') === 'test') {
+            return new \Domynation\Storage\UnitTestStorage;
+        }
+
         $storageConfig = $config->get('storage');
 
         switch ($storageConfig['driver']) {

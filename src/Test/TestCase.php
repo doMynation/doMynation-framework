@@ -82,7 +82,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    public function inject($className)
+    public function inject(string $className)
     {
         return $this->container->get($className);
     }
