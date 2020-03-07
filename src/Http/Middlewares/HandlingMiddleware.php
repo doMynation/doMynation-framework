@@ -2,10 +2,19 @@
 
 namespace Domynation\Http\Middlewares;
 
+use Assert\AssertionFailedException;
+use Domynation\Authentication\UserInterface;
+use Domynation\Bus\CommandBusInterface;
+use Domynation\Exceptions\ValidationException;
+use Domynation\Http\BaseActionTrait;
 use Domynation\Http\ResolvedRoute;
 use Domynation\Session\SessionInterface;
+use Domynation\View\ViewFactoryInterface;
+use InvalidArgumentException;
 use Invoker\InvokerInterface;
 use Psr\Container\ContainerInterface;
+use ReflectionException;
+use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -46,7 +55,8 @@ final class HandlingMiddleware extends RouteMiddleware
         $route = $resolvedRoute->getRoute();
 
         // Close the session for writes for routes that aren't going
-        // to write anything to the session.
+        // to write anything to the session. This may significantly improve performances in situations
+        // where multiple AJAX requests are running in parallel.
         if ($resolvedRoute->getRoute()->isReadOnly()) {
             $this->session->close();
         }
@@ -61,48 +71,69 @@ final class HandlingMiddleware extends RouteMiddleware
         return $this->handleAction($route->getHandler(), $resolvedRoute);
     }
 
+    /**
+     * Handles an Action type of handler.
+     *
+     * @param string $className
+     * @param \Domynation\Http\ResolvedRoute $resolvedRoute
+     *
+     * @return mixed
+     * @throws \Domynation\Exceptions\ValidationException
+     */
     private function handleAction(string $className, ResolvedRoute $resolvedRoute)
     {
         if (!class_exists($className)) {
-            throw new \InvalidArgumentException("Action {$className} not found for route {$resolvedRoute->getRoute()->getName()}.");
+            throw new InvalidArgumentException("Action {$className} not found for route {$resolvedRoute->getRoute()->getName()}.");
         }
 
+        // Ensure the action has a `run` method.
         try {
-            new \ReflectionMethod($className, 'run');
-        } catch (\ReflectionException $e) {
-            throw new \InvalidArgumentException("Action {$className} is missing a `run` method.");
+            new ReflectionMethod($className, 'run');
+        } catch (ReflectionException $e) {
+            throw new InvalidArgumentException("Action {$className} is missing a `run` method.");
         }
 
         // Instantiate the class and inject all its dependencies
         $instance = $this->container->get($className);
 
+        // Automagically inject the most frequently used dependencies when the action
+        // is using the `BaseActionTrait`. Setter injection is undoubtedly bad in most cases as it hinders testability, but
+        // the amount of boilerplate code it helps save makes it worth it in the end.
         if ($this->usesBaseTrait($instance)) {
             $instance->setRequest($this->container->get(Request::class));
-            $instance->setUser($this->container->get(\Domynation\Authentication\UserInterface::class));
-            $instance->setView($this->container->get(\Domynation\View\ViewFactoryInterface::class));
-            $instance->setBus($this->container->get(\Domynation\Bus\CommandBusInterface::class));
+            $instance->setUser($this->container->get(UserInterface::class));
+            $instance->setView($this->container->get(ViewFactoryInterface::class));
+            $instance->setBus($this->container->get(CommandBusInterface::class));
         }
 
         try {
-            $method = new \ReflectionMethod($className, 'validate');
-
             // Check if the action has a non-static `validate` method and if so, call it
-            if (!$method->isStatic()) {
+            if (!(new ReflectionMethod($className, 'validate'))->isStatic()) {
                 $this->validateAction($className, $resolvedRoute);
             }
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
         }
 
         // Call the action's `run` method with the path parameters
         return call_user_func_array([$instance, 'run'], $resolvedRoute->getParameters());
     }
 
+    /**
+     * Calls the `validate` method on an action and handles validation errors thrown
+     * from the method.
+     *
+     * @param $instance
+     * @param \Domynation\Http\ResolvedRoute $resolvedRoute
+     *
+     * @return mixed
+     * @throws \Domynation\Exceptions\ValidationException
+     */
     private function validateAction($instance, ResolvedRoute $resolvedRoute)
     {
         try {
             return $this->invoker->call([$instance, 'validate'], $resolvedRoute->getParameters());
-        } catch (\Assert\AssertionFailedException $e) {
-            throw new \Domynation\Exceptions\ValidationException([$e->getMessage()]);
+        } catch (AssertionFailedException $e) {
+            throw new ValidationException([$e->getMessage()]);
         }
     }
 
@@ -117,19 +148,21 @@ final class HandlingMiddleware extends RouteMiddleware
     {
         $allTraits = [];
 
+        // Loop through all the instance's trait (and their parent classes' traits)
         do {
             $currentClassTraits = class_uses($instance);
             $allTraits = array_merge($allTraits, $currentClassTraits);
 
-            if (in_array(\Domynation\Http\BaseActionTrait::class, $currentClassTraits, true)) {
+            if (in_array(BaseActionTrait::class, $currentClassTraits, true)) {
                 return true;
             }
         } while ($instance = get_parent_class($instance));
 
-        foreach ($traits as $trait => $_) {
+        // Loop through each trait found and their parent traits' traits
+        foreach ($allTraits as $trait => $_) {
             $traitTraits = class_uses($trait);
 
-            if (in_array(\Domynation\Http\BaseActionTrait::class, $traitTraits, true)) {
+            if (in_array(BaseActionTrait::class, $traitTraits, true)) {
                 return true;
             }
         }
