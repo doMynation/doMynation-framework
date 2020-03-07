@@ -15,8 +15,6 @@ use Symfony\Component\Routing\Route as SymfonyRoute;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
- * Class SymfonyRouter
- *
  * @package Domynation\Http
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
@@ -34,8 +32,6 @@ final class SymfonyRouter implements RouterInterface
     private $middleware;
 
     /**
-     * SymfonyRouter constructor.
-     *
      * @param RouteMiddleware[] $middlewares
      */
     public function __construct($middlewares)
@@ -66,7 +62,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function addRoute($method, $path, callable $controller, $name = null)
+    public function addRoute($method, $path, $controller, $name = null)
     {
         // Default the name to the path + method to avoid duplicate
         $name = $name ?: "$path-$method";
@@ -181,7 +177,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function get($path, callable $controller, $name = null)
+    public function get($path, $controller, $name = null)
     {
         return $this->addRoute('GET', $path, $controller, $name);
     }
@@ -189,7 +185,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function post($path, callable $controller, $name = null)
+    public function post($path, $controller, $name = null)
     {
         return $this->addRoute('POST', $path, $controller, $name);
     }
@@ -197,7 +193,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function put($path, callable $controller, $name = null)
+    public function put($path, $controller, $name = null)
     {
         return $this->addRoute('PUT', $path, $controller, $name);
     }
@@ -205,7 +201,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function delete($path, callable $controller, $name = null)
+    public function delete($path, $controller, $name = null)
     {
         return $this->addRoute('DELETE', $path, $controller, $name);
     }
@@ -213,7 +209,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function patch($path, callable $controller, $name = null)
+    public function patch($path, $controller, $name = null)
     {
         return $this->addRoute('PATCH', $path, $controller, $name);
     }

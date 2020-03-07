@@ -105,7 +105,7 @@ return [
         }, $routingConfig[$config->get('environment')]['middlewares']);
 
         // Append the handling middleware at the end
-        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($invoker, $session);
+        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($container, $invoker, $session);
 
         return new \Domynation\Http\SymfonyRouter($middlewares);
     },

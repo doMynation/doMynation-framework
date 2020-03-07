@@ -22,7 +22,7 @@ final class Route
     private $name;
 
     /**
-     * @var \Closure
+     * @var string|\Closure
      */
     private $handler;
 
@@ -54,10 +54,10 @@ final class Route
      * Route constructor.
      *
      * @param string name
-     * @param callable $handler
+     * @param string|callable $handler
      * @param string $method
      */
-    public function __construct($name, callable $handler, $method = 'GET')
+    public function __construct($name, $handler, $method = 'GET')
     {
         $this->method = strtoupper($method);
         $this->name = $name;
@@ -153,7 +153,7 @@ final class Route
     /**
      * Gets the value of handler.
      *
-     * @return \Closure
+     * @return string|\Closure
      */
     public function getHandler()
     {
