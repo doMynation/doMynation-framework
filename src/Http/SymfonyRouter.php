@@ -2,7 +2,13 @@
 
 namespace Domynation\Http;
 
+use Domynation\Exceptions\AuthenticationException;
+use Domynation\Exceptions\AuthorizationException;
+use Domynation\Exceptions\EntityNotFoundException;
+use Domynation\Exceptions\ValidationException;
 use Domynation\Http\Middlewares\RouteMiddleware;
+use PHPUnit\Util\Json;
+use Sushi\Common\Exceptions\DomainException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -77,6 +83,7 @@ final class SymfonyRouter implements RouterInterface
 
         // Add the route to the collection
         $this->routes->add($name, $route);
+        $r = $this->routes->get($name);
 
         // Return the route
         return $domynationRoute;
@@ -85,7 +92,32 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(Request $request)
+    public function handle(Request $request): Response
+    {
+        try {
+            return $this->doHandle($request);
+        } catch (AuthenticationException $e) {
+            return $request->isXmlHttpRequest()
+                ? new Response(null, Response::HTTP_UNAUTHORIZED)
+                : new RedirectResponse('/login');
+        } catch (AuthorizationException $e) {
+            return $request->isXmlHttpRequest()
+                ? new Response(null, Response::HTTP_UNAUTHORIZED)
+                : new RedirectResponse('/403');
+        } catch (RouteNotFoundException $e) {
+            return $request->isXmlHttpRequest()
+                ? new Response(null, Response::HTTP_UNAUTHORIZED)
+                : new RedirectResponse('/404');
+        } catch (ValidationException $e) {
+            return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
+        } catch (EntityNotFoundException $e) {
+            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
+        } catch (DomainException $e) {
+            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    private function doHandle(Request $request)
     {
         // Resolve the route definition
         try {
@@ -137,12 +169,10 @@ final class SymfonyRouter implements RouterInterface
      */
     private function parseResponse(Request $request, $response)
     {
-        if (is_null($response)) {
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse;
-            }
-
-            return new Response;
+        if ($response === null) {
+            return $request->isXmlHttpRequest()
+                ? new JsonResponse
+                : new Response;
         }
 
         // Convert a redirect to a regular response for ajax requests
@@ -214,6 +244,15 @@ final class SymfonyRouter implements RouterInterface
         return $this->addRoute('PATCH', $path, $controller, $name);
     }
 
+    /**
+     * Forwards a request to a different route.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $route
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Domynation\Http\RouteNotFoundException
+     */
     public function forward(Request $request, $route)
     {
         $context = (new RequestContext)->fromRequest($request);
