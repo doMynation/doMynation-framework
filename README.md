@@ -1,20 +1,23 @@
-**doMynation framework**
-=============
-A custom microframework made for fun and to learn the intricacies of framework development. This is an experimental project. **Do not use in production**.
+# doMynation framework
 
-Requirements
-------------
-* PHP >=7.0
+## What
+
+An opinionated PHP micro-framework.
+
+## Why
+
+This project originally started as a learning exercise to learn the intricacies of framework development. I then started using it for the \[Sushi ERP\]\(https://github.com/domynation/sushi-erp\) project, which over time grew big enough to justify spending more energy on polishing the framework.
+
+## Requirements
+
+* PHP &gt;=7.4
 * cURL
 
-**Note**: There are many flaws that still need to be adressed. Do not use this in production.
 
-Installation via composer
-------------
+
+## Installation via composer
 
 ```bash
-
 composer require domynation/domynation-framework
-
 ```
 
