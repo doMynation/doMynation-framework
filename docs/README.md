@@ -4,6 +4,8 @@
 
 An opinionated PHP micro-framework to build modular applications.
 
+For documentation, please visit [https://domynation.gitbook.io/domynation-framework/](https://domynation.gitbook.io/domynation-framework/).
+
 ## Why
 
 This project originally started as a learning exercise to learn the intricacies of framework development. I then started using it for the [Sushi ERP](https://github.com/domynation/sushi-erp/) project, which over time grew big enough to justify spending more time and energy on polishing this framework.
