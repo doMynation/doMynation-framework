@@ -1,7 +1,7 @@
 {
   "name": "domynation/domynation-framework",
-  "description": "A PHP micro framework inspired from Symfony.",
-  "keywords": [],
+  "description": "An opinionated PHP micro-framework to build modular applications",
+  "keywords": ["php", "framework"],
   "license": "MIT",
   "authors": [
     {
