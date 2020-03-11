@@ -68,7 +68,7 @@ final class HandlingMiddleware extends RouteMiddleware
         }
 
         // The handler is an "Action"
-        return $this->handleAction($route->getHandler(), $resolvedRoute);
+        return $this->handleAction($route->getHandler(), $resolvedRoute, $request);
     }
 
     /**
@@ -76,11 +76,12 @@ final class HandlingMiddleware extends RouteMiddleware
      *
      * @param string $className
      * @param \Domynation\Http\ResolvedRoute $resolvedRoute
+     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return mixed
      * @throws \Domynation\Exceptions\ValidationException
      */
-    private function handleAction(string $className, ResolvedRoute $resolvedRoute)
+    private function handleAction(string $className, ResolvedRoute $resolvedRoute, Request $request)
     {
         if (!class_exists($className)) {
             throw new InvalidArgumentException("Action {$className} not found for route {$resolvedRoute->getRoute()->getName()}.");
@@ -98,9 +99,9 @@ final class HandlingMiddleware extends RouteMiddleware
 
         // Automagically inject the most frequently used dependencies when the action
         // is using the `BaseActionTrait`. Setter injection is undoubtedly bad in most cases as it hinders testability, but
-        // the amount of boilerplate code it helps save makes it worth it in the end.
+        // the amount of boilerplate code we're saving in all Actions makes it worth it.
         if ($this->usesBaseTrait($instance)) {
-            $instance->setRequest($this->container->get(Request::class));
+            $instance->setRequest($request);
             $instance->setUser($this->container->get(UserInterface::class));
             $instance->setView($this->container->get(ViewFactoryInterface::class));
             $instance->setBus($this->container->get(CommandBusInterface::class));

@@ -224,62 +224,6 @@ final class Application
     }
 
     /**
-     * @param \Exception|\Throwable $e
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @todo: Move this to userland and allow customization.
-     *
-     */
-    private function handleException(\Throwable $e, bool $isDevMode)
-    {
-        if ($e instanceof \Symfony\Component\Routing\Exception\RouteNotFoundException) {
-            return new Response('Page not found', Response::HTTP_NOT_FOUND);
-        }
-
-        if ($e instanceof \Domynation\Exceptions\AuthenticationException) {
-            if ($this->request->isXmlHttpRequest()) {
-                return new Response('Forbidden', Response::HTTP_UNAUTHORIZED);
-            }
-
-            return new RedirectResponse('/login');
-        }
-
-        if ($e instanceof \Domynation\Exceptions\AuthorizationException) {
-            if ($this->request->isXmlHttpRequest()) {
-                $message = $isDevMode ? $e->getMessage() : '';
-
-                return new Response($message, Response::HTTP_FORBIDDEN);
-            }
-
-            return new RedirectResponse('/403');
-        }
-
-        if ($e instanceof \Domynation\Http\RouteNotFoundException) {
-            if ($this->request->isXmlHttpRequest()) {
-                $message = $isDevMode ? $e->getMessage() : '';
-
-                return new Response($message, Response::HTTP_NOT_FOUND);
-            }
-
-            return new RedirectResponse('/404');
-        }
-
-        if ($e instanceof \Domynation\Exceptions\ValidationException) {
-            return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($e instanceof \Domynation\Exceptions\EntityNotFoundException) {
-            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($e instanceof \Sushi\Common\Exceptions\DomainException) {
-            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return false;
-    }
-
-    /**
      * Boots error reporting.
      *
      * @return void
@@ -296,14 +240,6 @@ final class Application
 
         $whoops = new Run();
         $whoops->pushHandler($debugHandler);
-        $whoops->pushHandler(function ($exception, $inspector, $run) use ($isDevMode) {
-            if ($response = $this->handleException($exception, $isDevMode)) {
-                $response->send();
-
-                return Handler::QUIT;
-            }
-        });
-
         $whoops->register();
     }
 
