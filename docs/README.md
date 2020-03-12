@@ -14,7 +14,7 @@ This project originally started as a learning exercise to learn the intricacies 
 
 In all honesty, **not much**. In any case, this framework is surely less secure, less performant, less battle-tested and less feature-complete than its competitors. The only thing that perhaps sets it apart is the architectural design and decisions that it imposes. To name a few:
 
-1. The absence of controllers in the traditional sense. doMynation uses Actions instead
+1. The absence of controllers in the traditional sense. doMynation uses [Actions](routing-1.md#actions) instead
 2. The strong emphasize on modularity
 3. The absence of [magic](https://www.freecodecamp.org/news/moving-away-from-magic-or-why-i-dont-want-to-use-laravel-anymore-2ce098c979bd/) and a strong emphasize on type safety
 
