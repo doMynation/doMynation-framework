@@ -2,7 +2,9 @@
 
 ## What
 
-Modules are the pillars of your app, and act as the central point of your app. Every application using the doMynation framework must have **at least one module**. A module is where you register the following 4 foundational components:
+The doMynation framework encourages [modularity](https://en.wikipedia.org/wiki/Modular_programming). Modules are the pillars of your app, and each of them represent a logical group of related concepts. For instance, in a large system, you could have dozens of modules, each of which specializing in one area in particular \(e.g. accounting, sales, customer service, etc\).
+
+Every application using the doMynation framework must have **at least one module**. A module is where you register the following 4 foundational components:
 
 1. Dependencies
 2. Routes
@@ -52,7 +54,7 @@ public function registerContainerDefinitions(): array
 
 ### Registering Routes
 
-The `registerRoutes` method is used to define your routes. See the [Routing](routing-1.md) section for more details. 
+The `registerRoutes` method is used to define your routes. See the [Routing](routing-1.md) section for an in-depth explanation on how to create routes.
 
 ```php
 public function registerRoutes(RouterInterface $router): void
@@ -61,12 +63,11 @@ public function registerRoutes(RouterInterface $router): void
         return "Welcome home!";
     });
 }
-
 ```
 
 ### Registering Templates
 
-The `registerViews` method is where you configure your templates for a given module. See the Templating section for more details. 
+The `registerViews` method is where you configure your templates for a given module. See the [Templating](templating.md) section for more details. 
 
 ```php
 public function registerViews(ViewFactoryInterface $view): void
@@ -77,12 +78,11 @@ public function registerViews(ViewFactoryInterface $view): void
         return (new DateTime)->format("Y-m-d");
     });
 }
-
 ```
 
 ### Registering Event Listeners
 
-The `registerListeners` method is used to register listeners for particular events. See the Eventing section for more details.
+The `registerListeners` method is used to register listeners for particular events. See the [Eventing](eventing.md) section for more details.
 
 ```php
 public function registerListeners(EventDispatcherInterface $dispatcher): void
@@ -91,6 +91,5 @@ public function registerListeners(EventDispatcherInterface $dispatcher): void
         // do something when this event is fired
     });
 }
-
 ```
 
