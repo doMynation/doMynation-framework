@@ -16,9 +16,11 @@ git clone https://github.com/doMynation/doMynation-starter.git
 composer install
 ```
 
+Once you're done, head over to the [Module](routing.md) section to create your first module.
+
 ## Longer Version
 
-### Install and Setup
+### Install the Framework
 
 The first step is to clone the repository.
 
@@ -35,13 +37,13 @@ You'll then need to create the following directory structure and files:
   - index.php        # The entry point to your app
   - .htaccess        # Only applicable if you use Apache
 /storage
-  /files
+  /files             # Default location for uploaded files
     - .gitkeep
-  /logs
+  /logs              # Default location for logs
     - .gitkeep
 ```
 
-### Prepare The Entry To Your App
+### Prepare the Entry Point to Your App
 
 Open `/public/index.php` and paste the following code in it.
 
@@ -58,4 +60,8 @@ $app->boot();
 // Execute the request
 $app->run();
 ```
+
+### Configure Your App
+
+The next step is to configure your app through `/config/application.php`. For an example along with an explanation of each setting, see the [sample file](https://github.com/doMynation/doMynation-framework/blob/master/src/application.sample.php) in the main repository.
 
