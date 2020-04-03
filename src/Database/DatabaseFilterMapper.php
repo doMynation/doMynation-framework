@@ -10,24 +10,10 @@ namespace Domynation\Database;
  */
 final class DatabaseFilterMapper
 {
+    private string $namespace;
+    private array $allowedFilters;
 
-    /**
-     * @var string
-     */
-    private $namespace;
-
-    /**
-     * @var array
-     */
-    private $allowedFilters;
-
-    /**
-     * DatabaseFilterMapper constructor.
-     *
-     * @param $namespace
-     * @param $allowedFilters
-     */
-    public function __construct($namespace, $allowedFilters)
+    public function __construct(string $namespace, array $allowedFilters)
     {
         $this->namespace = $namespace;
         $this->allowedFilters = $allowedFilters;
@@ -41,7 +27,7 @@ final class DatabaseFilterMapper
      *
      * @return DatabaseFilter[]
      */
-    public function map($filters)
+    public function map(array $filters): array
     {
         $classes = [];
 
@@ -67,9 +53,9 @@ final class DatabaseFilterMapper
      *
      * @param string $name
      *
-     * @return mixed
+     * @return string
      */
-    private function resolveClassName($name)
+    private function resolveClassName(string $name): string
     {
         return $this->namespace . '\\' . ucfirst($name) . 'Filter';
     }

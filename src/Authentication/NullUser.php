@@ -14,7 +14,7 @@ final class NullUser implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return null;
     }

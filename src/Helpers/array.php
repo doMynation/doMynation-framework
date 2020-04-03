@@ -215,22 +215,6 @@ function array_group_by(array $array, callable $closure)
 }
 
 /**
- * @param array $array
- *
- * @return array
- */
-function array_unicity(array $array)
-{
-    return array_reduce($array, function ($acc, $value) {
-        if (!in_array($value, $acc)) {
-            $acc[] = $value;
-        }
-
-        return $acc;
-    }, []);
-}
-
-/**
  * Improved version of `array_reduce` that supports passing the key in addition to the value.
  *
  * @param array $array

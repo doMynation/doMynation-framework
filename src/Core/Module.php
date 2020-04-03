@@ -7,8 +7,6 @@ use Domynation\Http\RouterInterface;
 use Domynation\View\ViewFactoryInterface;
 
 /**
- * Class Module
- *
  * This class is the entry point to a module. This is where all the necessary configuration and
  * initialization logic takes place to boot a module.
  *

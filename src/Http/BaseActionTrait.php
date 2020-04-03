@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use \Domynation\Bus\CommandBusInterface;
 
 /**
- * @package Domynation\Http
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 trait BaseActionTrait
@@ -36,5 +35,44 @@ trait BaseActionTrait
     public function setView(ViewFactoryInterface $view): void
     {
         $this->view = $view;
+    }
+
+    /**
+     * Returns the requested content type via a URI suffix. Falls back to 'text/html' if none is provided.
+     *
+     * e.g. '/customers/{customerId}.json' -> 'application/json'
+     *
+     * @return string
+     */
+    public function getRequestedContentType(): string
+    {
+        $contentType = pathinfo($this->request->getPathInfo(), PATHINFO_EXTENSION);
+
+        switch ($contentType) {
+            case 'json':
+                return 'application/json';
+            case 'xml':
+                return 'application/xml';
+            default:
+                return 'text/html';
+        }
+    }
+
+    /**
+     * Parses a JSON request and return an array with the data.
+     *
+     * @return array
+     */
+    public function getJson(): array
+    {
+        if ($this->request->getContentType() !== 'json') {
+            throw new \RuntimeException("Request is not of type application/json");
+        }
+
+        try {
+            return json_decode($this->request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \RuntimeException("Error while decoding JSON payload.");
+        }
     }
 }
