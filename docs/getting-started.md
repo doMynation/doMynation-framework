@@ -4,7 +4,19 @@ description: Getting started with the doMynaton framework.
 
 # Getting Started
 
-## TL;DR Version
+## Requirements
+
+* PHP &gt;=7.4
+* PHP extensions:
+  * ctype
+  * cURL
+  * fileinfo
+  * json
+  * mbstring
+  * openssl
+  * pdo
+
+## Installing - TL;DR Version
 
 To get started quickly, clone the [starter project](https://github.com/domynation/domynation-starter).
 
@@ -18,7 +30,7 @@ composer install
 
 Once you're done, head over to the [Module](routing.md) section to create your first module.
 
-## Longer Version
+## Installing - Longer Version
 
 ### Install the Framework
 
