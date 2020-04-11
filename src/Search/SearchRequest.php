@@ -92,8 +92,10 @@ final class SearchRequest
      */
     public static function fromQueryStrings(array $queryStrings, bool $isPaginated = true): self
     {
+        $inputFilters = !empty($queryStrings['filters']) ? $queryStrings['filters'] : [];
+
         // Parse filters
-        $filters = array_fold($queryStrings['filters'] ?? [], function (array $acc, string $name, $value) {
+        $filters = array_fold($inputFilters, function (array $acc, string $name, $value) {
             if (is_string($value)) {
                 $trimmedValue = trim($value);
                 if ($trimmedValue !== "") {
@@ -108,7 +110,7 @@ final class SearchRequest
 
         // Determine pagination
         $limit = !empty($queryStrings['limit']) ? (int)$queryStrings['limit'] : 25;
-        $page = !empty($queryStrings['page']) && is_numeric($queryStrings['page']) ? (int)$queryStrings['page'] : 1;
+        $page = !empty($queryStrings['page']) && is_numeric($queryStrings['page']) && $queryStrings['page'] > 0 ? (int)$queryStrings['page'] : 1;
         $offset = $limit * ($page - 1);
 
         // Determine sorting

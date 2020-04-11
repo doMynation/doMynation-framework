@@ -7,8 +7,9 @@ namespace Domynation\Database;
  *
  * @package Domynation\Database
  * @author Dominique Sarrazin <domynation@gmail.com>
+ * @deprecated Use `DatabaseFilterMapperSimplified` instead
  */
-final class DatabaseFilterMapper
+final class DatabaseFilterMapper implements DatabaseFilterMapperInterface
 {
     private string $namespace;
     private array $allowedFilters;
