@@ -29,11 +29,13 @@ Let's define a simple route that matches requests to `/hello` and outputs "Hello
 use Symfony\Component\HttpFoundation\Response;
 
 $router->get('/hello', function () {
-    return new Response("Hello World!");
+    return new Response('Hello World!');
 });
 ```
 
 The doMynation frameworks uses Symfony's `Request` and `Response` classes for everything that's HTTP-related. Every route must return \(either explicitly, or implicitly via one of the [shorthands](routing-1.md#routing-shorthands)\) a Symfony `Response` object. 
+
+Since the framework uses Symfony's `Response` class, it means all response types from Symfony are supported. Visit Symfony's [documentation](https://symfony.com/doc/current/components/http_foundation.html#response) for more details. 
 
 ### Routing Shorthands
 
@@ -71,6 +73,23 @@ $router->delete('/comments', function () {
     // Code to delete all comments here
 });
 ```
+
+### Accessing Dependencies
+
+To use dependencies within your handler, simply list them as arguments to your closure and the doMynation framework will inject them for you.
+
+```php
+$router->get('/hello', function (Request $request, MyDependencyA $depA) {
+    // use $deptA here ...
+            
+    return "The request's content type is {$request->getContentType()}.";
+});
+```
+
+You can inject any dependency into your route handler as long as it is:
+
+* One of the core dependencies registered by the framework.
+* One of the [custom dependencies](routing.md#registering-dependencies) registered through your modules
 
 
 
