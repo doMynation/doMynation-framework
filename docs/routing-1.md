@@ -76,7 +76,7 @@ $router->delete('/comments', function () {
 
 ### Accessing Dependencies
 
-To use dependencies within your handler, simply list them as arguments to your closure and the doMynation framework will inject them for you.
+Closures in simple routes are [container-aware](dependency-injection.md#container-aware-entities). To use dependencies within your handler, simply list them as arguments to your closure and the framework will inject them for you.
 
 ```php
 $router->get('/hello', function (Request $request, MyDependencyA $depA) {
@@ -88,12 +88,12 @@ $router->get('/hello', function (Request $request, MyDependencyA $depA) {
 
 You can inject any dependency into your route handler as long as it is:
 
-* One of the core dependencies registered by the framework.
+* One of the [core dependencies](dependency-injection.md#core-dependencies) registered by the framework.
 * One of the [custom dependencies](routing.md#registering-dependencies) registered through your modules
 
 
 
 ## Actions
 
-## 
+Todo ...
 
