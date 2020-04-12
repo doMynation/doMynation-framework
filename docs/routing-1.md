@@ -7,7 +7,7 @@ Routes must be defined in your module's `registerRoutes()` method. The doMynatio
 1. Simple routes
 2. Actions
 
-Regardless of the type, all routes must be defined through an instance of `RouterInterface` , with one of the various methods available, each of which representing an [HTTP request method ](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+Regardless of the type, all routes must be defined through an instance of `RouterInterface` , with one of the various methods available, each of which representing a [HTTP request method ](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
 
 * `get(string $path, $controller, string $name = null)`
 * `post(string $path, $controller, string $name = null)`
@@ -53,7 +53,7 @@ $router->get('/hello', function () {
 
 #### Array Shorthand
 
-Returning an `array` will automatically be converted to a `JsonResponse` object with the `200` status code and the appropriate response headers will be set for you.
+Returning an `array` will be converted to a `JsonResponse` object with the `200` status code and the appropriate response headers will be set for you.
 
 ```php
 $router->get('/json', function () {
@@ -66,13 +66,35 @@ $router->get('/json', function () {
 
 #### Null Shorthand
 
-Returning `null` \(or not returning anything\) will be converted to an empty `Response` object with a `200` status code.
+Returning `null` \(or not returning anything\) will be converted to an empty `Response` object with a `200` status code. This is useful for write operations that don't need to return any data to the caller.
 
 ```php
 $router->delete('/comments', function () {
     // Code to delete all comments here
 });
 ```
+
+### Path parameters
+
+Path parameters \(also known as route parameters\) are useful to create routes with variable parts. They help you convey dynamic data through your URLs. You can use path parameters via the `{variableName}` syntax in your route's URI. 
+
+In the following example, visiting `/hello/Bob` will return `Hello Bob!` . 
+
+```php
+$router->get('/hello/{name}', function ($name) {
+    return "Hello $name!";
+});
+```
+
+You can have as many path parameters as you wish in a single route, they will always be **passed to your function in the** **order they are defined**. You can also add further requirements that the variables must meet via [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) as such:
+
+```php
+$router->get('/invoices/{invoiceId<\d+>}', function (int $invoiceId) {
+    return "Viewinig invoice $invoiceId.";
+});
+```
+
+In the above example, only numeric invoice IDs will match the route, meaning calls such as `/invoices/banana` **will** **not match** this route. Calls such as `/invoices/8475` , on the other hand, **will match** the route.
 
 ### Accessing Dependencies
 
@@ -91,7 +113,20 @@ You can inject any dependency into your route handler as long as it is:
 * One of the [core dependencies](dependency-injection.md#core-dependencies) registered by the framework.
 * One of the [custom dependencies](routing.md#registering-dependencies) registered through your modules
 
+You can have both path parameters and dependencies as arguments to your closure. The rules are as follow:
 
+1. Path parameters are **always passed first** to your function
+2. Dependencies are **always passed second**, after path parameters
+
+Here's the previous example again, this time with a path parameter:
+
+```php
+$router->get('/hello/{name}', function ($name, Request $request, MyDependencyA $depA) {
+    // use $deptA here ...
+            
+    return "Hello $name, the request's content type is {$request->getContentType()}.";
+});
+```
 
 ## Actions
 

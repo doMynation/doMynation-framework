@@ -32,7 +32,7 @@ final class MyModule extends Module
 
 The `registerContainerDefinitions` method is used to define and register your dependencies to be used via [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) throughout your app. Each definition is a key-value pair where the **key is a class name**, and the **value is a closure** that constructs and returns an instance of said class. 
 
-**Note**: Each closure is container-aware, meaning you can inject previously-registered dependencies into them to facilitate the creation of complex objects.
+**Note**: Each closure is [container-aware](dependency-injection.md#container-aware-entities), meaning you can inject previously-registered dependencies into them to facilitate the creation of complex objects.
 
 ```php
 public function registerContainerDefinitions(): array
