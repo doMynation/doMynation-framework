@@ -19,7 +19,7 @@ The first argument is the route's URI \(e.g. `/invoices`\), the second argument 
 
 ## Simple Routes
 
-Simple routes are the easiest to implement and are more of a convenience than a recommended practice. A simple route uses a closure \([anonymous function](https://www.php.net/manual/en/functions.anonymous.php)\) as the handler. 
+Simple routes are the easiest to implement and are more of a convenience than a recommended practice. A simple route uses a closure \([anonymous function](https://www.php.net/manual/en/functions.anonymous.php)\) as the handler.
 
 ### Your First Simple Route
 
@@ -33,9 +33,9 @@ $router->get('/hello', function () {
 });
 ```
 
-The doMynation frameworks uses Symfony's `Request` and `Response` classes for everything that's HTTP-related. Every route must return \(either explicitly, or implicitly via one of the [shorthands](routing-1.md#routing-shorthands)\) a Symfony `Response` object. 
+The doMynation frameworks uses Symfony's `Request` and `Response` classes for everything that's HTTP-related. Every route must return \(either explicitly, or implicitly via one of the [shorthands](routing-1.md#routing-shorthands)\) a Symfony `Response` object.
 
-Since the framework uses Symfony's `Response` class, it means all response types from Symfony are supported. Visit Symfony's [documentation](https://symfony.com/doc/current/components/http_foundation.html#response) for more details. 
+Since the framework uses Symfony's `Response` class, it means all response types from Symfony are supported. Visit Symfony's [documentation](https://symfony.com/doc/current/components/http_foundation.html#response) for more details.
 
 ### Routing Shorthands
 
@@ -76,9 +76,9 @@ $router->delete('/comments', function () {
 
 ### Path parameters
 
-Path parameters \(also known as route parameters\) are useful to create routes with variable parts. They help you convey dynamic data through your URLs. You can use path parameters via the `{variableName}` syntax in your route's URI. 
+Path parameters \(also known as route parameters\) are useful to create routes with variable parts. They help you convey dynamic data through your URLs. You can use path parameters via the `{variableName}` syntax in your route's URI.
 
-In the following example, visiting `/hello/Bob` will return `Hello Bob!` . 
+In the following example, visiting `/hello/Bob` will return `Hello Bob!` .
 
 ```php
 $router->get('/hello/{name}', function ($name) {
@@ -103,7 +103,7 @@ Closures in simple routes are [container-aware](dependency-injection.md#containe
 ```php
 $router->get('/hello', function (Request $request, MyDependencyA $depA) {
     // use $deptA here ...
-            
+
     return "The request's content type is {$request->getContentType()}.";
 });
 ```
@@ -123,12 +123,40 @@ Here's the previous example again, this time with a path parameter:
 ```php
 $router->get('/hello/{name}', function ($name, Request $request, MyDependencyA $depA) {
     // use $deptA here ...
-            
+
     return "Hello $name, the request's content type is {$request->getContentType()}.";
 });
 ```
 
 ## Actions
 
-Todo ...
+Actions are a one-to-one mapping between a request and a response. They're a more powerful version of simple routes in the sense that classes are more powerful abstractions than functions. 
+
+At its core, an action is simply a class with a `run()` method.
+
+### Your First Action
+
+## Simple Routes VS Actions
+
+Whether you should use simple routes or actions depends mainly on the size of the project you're dealing with. If you're building a To-Do app, actions are likely overkill and simple routes are the way to go. However, if you're building the new SalesForce with hundreds of different endpoints and operations, actions are the better choice.
+
+For larger projects, actions scale better than simple routes for many reasons:
+
+1. They encapsulate each operation in its own independent, isolated and decoupled class, making it really easy to locate and maintain existing code. Adding new operations is also easier as you don't have to touch existing code, you simply define a new action \(class\) for each new operation.
+2. Actions are easily testable. Since an action is but a class with its dependency injected in the constructor, writing integration/functional tests becomes really straightforward and less cumbersome as you only need to stub/mock the dependencies for this single operation.
+3. Given that they're simply a mapping from a URI to a class name \(`string` -&gt; `string` \), route definitions for actions can be cached for a small performance boost. Simple route definitions on the hand, cannot be cached at this moment due to their reliance on closures \(`string` -&gt; `callable`\).
+
+In essence, it boils down to **convenience vs scalability**. Simple routes are convenient due to their simplicity, whereas actions are more scalable to their encapsulation and testability.
+
+### Why Not Controllers?
+
+[Traditional controllers](https://symfony.com/doc/current/controller.html#a-simple-controller) handling more than one route **are fine** and there is absolutely nothing wrong with this approach. The reason behind the absence of them in the doMynation framework is mere [personal opinion](./#what). 
+
+Having built larger applications in the past, I found that the traditional controller approach ultimately often results in **large controllers with little cohesion** that are difficult to maintain. They start small, but as the app grows in size, more and more endpoints/operations are added to existing controllers up to a point where it becomes difficult to locate and maintain existing code. I'm aware that controllers can be split into smaller ones when they become too big, but that just moves the problem and eventually the cycle repeats.
+
+In its most basic form, a Web-based application is nothing but a **series of request handlers that each take a request and produce a response**. In other words, no matter what kind of operation you're dealing with \(e.g. viewing an invoice, deleting a comment, purchasing a product\), every operation can be seen as a function from a request to a response \(`request` -&gt; `response`\), and this is exactly what actions attempt to represent.
+
+Please note that I am **not saying that actions are better than controllers**. Again this is simple personal preference. Both approaches have their advantage and inconvenient, and actions may very well be a lesser approach in many situations. For instance, actions might induce more boilerplate and more files in your project than a traditional controller approach would. 
+
+All in all, nothing comes for free in software engineering, everything is a trade-off. 
 
