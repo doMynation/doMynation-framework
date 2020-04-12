@@ -81,7 +81,7 @@ Path parameters \(also known as route parameters\) are useful to create routes w
 In the following example, visiting `/hello/Bob` will return `Hello Bob!` .
 
 ```php
-$router->get('/hello/{name}', function ($name) {
+$router->get('/hello/{name}', function (string $name) {
     return "Hello $name!";
 });
 ```
@@ -121,7 +121,7 @@ You can have both path parameters and dependencies as arguments to your closure.
 Here's the previous example again, this time with a path parameter:
 
 ```php
-$router->get('/hello/{name}', function ($name, Request $request, MyDependencyA $depA) {
+$router->get('/hello/{name}', function (string $name, Request $request, MyDependencyA $depA) {
     // use $deptA here ...
 
     return "Hello $name, the request's content type is {$request->getContentType()}.";
@@ -132,9 +132,57 @@ $router->get('/hello/{name}', function ($name, Request $request, MyDependencyA $
 
 Actions are a one-to-one mapping between a request and a response. They're a more powerful version of simple routes in the sense that classes are more powerful abstractions than functions. 
 
-At its core, an action is simply a class with a `run()` method.
+Actions are defined the same way simple routes are, with the exception that the second argument is a **fully-qualified class name rather than a closure**.
 
 ### Your First Action
+
+Let's re-implement [one of the above](routing-1.md#path-parameters) examples as an action. The first step is to define the route:
+
+```php
+$router->get('/hello/{name}', HelloAction::class);
+```
+
+The second \(and last\) step is to create a class for the action. The only requirement imposed by the framework is that your class implements a `run()` method. The `run()` method will be called by the framework with the [path parameters](routing-1.md#path-parameters) \(if any\).
+
+```php
+// HelloAction.php
+
+final class HelloAction
+{
+    public function run(string $name): void
+    {
+        return "Hello $name!";
+    }
+}
+```
+
+In the example above, the `$name` argument is required since the route contains path parameters. For routes without path parameters, the method signature would simply be `run()` with no arguments.
+
+### Accessing Dependencies
+
+Unlike simple routes, dependencies for actions aren't confusingly mixed with path parameters. Instead, they can be accessed by **injecting them in the constructor**.
+
+```php
+final class HelloAction
+{
+    private Request $request;
+    private MyDependencyA $depA;
+
+    public function __construct(Request $request, MyDependencyA $depA)
+    {
+        $this->request = $request;
+        $this->depA = $depA;
+    }
+
+    public function run(string $name): void
+    {
+        // use $this->deptA here ...
+        return "The request's content type is {$this->request->getContentType()}.";
+    }
+}
+```
+
+This separation of path parameters and dependencies not only makes it easy to test by passing stubs/mocks as arguments, it also facilitates re-using the same instance to test different inputs.
 
 ## Simple Routes VS Actions
 
