@@ -184,7 +184,11 @@ final class HelloAction
 
 This separation of path parameters and dependencies not only makes it easy to test by passing stubs/mocks as arguments, it also facilitates re-using the same instance to test different inputs.
 
-## Simple Routes VS Actions
+### Reducing Boilerplate
+
+Todo ...
+
+## Simple Routes vs Actions
 
 Whether you should use simple routes or actions depends mainly on the size of the project you're dealing with. If you're building a To-Do app, actions are likely overkill and simple routes are the way to go. However, if you're building the new SalesForce with hundreds of different endpoints and operations, actions are the better choice.
 
@@ -206,5 +210,5 @@ In its most basic form, a Web-based application is nothing but a **series of req
 
 Please note that I am **not saying that actions are better than controllers**. Again this is simple personal preference. Both approaches have their advantage and inconvenient, and actions may very well be a lesser approach in many situations. For instance, actions might induce more boilerplate and more files in your project than a traditional controller approach would. 
 
-All in all, nothing comes for free in software engineering, everything is a trade-off. 
+All in all, nothing comes for free in software engineering, everything is a trade-off. Always balance the pros and cons and see what makes the most sense in your specific situation.
 
