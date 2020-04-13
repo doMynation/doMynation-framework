@@ -186,7 +186,36 @@ This separation of path parameters and dependencies not only makes it easy to te
 
 ### Reducing Boilerplate
 
-Todo ...
+Certain dependencies are used very frequently, and having to inject them manually in every route handler can prove to be cumbersome. To remediate this, simply have your actions extend the `Action` base class to have the following common dependencies automatically injected for you:
+
+* `Request` \(available as `$this->request`\)
+* `ViewFactoryInterface` \(available as `$this->view`\)
+* `CommandBusInterface` \(available as `$this->bus`\)
+* `UserInterface` \(available as `$this->user`\)
+
+{% hint style="info" %}
+The above dependencies are injected into the `Action` base class **through setters**, **not through its constructor**. This is to allow your action to have its own dependencies \(on top of the ones provided by `Action`\) without having to explicitly list the above 4 dependencies and having to pass them to the parent constructor every time. The example that follows illustrates the idea.
+{% endhint %}
+
+```php
+final class DisplayHomeAction extends Action
+{
+    private MyDependencyA $depA;
+
+    public function __construct(MyDependencyA $depA)
+    {
+        $this->depA = $depA;
+    }
+
+    public function run(): void
+    {
+        // `$this->view` is provided by the `Action` base class
+        return $this->view->render('home.html.twig', [
+            'someData' => $this->depA->produceData()
+        ]);
+    }
+}
+```
 
 ## Simple Routes vs Actions
 
@@ -202,13 +231,13 @@ In essence, it boils down to **convenience vs scalability**. Simple routes are c
 
 ### Why Not Controllers?
 
-[Traditional controllers](https://symfony.com/doc/current/controller.html#a-simple-controller) handling more than one route **are fine** and there is absolutely nothing wrong with this approach. The reason behind the absence of them in the doMynation framework is mere [personal opinion](./#what). 
+[Traditional controllers](https://symfony.com/doc/current/controller.html#a-simple-controller) handling more than one route **are fine** and there is absolutely nothing wrong with that approach. The reason behind the absence of them in the doMynation framework is mere [personal opinion](./#what). 
 
 Having built larger applications in the past, I found that the traditional controller approach ultimately often results in **large controllers with little cohesion** that are difficult to maintain. They start small, but as the app grows in size, more and more endpoints/operations are added to existing controllers up to a point where it becomes difficult to locate and maintain existing code. I'm aware that controllers can be split into smaller ones when they become too big, but that just moves the problem and eventually the cycle repeats.
 
-In its most basic form, a Web-based application is nothing but a **series of request handlers that each take a request and produce a response**. In other words, no matter what kind of operation you're dealing with \(e.g. viewing an invoice, deleting a comment, purchasing a product\), every operation can be seen as a function from a request to a response \(`request` -&gt; `response`\), and this is exactly what actions attempt to represent.
+In its most basic form, a Web-based application is nothing but a **series of request handlers that each take a request and produce a response**. In other words, no matter the kind of operation you're dealing with \(e.g. viewing an invoice, deleting a comment, purchasing a product\), every operation can be seen as a function from a request to a response \(`request` -&gt; `response`\), and this is exactly what actions attempt to represent.
 
 Please note that I am **not saying that actions are better than controllers**. Again this is simple personal preference. Both approaches have their advantage and inconvenient, and actions may very well be a lesser approach in many situations. For instance, actions might induce more boilerplate and more files in your project than a traditional controller approach would. 
 
-All in all, nothing comes for free in software engineering, everything is a trade-off. Always balance the pros and cons and see what makes the most sense in your specific situation.
+All in all, nothing comes for free in software engineering, everything is a trade-off. Don't just dive headfirst with actions, try them out, balance the pros and cons and if they sense for your specific situation.
 
