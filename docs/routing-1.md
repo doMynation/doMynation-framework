@@ -239,5 +239,5 @@ In its most basic form, a Web-based application is nothing but a **series of req
 
 Please note that I am **not saying that actions are better than controllers**. Again this is simple personal preference. Both approaches have their advantage and inconvenient, and actions may very well be a lesser approach in many situations. For instance, actions might induce more boilerplate and more files in your project than a traditional controller approach would. 
 
-All in all, nothing comes for free in software engineering, everything is a trade-off. Don't just dive headfirst with actions, try them out, balance the pros and cons and if they sense for your specific situation.
+All in all, nothing comes for free in software engineering, everything is a trade-off. Don't just dive headfirst with actions, try them out, balance the pros and cons and if they make sense for your specific situation.
 
