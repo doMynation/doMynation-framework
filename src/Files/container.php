@@ -48,12 +48,14 @@ return [
             $ormConfig->getSecondLevelCacheConfiguration()->setCacheLogger($cacherLogger);
         }
 
-        // Uncomment the following to debug every request made to the DB
-//        $ormConfig->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
-
         // Determine which database environnment to load
         $dbConfig = $config->get('databases');
         $dbEnv = $config->get('environment') === 'test' ? 'test' : 'web';
+
+        // Debug all SQL queries
+        if ($dbConfig[$dbEnv]['debugSql'] ?? false) {
+            $ormConfig->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+        }
 
         return Doctrine\ORM\EntityManager::create([
             'host'     => $dbConfig[$dbEnv]['host'],
