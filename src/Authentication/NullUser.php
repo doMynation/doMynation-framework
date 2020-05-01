@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Authentication;
 
 /**
@@ -24,7 +26,7 @@ final class NullUser implements UserInterface
      */
     public function getFullName(): string
     {
-        return null;
+        return '';
     }
 
     /**
@@ -32,7 +34,7 @@ final class NullUser implements UserInterface
      */
     public function getUsername(): string
     {
-        return null;
+        return '';
     }
 
     /**

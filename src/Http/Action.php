@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
 
-use Domynation\Http\BaseActionTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

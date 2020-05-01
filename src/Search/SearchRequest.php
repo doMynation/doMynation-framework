@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Search;
 
 use Assert\Assertion;
+use InvalidArgumentException;
 
 /**
  * Class SearchRequest
@@ -12,38 +15,18 @@ use Assert\Assertion;
  */
 final class SearchRequest
 {
-    const ORDER_ASC  = 'asc';
-    const ORDER_DESC = 'desc';
+    public const ORDER_ASC  = 'asc';
+    public const ORDER_DESC = 'desc';
 
     /**
      * @var string[]
      */
-    private $filters;
-
-    /**
-     * @var int
-     */
-    private $offset;
-
-    /**
-     * @var int
-     */
-    private $limit;
-
-    /**
-     * @var string
-     */
-    private $sortField;
-
-    /**
-     * @var string
-     */
-    private $sortOrder;
-
-    /**
-     * @var bool
-     */
-    private $isPaginated;
+    private array $filters;
+    private int $offset;
+    private int $limit;
+    private ?string $sortField;
+    private ?string $sortOrder;
+    private bool $isPaginated;
 
     /**
      * SearchRequest constructor.
@@ -61,11 +44,11 @@ final class SearchRequest
         Assertion::choice($sortOrder, [null, self::ORDER_ASC, self::ORDER_DESC], "Invalid sort order");
 
         if ($limit < 0) {
-            throw new \InvalidArgumentException("Invalid limit");
+            throw new InvalidArgumentException("Invalid limit");
         }
 
         if ($offset < 0) {
-            throw new \InvalidArgumentException("Invalid offset");
+            throw new InvalidArgumentException("Invalid offset");
         }
 
         $this->filters = $filters;
@@ -76,10 +59,7 @@ final class SearchRequest
         $this->isPaginated = $isPaginated;
     }
 
-    /**
-     * @return \Domynation\Search\SearchRequestBuilder
-     */
-    public static function make()
+    public static function make(): SearchRequestBuilder
     {
         return new SearchRequestBuilder;
     }
@@ -98,7 +78,7 @@ final class SearchRequest
         $filters = array_fold($inputFilters, function (array $acc, string $name, $value) {
             if (is_string($value)) {
                 $trimmedValue = trim($value);
-                if ($trimmedValue !== "") {
+                if ($trimmedValue !== '') {
                     $acc[$name] = $trimmedValue;
                 }
             } else {
@@ -132,65 +112,44 @@ final class SearchRequest
     }
 
     /**
-     * @return string[]
+     * @return array|string[]
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->filters;
     }
 
-    /**
-     * @return int
-     */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * @return int
-     */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @return string
-     */
-    public function getSortField()
+    public function getSortField(): ?string
     {
         return $this->sortField;
     }
 
-    /**
-     * @return string
-     */
-    public function getSortOrder()
+    public function getSortOrder(): ?string
     {
         return $this->sortOrder;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isPaginated()
+    public function isPaginated(): bool
     {
         return $this->isPaginated;
     }
 
-    /**
-     * @return bool
-     */
-    public function isSorted()
+    public function isSorted(): bool
     {
-        return !is_null($this->sortField);
+        return $this->sortField !== null;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasLimit()
+    public function hasLimit(): bool
     {
         return $this->limit > 0;
     }

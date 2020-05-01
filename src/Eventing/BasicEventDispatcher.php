@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Eventing;
 
 use Invoker\InvokerInterface;
@@ -12,27 +14,15 @@ use Invoker\InvokerInterface;
  */
 final class BasicEventDispatcher implements EventDispatcherInterface
 {
-
-    /**
-     * @var \Invoker\InvokerInterface
-     */
-    private $invoker;
-
+    private InvokerInterface $invoker;
     private ?EventDispatcherMiddleware $middlewareChain;
+    private array $listeners;
 
     /**
-     * @var array
+     * @var array|\Domynation\Eventing\Event[]
      */
-    private $listeners;
+    private array $raisedEvents;
 
-    /**
-     * @var Event[]
-     */
-    private $raisedEvents;
-
-    /**
-     * @param \Invoker\InvokerInterface $invoker
-     */
     public function __construct(InvokerInterface $invoker, array $middlewares = [])
     {
         $this->invoker = $invoker;
@@ -44,7 +34,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function raise(Event $event, $priority = null)
+    public function raise(Event $event, $priority = null): void
     {
         $this->raisedEvents[] = $event;
     }
@@ -52,12 +42,12 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function listen($eventName, callable $callable, $priority = null)
+    public function listen($eventName, callable $callable, $priority = null): void
     {
         $listener = [
             'name'     => $eventName,
             'closure'  => $callable,
-            'priority' => $priority !== null ? $priority : self::PRIORITY_MEDIUM
+            'priority' => $priority ?? self::PRIORITY_MEDIUM
         ];
 
         if (array_key_exists($eventName, $this->listeners)) {
@@ -72,7 +62,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function dispatch()
+    public function dispatch(): void
     {
         // Clear the list of raised events.
         $raisedEvents = $this->raisedEvents;
@@ -104,7 +94,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function clearEvents()
+    public function clearEvents(): void
     {
         $this->raisedEvents = [];
     }
@@ -112,7 +102,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function getRaisedEvents()
+    public function getRaisedEvents(): array
     {
         return $this->raisedEvents;
     }
@@ -120,9 +110,9 @@ final class BasicEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function getListeners($eventName = null)
+    public function getListeners($eventName = null): array
     {
-        if ($eventName == null) {
+        if ($eventName === null) {
             return $this->listeners;
         }
 
@@ -136,7 +126,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      *
      * @return array
      */
-    private function sortListeners($listeners)
+    private function sortListeners($listeners): array
     {
         return array_sort_by($listeners, function ($a, $b) {
             return $a['priority'] <=> $b['priority'];
@@ -150,7 +140,7 @@ final class BasicEventDispatcher implements EventDispatcherInterface
      *
      * @return mixed|null
      */
-    private function buildMiddlewareChain(array $middlewares = [])
+    private function buildMiddlewareChain(array $middlewares = []): ?EventDispatcherMiddleware
     {
         if (empty($middlewares)) {
             return null;

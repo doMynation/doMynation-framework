@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Bus;
 
 /**
@@ -15,5 +17,5 @@ interface CachableCommand
      *
      * @return string
      */
-    public function getCacheName();
+    public function getCacheName(): string;
 }

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Entities;
 
 use Domynation\Contracts\Arrayable;
+use JsonSerializable;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class Entity
@@ -11,16 +15,11 @@ use Domynation\Contracts\Arrayable;
  *
  * @package Domynation\Entities
  */
-abstract class Entity implements Arrayable, \JsonSerializable
+abstract class Entity implements Arrayable, JsonSerializable
 {
-
-    /**
-     * @return \Ramsey\Uuid\UuidInterface
-     * @throws \Exception
-     */
-    public static function generateId()
+    public static function generateId(): string
     {
-        return \Ramsey\Uuid\Uuid::uuid4()->toString();
+        return Uuid::uuid4()->toString();
     }
 
     /**
@@ -34,5 +33,5 @@ abstract class Entity implements Arrayable, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    abstract public function toArray();
+    abstract public function toArray(): array;
 }

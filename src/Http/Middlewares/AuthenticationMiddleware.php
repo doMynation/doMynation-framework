@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http\Middlewares;
 
 use Domynation\Authentication\UserInterface;
@@ -15,11 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class AuthenticationMiddleware extends RouteMiddleware
 {
-
     /**
      * @var UserInterface
      */
-    private $user;
+    private UserInterface $user;
 
     /**
      * AuthenticationMiddleware constructor.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Search;
 
 /**
@@ -10,21 +12,9 @@ namespace Domynation\Search;
  */
 final class SearchResult
 {
+    private array $hits;
+    private int $count;
 
-    /**
-     * @var array
-     */
-    private $hits;
-
-    /**
-     * @var int
-     */
-    private $count;
-
-    /**
-     * @param array $hits
-     * @param int $count
-     */
     public function __construct(array $hits, int $count)
     {
         $this->hits = $hits;
@@ -57,23 +47,17 @@ final class SearchResult
      *
      * @deprecated
      */
-    public function getRows()
+    public function getRows(): array
     {
         return $this->hits;
     }
 
-    /**
-     * @return array
-     */
-    public function getHits()
+    public function getHits(): array
     {
         return $this->hits;
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getCount(): int
     {
         return $this->count;
     }

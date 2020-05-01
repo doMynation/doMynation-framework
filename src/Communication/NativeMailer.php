@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 /**
@@ -10,31 +12,25 @@ namespace Domynation\Communication;
  */
 final class NativeMailer implements MailerInterface
 {
-
-    /**
-     * @param array $headers
-     *
-     * @return array
-     */
-    private function getDefaultHeaders($headers = [])
+    private function getDefaultHeaders(): array
     {
         return [
-            "X-Mailer: PHP" . phpversion()
+            'X-Mailer: PHP' . PHP_VERSION
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send(EmailMessage $email, $data = [])
+    public function send(EmailMessage $email, $data = []): void
     {
         $headers = $this->getDefaultHeaders();
         $specialParams = '';
 
         if ($email->from) {
             $headers += [
-                "Reply-To: " . $email->from,
-                "From: " . $email->from
+                'Reply-To: ' . $email->from,
+                'From: ' . $email->from
             ];
 
             $specialParams = '-f ' . $email->from;
@@ -42,6 +38,6 @@ final class NativeMailer implements MailerInterface
 
         $headersString = implode("\r\n", $headers);
 
-        return @mail($email->recipients, $email->subject, $email->body, $headersString, $specialParams);
+        @mail($email->recipients, $email->subject, $email->body, $headersString, $specialParams);
     }
 }

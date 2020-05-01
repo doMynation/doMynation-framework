@@ -1,8 +1,8 @@
 <?php
 
-namespace Domynation\Eventing;
+declare(strict_types=1);
 
-use Domynation\Eventing\Event;
+namespace Domynation\Eventing;
 
 /**
  * @package Domynation\Eventing
@@ -10,7 +10,6 @@ use Domynation\Eventing\Event;
  */
 abstract class EventDispatcherMiddleware
 {
-
     /**
      * The next middleware in the chain.
      */

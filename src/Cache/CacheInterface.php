@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Cache;
 
 /**
@@ -10,7 +12,6 @@ namespace Domynation\Cache;
  */
 interface CacheInterface
 {
-
     /**
      * Retrieves an item from the cache.
      *
@@ -27,7 +28,7 @@ interface CacheInterface
      *
      * @return mixed
      */
-    public function getMany(array $keys) : array;
+    public function getMany(array $keys): array;
 
     /**
      * Retrieve an item from the cache and delete it.
@@ -86,7 +87,7 @@ interface CacheInterface
      *
      * @return bool
      */
-    public function exists(string $key) : bool;
+    public function exists(string $key): bool;
 
     /**
      * Deletes an item in the cache.
@@ -95,21 +96,21 @@ interface CacheInterface
      *
      * @return int
      */
-    public function delete(string $key) : int;
+    public function delete(string $key): int;
 
     /**
      * Deletes all item in the cache.
      *
      * @return void
      */
-    public function flush();
+    public function flush(): void;
 
     /**
      * Returns the prefix for all items in the cache.
      *
      * @return string
      */
-    public function getPrefix() : string;
+    public function getPrefix(): string;
 
     /**
      * Sets the prefix for all items in the cache.
@@ -118,5 +119,5 @@ interface CacheInterface
      *
      * @return mixed
      */
-    public function setPrefix(string $prefix);
+    public function setPrefix(string $prefix): void;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 /**
@@ -10,17 +12,8 @@ namespace Domynation\Storage;
  */
 class InMemoryStore implements StoreInterface
 {
+    private array $store;
 
-    /**
-     * @var array
-     */
-    private $store;
-
-    /**
-     * InMemoryStore constructor.
-     *
-     * @param array $initialData
-     */
     public function __construct(array $initialData = [])
     {
         $this->store = $initialData;
@@ -65,7 +58,7 @@ class InMemoryStore implements StoreInterface
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists($key): bool
     {
         return isset($this->store[$key]) || array_key_exists($key, $this->store);
     }

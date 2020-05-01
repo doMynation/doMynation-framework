@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 /**
@@ -10,37 +12,20 @@ namespace Domynation\Communication;
  */
 final class DebugMailer implements MailerInterface
 {
-    /**
-     * @var \Domynation\Communication\MailerInterface
-     */
-    private $mailer;
+    private MailerInterface $mailer;
+    private string $destinationEmail;
 
-    /**
-     * @var string
-     */
-    private $destinationEmail;
-
-    /**
-     * DebugMailer constructor.
-     *
-     * @param \Domynation\Communication\MailerInterface $mailer
-     * @param string $destinationEmail
-     */
-    public function __construct(MailerInterface $mailer, $destinationEmail)
+    public function __construct(MailerInterface $mailer, string $destinationEmail)
     {
-        $this->mailer           = $mailer;
+        $this->mailer = $mailer;
         $this->destinationEmail = $destinationEmail;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send(EmailMessage $message, $data = [])
+    public function send(EmailMessage $message, $data = []): void
     {
-        $recipient = function (Email $email) {
-            return $email->getValue();
-        };
-
         $emails = array_map(function (Email $email) {
             return $email->getValue();
         }, $message->recipients);
@@ -63,5 +48,4 @@ EOT;
         // Send the email using the normal mailer
         $this->mailer->send($message, $data);
     }
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
 
 /**
@@ -10,41 +12,21 @@ namespace Domynation\Http;
  */
 final class ResolvedRoute
 {
+    private Route $route;
+    private array $parameters;
 
-    /**
-     * @var \Domynation\Http\Route
-     */
-    private $route;
-
-    /**
-     * @var array
-     */
-    private $parameters;
-
-    /**
-     * ResolvedRoute constructor.
-     *
-     * @param \Domynation\Http\Route $route
-     * @param array $parameters
-     */
-    public function __construct(Route $route, $parameters = [])
+    public function __construct(Route $route, array $parameters = [])
     {
         $this->route = $route;
         $this->parameters = $parameters;
     }
 
-    /**
-     * @return Route
-     */
-    public function getRoute()
+    public function getRoute(): Route
     {
         return $this->route;
     }
 
-    /**
-     * @return array
-     */
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }

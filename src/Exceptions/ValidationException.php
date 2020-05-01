@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Exceptions;
+
+use Exception;
 
 /**
  * Class ValidationException
@@ -8,20 +12,19 @@ namespace Domynation\Exceptions;
  * @package Domynation\Exceptions
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-final class ValidationException extends \Exception
+final class ValidationException extends Exception
 {
-
     /**
      * The list of errors.
      *
-     * @var array|string
+     * @var array
      */
-    protected $errors;
+    protected array $errors;
 
     /**
      * ValidationException constructor.
      *
-     * @param string $errors
+     * @param array|string $errors
      */
     public function __construct($errors)
     {
@@ -31,7 +34,7 @@ final class ValidationException extends \Exception
     /**
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }

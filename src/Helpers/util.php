@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @param $line
  * @param array $placeholders
  *
  * @return mixed
+ * @deprecated Do not use, will be removed.
  */
 function lang($line, $placeholders = [])
 {
@@ -26,13 +29,13 @@ function lang($line, $placeholders = [])
  *
  * @return callable
  */
-function memoize(callable $function)
+function memoize(callable $function): callable
 {
     return function () use ($function) {
         static $cache = [];
 
         $args = func_get_args();
-        $key  = serialize($args);
+        $key = serialize($args);
 
         if (isset($cache[$key])) {
             return $cache[$key];

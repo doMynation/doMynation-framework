@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\View;
 
 use Twig_Environment;
@@ -12,31 +14,19 @@ use Twig_Environment;
  */
 final class TwigViewFactory implements ViewFactoryInterface
 {
-
     /**
      * @var \Twig_Environment
      */
-    private $twig;
+    private Twig_Environment $twig;
 
     /**
      * The path where view files are located.
      *
      * @var string
      */
-    private $path;
+    private string $path;
+    private string $fileExtension;
 
-    /**
-     * @var string
-     */
-    private $fileExtension;
-
-    /**
-     * TwigViewFactory constructor.
-     *
-     * @param \Twig_Environment $twig
-     * @param string $path
-     * @param string $defaultFileExtension
-     */
     public function __construct(Twig_Environment $twig, string $path, string $defaultFileExtension)
     {
         $this->twig = $twig;
@@ -47,7 +37,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function render($viewName, $data = [])
+    public function render($viewName, $data = []): string
     {
         $viewName = str_replace(".html.twig", "", $viewName);
 
@@ -57,7 +47,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function addNamespace($path, $name)
+    public function addNamespace($path, $name): void
     {
         $this->twig->getLoader()->addPath($this->path . $path, $name);
     }
@@ -65,7 +55,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function addGlobal($name, $value)
+    public function addGlobal($name, $value): void
     {
         $this->twig->addGlobal($name, $value);
     }
@@ -73,7 +63,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function addFunction($name, callable $closure)
+    public function addFunction($name, callable $closure): void
     {
         $this->twig->addFunction(new \Twig_SimpleFunction($name, $closure));
     }
@@ -81,7 +71,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function addFilter($name, callable $closure)
+    public function addFilter($name, callable $closure): void
     {
         $this->twig->addFilter(new \Twig_SimpleFilter($name, $closure));
     }

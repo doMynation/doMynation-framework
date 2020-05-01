@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http\Middlewares;
 
 use Assert\AssertionFailedException;
@@ -18,23 +20,9 @@ use \Invoker\InvokerInterface;
  */
 final class ValidationMiddleware extends RouteMiddleware
 {
+    private ContainerInterface $container;
+    private InvokerInterface $invoker;
 
-    /**
-     * @var \Psr\Container\ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var \Invoker\InvokerInterface
-     */
-    private $invoker;
-
-    /**
-     * ValidationMiddleware constructor.
-     *
-     * @param \Psr\Container\ContainerInterface $container
-     * @param \Invoker\InvokerInterface
-     */
     public function __construct(ContainerInterface $container, InvokerInterface $invoker)
     {
         $this->container = $container;
@@ -64,7 +52,7 @@ final class ValidationMiddleware extends RouteMiddleware
      * Validates the request.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param $validator
+     * @param mixed $validator
      *
      * @throws \Invoker\Exception\InvocationException
      * @throws \Invoker\Exception\NotCallableException

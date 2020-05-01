@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 use Ramsey\Uuid\Uuid;
@@ -11,22 +13,20 @@ use Ramsey\Uuid\Uuid;
 final class NativeFileStorage implements StorageInterface
 {
     /**
-     * @var string the folder where files are stored.
-     */
-    private $folder;
-
-    /**
-     * @var string the URI fragment to access the files.
-     */
-    private $uri;
-
-    /**
-     * NativeFileStorage constructor.
+     * The folder where files are stored.
      *
-     * @param string $folder
-     * @param string $uri
+     * @var string
      */
-    public function __construct($folder, $uri)
+    private string $folder;
+
+    /**
+     * The URI fragment to access the files.
+     *
+     * @var string
+     */
+    private string $uri;
+
+    public function __construct(string $folder, string $uri)
     {
         $this->folder = $folder;
         $this->uri = $uri;
@@ -71,7 +71,7 @@ final class NativeFileStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function exists($key, $data = [])
+    public function exists($key, $data = []): bool
     {
         return file_exists("{$this->folder}/{$key}");
     }

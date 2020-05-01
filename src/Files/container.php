@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     \Psr\Log\LoggerInterface::class => function (\Domynation\Config\ConfigInterface $config) {
         $loggingConfigs = $config->get('logging');
@@ -128,17 +130,6 @@ return [
         }
     },
 
-    \Domynation\Communication\WebSocketInterface::class => function (\Domynation\Config\ConfigInterface $config) {
-        $wsConfig = $config->get('websocket');
-
-        switch ($wsConfig['driver']) {
-            case 'pusher':
-            default:
-                return new \Domynation\Communication\PusherWebSocket($wsConfig['pusher']['apiKey'], $wsConfig['pusher']['secretKey'], $wsConfig['pusher']['appId']);
-                break;
-        }
-    },
-
     \Domynation\Communication\MarkdownParserInterface::class => function () {
         $parsedown = new Parsedown;
         $parsedown->setBreaksEnabled(true);
@@ -179,10 +170,6 @@ return [
         $emailConfig = $config->get('emailing');
 
         switch ($emailConfig['driver']) {
-            case 'aws':
-                return new \Domynation\Communication\AwsSesMailer($emailConfig['domain'], $emailConfig['region'], $emailConfig['apiKey'], $emailConfig['secretKey']);
-                break;
-
             case 'mailgun':
                 $mailer = new Domynation\Communication\MailgunMailer($emailConfig['mailgun']['apiKey'], $emailConfig['mailgun']['domain']);
                 break;
@@ -231,15 +218,5 @@ return [
         }, $eventingConfig[$config->get('environment')]['middlewares']);
 
         return new \Domynation\Eventing\BasicEventDispatcher($invoker, $middlewares);
-    },
-
-    \Domynation\Entities\EntityRegistry::class => function () {
-        return new \Domynation\Entities\EntityRegistry;
-    },
-
-    \Domynation\Search\SearchInterface::class => function () {
-        return new \Domynation\Search\ElasticSearch(
-            \Elasticsearch\ClientBuilder::create()->build()
-        );
     },
 ];

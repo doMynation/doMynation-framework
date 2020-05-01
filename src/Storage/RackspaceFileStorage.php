@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 use Ramsey\Uuid\Uuid;
@@ -12,23 +14,9 @@ use Ramsey\Uuid\Uuid;
  */
 final class RackspaceFileStorage implements StorageInterface
 {
+    private string $username;
+    private string $apiKey;
 
-    /**
-     * @var string
-     */
-    private $username;
-
-    /**
-     * @var string
-     */
-    private $apiKey;
-
-    /**
-     * RackspaceFileStorage constructor.
-     *
-     * @param string $username
-     * @param string $apiKey
-     */
     public function __construct(string $username, string $apiKey)
     {
         $this->username = $username;
@@ -38,7 +26,7 @@ final class RackspaceFileStorage implements StorageInterface
     /**
      * @return \CF_Connection
      */
-    private function authenticate()
+    private function authenticate(): \CF_Connection
     {
         $auth = new \CF_Authentication($this->username, $this->apiKey);
 
@@ -95,7 +83,7 @@ final class RackspaceFileStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function exists($key, $data = [])
+    public function exists($key, $data = []): bool
     {
         if (array_key_exists('container', $data)) {
             throw new \RuntimeException("Container missing");

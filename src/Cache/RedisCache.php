@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Cache;
 
 use Predis\Client;
@@ -12,23 +14,9 @@ use Predis\Client;
  */
 final class RedisCache implements CacheInterface
 {
+    private Client $predis;
+    private string $prefix;
 
-    /**
-     * @var \Predis\Client
-     */
-    private $predis;
-
-    /**
-     * @var string
-     */
-    private $prefix;
-
-    /**
-     * RedisCache constructor.
-     *
-     * @param string $host
-     * @param string $port
-     */
     public function __construct(string $host, string $port)
     {
         $this->predis = new Client([
@@ -37,7 +25,7 @@ final class RedisCache implements CacheInterface
             'port'   => $port
         ]);
 
-        $this->prefix = "";
+        $this->prefix = '';
     }
 
     /**
@@ -61,7 +49,7 @@ final class RedisCache implements CacheInterface
      *
      * @return mixed
      */
-    public function getMany(array $keys) : array
+    public function getMany(array $keys): array
     {
         // Retrieve all keys
         $items = $this->predis->mget(array_map(function ($key) {
@@ -98,8 +86,6 @@ final class RedisCache implements CacheInterface
      * @param string $key
      * @param mixed $value
      * @param int $minutes
-     *
-     * @return mixed
      */
     public function set(string $key, $value, int $minutes)
     {
@@ -160,17 +146,15 @@ final class RedisCache implements CacheInterface
      *
      * @return int
      */
-    public function delete(string $key) : int
+    public function delete(string $key): int
     {
         return $this->predis->del([$this->prefix . $key]);
     }
 
     /**
      * Deletes all item in the cache.
-     *
-     * @return void
      */
-    public function flush()
+    public function flush(): void
     {
         $this->predis->flushdb();
     }
@@ -180,7 +164,7 @@ final class RedisCache implements CacheInterface
      *
      * @return string
      */
-    public function getPrefix() : string
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -189,10 +173,8 @@ final class RedisCache implements CacheInterface
      * Sets the prefix for all items in the cache.
      *
      * @param string $prefix
-     *
-     * @return mixed
      */
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }
@@ -204,7 +186,7 @@ final class RedisCache implements CacheInterface
      *
      * @return bool
      */
-    public function exists(string $key) : bool
+    public function exists(string $key): bool
     {
         return (bool)$this->predis->exists($this->prefix . $key);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Cache;
 
 /**
@@ -10,24 +12,13 @@ namespace Domynation\Cache;
  */
 final class InMemoryCache implements CacheInterface
 {
+    private array $store;
+    private string $prefix;
 
-    /**
-     * @var array
-     */
-    private $store;
-
-    /**
-     * @var string
-     */
-    private $prefix;
-
-    /**
-     * InMemoryCache constructor.
-     */
     public function __construct()
     {
-        $this->store  = [];
-        $this->prefix = "";
+        $this->store = [];
+        $this->prefix = '';
     }
 
     /**
@@ -39,7 +30,7 @@ final class InMemoryCache implements CacheInterface
      */
     public function get(string $key)
     {
-        return array_key_exists($this->prefix . $key, $this->store) ? $this->store[$this->prefix . $key] : null;
+        return $this->store[$this->prefix . $key] ?? null;
     }
 
     /**
@@ -49,7 +40,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return mixed
      */
-    public function getMany(array $keys) : array
+    public function getMany(array $keys): array
     {
         $values = [];
 
@@ -84,8 +75,6 @@ final class InMemoryCache implements CacheInterface
      * @param string $key
      * @param mixed $value
      * @param int $minutes
-     *
-     * @return mixed
      */
     public function set(string $key, $value, int $minutes)
     {
@@ -97,8 +86,6 @@ final class InMemoryCache implements CacheInterface
      *
      * @param array $values
      * @param int $minutes
-     *
-     * @return mixed
      */
     public function setMany(array $values, int $minutes)
     {
@@ -112,8 +99,6 @@ final class InMemoryCache implements CacheInterface
      *
      * @param string $key
      * @param int $amount
-     *
-     * @return mixed
      */
     public function increment(string $key, int $amount = 1)
     {
@@ -127,8 +112,6 @@ final class InMemoryCache implements CacheInterface
      *
      * @param string $key
      * @param int $amount
-     *
-     * @return mixed
      */
     public function decrement(string $key, int $amount = 1)
     {
@@ -144,10 +127,8 @@ final class InMemoryCache implements CacheInterface
      *
      * @return bool
      */
-    public function exists(string $key) : bool
+    public function exists(string $key): bool
     {
-        // Since isset is language construct, it is much faster than a function call to array_key_exists(), but will return false if the value is null.
-        // So we're first trying with isset, then with array_key_exists in case we had a null value.
         return isset($this->store[$this->prefix . $key]) || array_key_exists($this->prefix . $key, $this->store);
     }
 
@@ -158,7 +139,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return int
      */
-    public function delete(string $key) : int
+    public function delete(string $key): int
     {
         if ($this->exists($key)) {
             unset($this->store[$this->prefix . $key]);
@@ -174,7 +155,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return void
      */
-    public function flush()
+    public function flush(): void
     {
         $this->store = [];
     }
@@ -184,7 +165,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return string
      */
-    public function getPrefix() : string
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -196,7 +177,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @return mixed
      */
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }

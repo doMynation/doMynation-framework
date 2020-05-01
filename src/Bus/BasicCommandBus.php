@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Bus;
 
+use Domynation\Bus\Middlewares\CommandBusMiddleware;
 use Domynation\Eventing\EventDispatcherInterface;
+use Exception;
 use Psr\Container\ContainerInterface;
+use ReflectionObject;
 
 /**
  * A basic implementation of a command bus.
@@ -13,30 +18,11 @@ use Psr\Container\ContainerInterface;
  */
 final class BasicCommandBus implements CommandBusInterface
 {
+    private ?CommandBusMiddleware $middlewareChain;
+    private ContainerInterface $container;
+    private EventDispatcherInterface $dispatcher;
 
-    /**
-     * @var \Domynation\Bus\Middlewares\CommandBusMiddleware
-     */
-    private $middlewareChain;
-
-    /**
-     * @var \Psr\Container\ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var \Domynation\Eventing\EventDispatcherInterface
-     */
-    private $dispatcher;
-
-    /**
-     * BasicCommandBus constructor.
-     *
-     * @param \Psr\Container\ContainerInterface $container
-     * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
-     * @param array $middlewares
-     */
-    public function __construct(ContainerInterface $container, EventDispatcherInterface $dispatcher, array $middlewares)
+    public function __construct(ContainerInterface $container, EventDispatcherInterface $dispatcher, array $middlewares = [])
     {
         $this->middlewareChain = $this->buildMiddlewareChain($middlewares);
         $this->container = $container;
@@ -73,9 +59,9 @@ final class BasicCommandBus implements CommandBusInterface
      *
      * @param array $middlewares
      *
-     * @return mixed|null
+     * @return \Domynation\Bus\Middlewares\CommandBusMiddleware|null
      */
-    private function buildMiddlewareChain(array $middlewares = [])
+    private function buildMiddlewareChain(array $middlewares = []): ?CommandBusMiddleware
     {
         if (empty($middlewares)) {
             return null;
@@ -91,22 +77,21 @@ final class BasicCommandBus implements CommandBusInterface
     }
 
     /**
-     * Resolves an instance of the handler class
-     * corresponding to $command.
+     * Resolves an instance of the handler class corresponding to $command.
      *
      * @param Command $command
      *
      * @return CommandHandler
      * @throws \Exception
      */
-    private function resolveHandlerClass(Command $command)
+    private function resolveHandlerClass(Command $command): CommandHandler
     {
-        $reflectionObject = new \ReflectionObject($command);
+        $reflectionObject = new ReflectionObject($command);
         $shortName = $reflectionObject->getShortName();
         $className = $reflectionObject->getNamespaceName() . '\\Handlers\\' . $shortName . 'Handler';
 
         if (!class_exists($className)) {
-            throw new \Exception("Command handler {$className} not found.");
+            throw new Exception("Command handler {$className} not found.");
         }
 
         // Let the container resolve the instance and inject the required dependencies.

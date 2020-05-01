@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 use Aws\S3\Exception\S3Exception;
@@ -14,20 +16,9 @@ use Ramsey\Uuid\Uuid;
  */
 final class AwsS3FileStorage implements StorageInterface
 {
+    private S3Client $client;
+    private string $defaultBucket;
 
-    /** @var \Aws\S3\S3Client */
-    private $client;
-
-    /** @var string */
-    private $defaultBucket;
-
-    /**
-     * AwsS3FileStorage constructor.
-     *
-     * @param string $region
-     * @param string $apiKey
-     * @param string $privateKey
-     */
     public function __construct(string $region, string $apiKey, string $privateKey, string $bucket)
     {
         $this->client = new S3Client([
@@ -144,7 +135,7 @@ final class AwsS3FileStorage implements StorageInterface
      *
      * @return mixed
      */
-    public function exists($key, $data = [])
+    public function exists($key, $data = []): bool
     {
         try {
             $file = $this->get($key, $data);

@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Session;
+
+use RuntimeException;
 
 /**
  * Class PHPSession
@@ -10,22 +14,19 @@ namespace Domynation\Session;
  */
 final class PHPSession implements SessionInterface
 {
-    /**
-     * @var bool
-     */
-    private $isStarted = false;
+    private bool $isStarted = false;
 
     /**
      * {@inheritdoc}
      */
-    public function start()
+    public function start(): void
     {
         if ($this->isStarted) {
             return;
         }
 
         if (!session_start()) {
-            throw new \RuntimeException("Failed to start a session");
+            throw new RuntimeException("Failed to start a session");
         }
 
         $this->isStarted = true;
@@ -42,7 +43,7 @@ final class PHPSession implements SessionInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set($key, $value): void
     {
         $_SESSION[$key] = $value;
     }
@@ -65,7 +66,7 @@ final class PHPSession implements SessionInterface
     /**
      * {@inheritdoc}
      */
-    public function has($key)
+    public function has($key): bool
     {
         return isset($_SESSION[$key]) || array_key_exists($key, $_SESSION);
     }
@@ -73,7 +74,7 @@ final class PHPSession implements SessionInterface
     /**
      * {@inheritdoc}
      */
-    public function isStarted()
+    public function isStarted(): bool
     {
         return $this->isStarted;
     }
@@ -81,7 +82,7 @@ final class PHPSession implements SessionInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): string
     {
         return session_id();
     }
@@ -89,10 +90,10 @@ final class PHPSession implements SessionInterface
     /**
      * {@inheritdoc}
      */
-    public function setId($id)
+    public function setId(string $id): void
     {
         if (!$this->isStarted) {
-            throw new \RuntimeException("Cannot set the ID if the session is not started.");
+            throw new RuntimeException("Cannot set the ID if the session is not started.");
         }
 
         session_id($id);

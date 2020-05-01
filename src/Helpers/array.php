@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Returns true if at least one value in the array satisfy the predicate.
  *
@@ -8,7 +10,7 @@
  *
  * @return bool
  */
-function array_some(array $array, callable $predicate)
+function array_some(array $array, callable $predicate): bool
 {
     foreach ($array as $value) {
         if ($predicate($value)) {
@@ -27,7 +29,7 @@ function array_some(array $array, callable $predicate)
  *
  * @return bool
  */
-function array_every(array $array, callable $predicate)
+function array_every(array $array, callable $predicate): bool
 {
     foreach ($array as $value) {
         if (!$predicate($value)) {
@@ -44,11 +46,9 @@ function array_every(array $array, callable $predicate)
  * @param array $array
  * @param callable $predicate
  *
- * @return mixed
- * @internal param callable $closure
- *
+ * @return array
  */
-function array_partition(array $array, callable $predicate)
+function array_partition(array $array, callable $predicate): array
 {
     return array_reduce($array, function ($acc, $value) use ($predicate) {
         if ($predicate($value)) {
@@ -68,7 +68,7 @@ function array_partition(array $array, callable $predicate)
  *
  * @return array
  */
-function array_flatten(array $array)
+function array_flatten(array $array): array
 {
     return array_reduce($array, function ($acc, $a) {
         return is_array($a) ? array_merge($acc, array_flatten($a)) : array_merge($acc, [$a]);
@@ -81,7 +81,7 @@ function array_flatten(array $array)
  *
  * @return array
  */
-function array_flat_map(array $array, callable $closure)
+function array_flat_map(array $array, callable $closure): array
 {
     return array_flatten(array_map($closure, $array));
 }
@@ -92,7 +92,6 @@ function array_flat_map(array $array, callable $closure)
  * @param null $default
  *
  * @return mixed
- * @internal param callable $callback
  */
 function array_first(array $array, callable $predicate, $default = null)
 {

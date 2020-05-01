@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 interface MarkdownParserInterface
 {
-
     /**
      * Parses the text.
      *
@@ -12,5 +13,5 @@ interface MarkdownParserInterface
      *
      * @return string
      */
-    public function parse(string $text) : string;
+    public function parse(string $text): string;
 }

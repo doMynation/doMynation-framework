@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Security;
 
 /**
@@ -10,7 +12,6 @@ namespace Domynation\Security;
  */
 final class NativePassword implements PasswordInterface
 {
-
     /**
      * Checks if a password matches a hash.
      *
@@ -19,7 +20,7 @@ final class NativePassword implements PasswordInterface
      *
      * @return bool
      */
-    public function check($password, $hash)
+    public function check($password, $hash): bool
     {
         return password_verify($password, $hash);
     }
@@ -31,7 +32,7 @@ final class NativePassword implements PasswordInterface
      *
      * @return string
      */
-    public function hash($password)
+    public function hash($password): string
     {
         return password_hash($password, PASSWORD_DEFAULT, [
             'cost' => 13
@@ -45,7 +46,7 @@ final class NativePassword implements PasswordInterface
      *
      * @return bool
      */
-    public function needsRehash($password)
+    public function needsRehash($password): bool
     {
         return password_needs_rehash($password, PASSWORD_DEFAULT);
     }

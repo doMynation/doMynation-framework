@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Test;
 
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
@@ -90,7 +92,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Initializes the framework kernel and a few useful dependencies.
      */
-    private function initialize()
+    private function initialize(): void
     {
         // Boot the kernel
         $this->kernel = new \Domynation\Application(PATH_BASE, 'test');

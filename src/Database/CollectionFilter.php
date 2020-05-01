@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Database;
 
 use Doctrine\Common\Collections\Criteria;

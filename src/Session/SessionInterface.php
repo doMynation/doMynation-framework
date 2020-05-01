@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Session;
 
 /**
@@ -27,7 +29,7 @@ interface SessionInterface
      *
      * @return bool
      */
-    public function has($key);
+    public function has($key): bool;
 
     /**
      * Sets an item.
@@ -37,7 +39,7 @@ interface SessionInterface
      *
      * @return void
      */
-    public function set($key, $value);
+    public function set($key, $value): void;
 
     /**
      * Removes an item.
@@ -51,28 +53,28 @@ interface SessionInterface
     /**
      * Starts the session.
      */
-    public function start();
+    public function start(): void;
 
     /**
      * Checks if the session is started.
      *
      * @return bool
      */
-    public function isStarted();
+    public function isStarted(): bool;
 
     /**
      * Returns the session ID.
      *
      * @return string
      */
-    public function getId();
+    public function getId(): string;
 
     /**
      * Sets the session ID.
      *
      * @param string $id
      */
-    public function setId($id);
+    public function setId(string $id): void;
 
     /**
      * Closes the session.

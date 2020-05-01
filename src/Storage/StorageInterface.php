@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 /**
@@ -58,5 +60,5 @@ interface StorageInterface
      *
      * @return mixed
      */
-    public function exists($key, $data = []);
+    public function exists($key, $data = []): bool;
 }

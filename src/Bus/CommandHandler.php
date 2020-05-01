@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Bus;
 
 use Domynation\Eventing\EventDispatcherInterface;
@@ -10,18 +12,14 @@ use Domynation\Eventing\EventDispatcherInterface;
  */
 abstract class CommandHandler
 {
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $dispatcher;
+    protected ?EventDispatcherInterface $dispatcher;
 
     /**
      * Sets the event dispatcher for this command handler.
      *
-     * @param mixed $dispatcher
+     * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
      */
-    public function setEventDispatcher(EventDispatcherInterface $dispatcher)
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;
     }

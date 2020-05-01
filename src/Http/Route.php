@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
 
 /**
@@ -10,16 +12,8 @@ namespace Domynation\Http;
  */
 final class Route
 {
-
-    /**
-     * @var string
-     */
-    private $method;
-
-    /**
-     * @var string
-     */
-    private $name;
+    private string $method;
+    private string $name;
 
     /**
      * @var string|\Closure
@@ -30,34 +24,30 @@ final class Route
      * @var callable|string
      */
     private $validator;
-
-    /**
-     * @var array
-     */
-    private $requiredPermissions;
+    private array $requiredPermissions;
 
     /**
      * Whether or not this route requires the user to be authenticated.
      *
      * @var bool
      */
-    private $isSecure;
+    private bool $isSecure;
 
     /**
      * Indicates whether the request is read-only.
      *
      * @var bool
      */
-    private $isReadOnly;
+    private bool $isReadOnly;
 
     /**
      * Route constructor.
      *
-     * @param string name
+     * @param string $name
      * @param string|callable $handler
      * @param string $method
      */
-    public function __construct($name, $handler, $method = 'GET')
+    public function __construct(string $name, $handler, string $method = 'GET')
     {
         $this->method = strtoupper($method);
         $this->name = $name;
@@ -112,37 +102,22 @@ final class Route
         return $this;
     }
 
-    /**
-     * Gets the value of method.
-     *
-     * @return string
-     */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
-    /**
-     * Gets the value of name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasValidator()
+    public function hasValidator(): bool
     {
         return $this->validator !== null;
     }
 
     /**
-     * Gets the value of validator.
-     *
      * @return callable|string
      */
     public function getValidator()
@@ -151,21 +126,14 @@ final class Route
     }
 
     /**
-     * Gets the value of handler.
-     *
-     * @return string|\Closure
+     * @return callable|string
      */
     public function getHandler()
     {
         return $this->handler;
     }
 
-    /**
-     * Gets the value of requiredPermissions.
-     *
-     * @return array
-     */
-    public function getRequiredPermissions()
+    public function getRequiredPermissions(): array
     {
         return $this->requiredPermissions;
     }
@@ -175,7 +143,7 @@ final class Route
      *
      * @return bool
      */
-    public function isSecure()
+    public function isSecure(): bool
     {
         return $this->isSecure;
     }
@@ -201,7 +169,7 @@ final class Route
     }
 
     /**
-     * @return \Domynation\Http\Route
+     * @return $this
      */
     public function readOnly(): self
     {

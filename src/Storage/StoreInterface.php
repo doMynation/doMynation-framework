@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 /**
@@ -10,7 +12,6 @@ namespace Domynation\Storage;
  */
 interface StoreInterface
 {
-
     /**
      * Retrieves an item from the store.
      *
@@ -60,5 +61,5 @@ interface StoreInterface
      *
      * @return bool
      */
-    public function exists($key);
+    public function exists($key): bool;
 }

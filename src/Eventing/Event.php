@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Eventing;
 
 /**
@@ -10,10 +12,7 @@ namespace Domynation\Eventing;
  */
 abstract class Event
 {
-    /**
-     * @var bool
-     */
-    private $propagationStopped = false;
+    private bool $propagationStopped = false;
 
     /**
      * @return boolean

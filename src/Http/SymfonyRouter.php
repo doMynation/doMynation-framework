@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
 
+use DomainException;
 use Domynation\Exceptions\AuthenticationException;
 use Domynation\Exceptions\AuthorizationException;
 use Domynation\Exceptions\EntityNotFoundException;
 use Domynation\Exceptions\ValidationException;
 use Domynation\Http\Middlewares\RouteMiddleware;
-use PHPUnit\Util\Json;
-use Sushi\Common\Exceptions\DomainException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -26,21 +27,13 @@ use Symfony\Component\Routing\RouteCollection;
  */
 final class SymfonyRouter implements RouterInterface
 {
+    private RouteCollection $routes;
+    private ?RouteMiddleware $middleware;
 
     /**
-     * @var \Symfony\Component\Routing\RouteCollection
+     * @param array \Domynation\Http\Middlewares\RouteMiddleware[] $middlewares
      */
-    private $routes;
-
-    /**
-     * @var \Domynation\Http\Middlewares\RouteMiddleware
-     */
-    private $middleware;
-
-    /**
-     * @param RouteMiddleware[] $middlewares
-     */
-    public function __construct($middlewares)
+    public function __construct(array $middlewares)
     {
         $this->middleware = $this->buildMiddlewareChain($middlewares);
         $this->routes = new RouteCollection;
@@ -53,7 +46,7 @@ final class SymfonyRouter implements RouterInterface
      *
      * @return RouteMiddleware
      */
-    private function buildMiddlewareChain(array $middlewares)
+    private function buildMiddlewareChain(array $middlewares): ?RouteMiddleware
     {
         if (empty($middlewares)) {
             return null;
@@ -68,7 +61,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function addRoute($method, $path, $controller, $name = null)
+    public function addRoute($method, $path, $controller, $name = null): Route
     {
         // Default the name to the path + method to avoid duplicate
         $name = $name ?: "$path-$method";
@@ -83,7 +76,6 @@ final class SymfonyRouter implements RouterInterface
 
         // Add the route to the collection
         $this->routes->add($name, $route);
-        $r = $this->routes->get($name);
 
         // Return the route
         return $domynationRoute;
@@ -167,7 +159,7 @@ final class SymfonyRouter implements RouterInterface
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
-    private function parseResponse(Request $request, $response)
+    private function parseResponse(Request $request, $response): Response
     {
         if ($response === null) {
             return $request->isXmlHttpRequest()
@@ -199,7 +191,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * @return RouteMiddleware
      */
-    public function getMiddleware()
+    public function getMiddleware(): ?RouteMiddleware
     {
         return $this->middleware;
     }
@@ -207,7 +199,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function get($path, $controller, $name = null)
+    public function get($path, $controller, $name = null): Route
     {
         return $this->addRoute('GET', $path, $controller, $name);
     }
@@ -215,7 +207,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function post($path, $controller, $name = null)
+    public function post($path, $controller, $name = null): Route
     {
         return $this->addRoute('POST', $path, $controller, $name);
     }
@@ -223,7 +215,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function put($path, $controller, $name = null)
+    public function put($path, $controller, $name = null): Route
     {
         return $this->addRoute('PUT', $path, $controller, $name);
     }
@@ -231,7 +223,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function delete($path, $controller, $name = null)
+    public function delete($path, $controller, $name = null): Route
     {
         return $this->addRoute('DELETE', $path, $controller, $name);
     }
@@ -239,7 +231,7 @@ final class SymfonyRouter implements RouterInterface
     /**
      * {@inheritdoc}
      */
-    public function patch($path, $controller, $name = null)
+    public function patch($path, $controller, $name = null): Route
     {
         return $this->addRoute('PATCH', $path, $controller, $name);
     }
@@ -253,7 +245,7 @@ final class SymfonyRouter implements RouterInterface
      * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Domynation\Http\RouteNotFoundException
      */
-    public function forward(Request $request, $route)
+    public function forward(Request $request, $route): Response
     {
         $context = (new RequestContext)->fromRequest($request);
         $context->setPathInfo($route);

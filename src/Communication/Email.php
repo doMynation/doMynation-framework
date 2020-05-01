@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 use Assert\Assertion;
@@ -12,16 +14,8 @@ use Assert\Assertion;
  */
 final class Email
 {
-    /**
-     * @var string
-     */
-    private $email;
+    private string $email;
 
-    /**
-     * Email constructor.
-     *
-     * @param string $email
-     */
     public function __construct(string $email)
     {
         Assertion::email($email, "Invalid email address {$email}");
@@ -29,25 +23,16 @@ final class Email
         $this->email = $email;
     }
 
-    /**
-     * @return string
-     */
-    public function getValue() : string
+    public function getValue(): string
     {
         return $this->email;
     }
 
-    /**
-     * @return string
-     */
     public function get(): string
     {
         return $this->email;
     }
 
-    /**
-     * @return string
-     */
     public function __toString()
     {
         return $this->email;

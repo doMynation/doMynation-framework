@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Core;
 
 use Domynation\Eventing\EventDispatcherInterface;
@@ -14,7 +16,6 @@ use Domynation\View\ViewFactoryInterface;
  */
 interface ModuleInterface
 {
-
     /**
      * Starts the module.
      *
@@ -22,14 +23,14 @@ interface ModuleInterface
      * @param \Domynation\View\ViewFactoryInterface $view
      * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
      */
-    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher);
+    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher): void;
 
     /**
      * Registers the module's container definitions.
      *
      * @return array
      */
-    public function registerContainerDefinitions();
+    public function registerContainerDefinitions(): array;
 
     /**
      * Registers the module's routes.
@@ -37,23 +38,19 @@ interface ModuleInterface
      * @param \Domynation\Http\RouterInterface $router
      *
      */
-    public function registerRoutes(RouterInterface $router);
+    public function registerRoutes(RouterInterface $router): void;
 
     /**
      * Registers the module's views.
      *
      * @param \Domynation\View\ViewFactoryInterface $view
-     *
-     * @return void
      */
-    public function registerViews(ViewFactoryInterface $view);
+    public function registerViews(ViewFactoryInterface $view): void;
 
     /**
      * Registers the module's event listeners.
      *
      * @param \Domynation\Eventing\EventDispatcherInterface $dispatcher
-     *
-     * @return void
      */
-    public function registerListeners(EventDispatcherInterface $dispatcher);
+    public function registerListeners(EventDispatcherInterface $dispatcher): void;
 }

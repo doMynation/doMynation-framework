@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
+
+use Exception;
 
 /**
  * Class RouteNotFoundException
@@ -8,7 +12,7 @@ namespace Domynation\Http;
  * @package Domynation\Http
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-final class RouteNotFoundException extends \Exception
+final class RouteNotFoundException extends Exception
 {
     /**
      * RouteNotFoundException constructor.

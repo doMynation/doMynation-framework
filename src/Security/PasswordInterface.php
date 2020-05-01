@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Security;
 
 /**
@@ -19,7 +21,7 @@ interface PasswordInterface
      *
      * @return bool
      */
-    public function check($password, $hash);
+    public function check($password, $hash): bool;
 
     /**
      * Hashes the password.
@@ -28,7 +30,7 @@ interface PasswordInterface
      *
      * @return string
      */
-    public function hash($password);
+    public function hash($password): string;
 
     /**
      * Checks if a password needs to be replaced with a new hash.
@@ -37,5 +39,5 @@ interface PasswordInterface
      *
      * @return bool
      */
-    public function needsRehash($password);
+    public function needsRehash($password): bool;
 }

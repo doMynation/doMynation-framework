@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Database;
 
 use Doctrine\ORM\QueryBuilder;
@@ -17,5 +19,5 @@ interface DqlFilter
      *
      * @param \Doctrine\ORM\QueryBuilder $builder
      */
-    public function applyDql(QueryBuilder $builder);
+    public function applyDql(QueryBuilder $builder): void;
 }

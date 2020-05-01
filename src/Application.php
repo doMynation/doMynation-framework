@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation;
 
 use DI\ContainerBuilder;
@@ -11,6 +13,7 @@ use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +36,7 @@ final class Application
      *
      * @var string
      */
-    private $basePath;
+    private string $basePath;
 
     /**
      * The environment the kernel is operating in.
@@ -41,26 +44,27 @@ final class Application
      *
      * @var string
      */
-    private $environment;
+    private string $environment;
 
     /**
      * The dependency injection container.
      *
      * @var \Psr\Container\ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * The current HTTP request.
      *
      * @var \Symfony\Component\HttpFoundation\Request
      */
-    private $request;
+    private ?Request $request;
 
     /**
      * Application constructor.
      *
      * @param string $basePath
+     * @param string $environment
      */
     public function __construct(string $basePath, string $environment = 'web')
     {
@@ -98,6 +102,7 @@ final class Application
      * @param \Domynation\Session\SessionInterface $session
      *
      * @return \Psr\Container\ContainerInterface
+     * @throws \ReflectionException
      */
     private function bootContainer(ConfigInterface $config, SessionInterface $session): ContainerInterface
     {
@@ -123,7 +128,7 @@ final class Application
             }
 
             // Instanciate the module
-            $reflection = new \ReflectionClass($name);
+            $reflection = new ReflectionClass($name);
             $module = $reflection->newInstanceArgs();
 
             // Load the module's container definitions
@@ -147,7 +152,7 @@ final class Application
             );
 
             // Use reflection to get a closure copy of the `boot` method
-            $reflection = new \ReflectionClass(get_class($module));
+            $reflection = new ReflectionClass(get_class($module));
             $closure = $reflection->getMethod('boot')->getClosure($module);
 
             // Let the container inject the dependency needed by the closure
@@ -212,7 +217,7 @@ final class Application
      *
      * @return mixed
      */
-    public function run()
+    public function run(): void
     {
         $router = $this->container->get(RouterInterface::class);
 

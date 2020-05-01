@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Storage;
 
 /**
@@ -44,7 +46,7 @@ final class UnitTestStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function exists($key, $data = [])
+    public function exists($key, $data = []): bool
     {
         return file_exists("{$this->folder}/{$key}");
     }

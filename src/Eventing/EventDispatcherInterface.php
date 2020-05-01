@@ -1,7 +1,8 @@
 <?php
 
-namespace Domynation\Eventing;
+declare(strict_types=1);
 
+namespace Domynation\Eventing;
 
 /**
  * Interface EventDispatcherInterface
@@ -11,19 +12,16 @@ namespace Domynation\Eventing;
  */
 interface EventDispatcherInterface
 {
-
-    const PRIORITY_HIGH   = 300;
-    const PRIORITY_MEDIUM = 200;
-    const PRIORITY_LOW    = 100;
+    public const PRIORITY_HIGH   = 300;
+    public const PRIORITY_MEDIUM = 200;
+    public const PRIORITY_LOW    = 100;
 
     /**
      * Raises an event.
      *
      * @param Event $event
-     *
-     * @return void
      */
-    public function raise(Event $event);
+    public function raise(Event $event): void;
 
     /**
      * Adds an event listener. A numeric priority can be provided.
@@ -31,32 +29,25 @@ interface EventDispatcherInterface
      * @param string $eventName
      * @param callable $callable
      * @param int $priority
-     *
-     * @return void
      */
-    public function listen($eventName, callable $callable, $priority = null);
+    public function listen($eventName, callable $callable, $priority = null): void;
 
     /**
-     * Dispatches all raised events and clear the list of raised
-     * events.
-     *
-     * @return void
+     * Dispatches all raised events and clear the list of raised events.
      */
-    public function dispatch();
+    public function dispatch(): void;
 
     /**
      * Clears the list of raised events.
-     *
-     * @return void
      */
-    public function clearEvents();
+    public function clearEvents(): void;
 
     /**
      * Returns all the events that have been raised.
      *
-     * @return Event[]
+     * @return array|\Domynation\Eventing\Event[]
      */
-    public function getRaisedEvents();
+    public function getRaisedEvents(): array;
 
     /**
      * Returns all listeners. If an event name is provided, only the listeners
@@ -66,5 +57,5 @@ interface EventDispatcherInterface
      *
      * @return array
      */
-    public function getListeners($eventName = null);
+    public function getListeners($eventName = null): array;
 }

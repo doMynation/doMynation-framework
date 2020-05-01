@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Validation;
 
 /**
@@ -8,7 +10,6 @@ namespace Domynation\Validation;
  */
 abstract class RouteValidator
 {
-
     /**
      * Validates the inputs and throws a ValidationException is it fails.
      *

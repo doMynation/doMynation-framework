@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Contracts;
 
 /**
@@ -17,7 +19,7 @@ interface Comparable
      *
      * @return int
      */
-    public function compareTo($other);
+    public function compareTo($other): int;
 
     /**
      * Checks if the object is equal to an other object.
@@ -26,5 +28,5 @@ interface Comparable
      *
      * @return boolean
      */
-    public function equals($other);
+    public function equals($other): bool;
 }

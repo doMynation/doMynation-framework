@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 use Mailgun\Mailgun;
+use Symfony\Component\Mailer\Bridge\Mailgun\Transport\MailgunApiTransport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Address;
 
 /**
  * @package Domynation\Communication
@@ -10,26 +15,21 @@ use Mailgun\Mailgun;
  */
 final class MailgunMailer implements MailerInterface
 {
+    private Mailer $mailer;
 
-    private $mailer;
-
-    /**
-     * @param string $apiKey
-     * @param string $domain
-     */
     public function __construct(string $apiKey, string $domain)
     {
-        $transport = new \Symfony\Component\Mailer\Bridge\Mailgun\Transport\MailgunApiTransport($apiKey, $domain);
-        $this->mailer = new \Symfony\Component\Mailer\Mailer($transport);
+        $transport = new MailgunApiTransport($apiKey, $domain);
+        $this->mailer = new Mailer($transport);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send(EmailMessage $message, $data = [])
+    public function send(EmailMessage $message, $data = []): void
     {
         $email = (new \Symfony\Component\Mime\Email())
-            ->from(new \Symfony\Component\Mime\Address($message->from, $message->fromName))
+            ->from(new Address($message->from, $message->fromName))
             ->to(...$message->recipients)
             ->subject($message->subject)
             ->text($message->body);

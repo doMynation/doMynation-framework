@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Exceptions;
+
+use Exception;
 
 /**
  * Class AuthorizationException
@@ -8,6 +12,6 @@ namespace Domynation\Exceptions;
  * @package Domynation\Exceptions
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-final class AuthorizationException extends \Exception
+final class AuthorizationException extends Exception
 {
 }

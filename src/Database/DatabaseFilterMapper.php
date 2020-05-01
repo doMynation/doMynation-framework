@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Database;
 
 /**
@@ -33,7 +35,7 @@ final class DatabaseFilterMapper implements DatabaseFilterMapperInterface
         $classes = [];
 
         foreach ($filters as $name => $value) {
-            if (in_array($name, $this->allowedFilters)) {
+            if (in_array($name, $this->allowedFilters, true)) {
                 $className = $this->resolveClassName($name);
 
                 if (class_exists($className)) {

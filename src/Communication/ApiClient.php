@@ -1,30 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 use Domynation\Exceptions\ApiException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * @package Domynation\Communication
  * @author Dominique Sarrazin <domynation@gmail.com>
+ * @deprecated Use guzzle directly instead.
  */
 final class ApiClient
 {
+    private Client $client;
 
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $client;
-
-    /**
-     * ApiClient constructor.
-     *
-     * @param $baseUrl
-     * @param $headers
-     * @param array $defaultQueryParameters
-     */
-    public function __construct($baseUrl, $headers, $defaultQueryParameters = [])
+    public function __construct(string $baseUrl, array $headers, array $defaultQueryParameters = [])
     {
         $this->client = new Client([
             'base_uri' => $baseUrl,
@@ -42,7 +35,7 @@ final class ApiClient
      *
      * @return array
      */
-    private function prepareQuery($options = [])
+    private function prepareQuery($options = []): array
     {
         return array_merge($this->client->getConfig('defaults')['query'], $options);
     }
@@ -71,7 +64,7 @@ final class ApiClient
             }
 
             return $json;
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException("Not found", $e->getResponse()->getStatusCode());
         }
     }
@@ -102,7 +95,7 @@ final class ApiClient
             }
 
             return $json;
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException("Not found", $e->getResponse()->getStatusCode());
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 use Parsedown;
@@ -12,16 +14,8 @@ use Parsedown;
  */
 final class ParsedownMarkdownParser implements MarkdownParserInterface
 {
-    /**
-     * @var \Parsedown
-     */
-    private $parsedown;
+    private Parsedown $parsedown;
 
-    /**
-     * ParsedownMarkdownParser constructor.
-     *
-     * @param \Parsedown $parsedown
-     */
     public function __construct(Parsedown $parsedown)
     {
         $this->parsedown = $parsedown;

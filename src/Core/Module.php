@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Core;
 
 use Domynation\Eventing\EventDispatcherInterface;
@@ -14,11 +16,10 @@ use Domynation\View\ViewFactoryInterface;
  */
 abstract class Module implements ModuleInterface
 {
-
     /**
      * {@inheritdoc}
      */
-    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher)
+    public function start(RouterInterface $router, ViewFactoryInterface $view, EventDispatcherInterface $dispatcher): void
     {
         $this->registerRoutes($router);
         $this->registerViews($view);

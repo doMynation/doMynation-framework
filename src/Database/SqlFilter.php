@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Database;
 
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -18,5 +20,5 @@ interface SqlFilter
      *
      * @param \Doctrine\DBAL\Query\QueryBuilder $builder
      */
-    public function applySql(QueryBuilder $builder);
+    public function applySql(QueryBuilder $builder): void;
 }

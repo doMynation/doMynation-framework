@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http\Middlewares;
 
 use Assert\AssertionFailedException;
@@ -25,22 +27,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class HandlingMiddleware extends RouteMiddleware
 {
-    /**
-     * @var \Psr\Container\ContainerInterface
-     */
-    private $container;
+    private ContainerInterface $container;
+    private InvokerInterface $invoker;
+    private SessionInterface $session;
 
-    /**
-     * @var \Invoker\InvokerInterface
-     */
-    private $invoker;
-
-    /**
-     * @var \Domynation\Session\SessionInterface
-     */
-    private $session;
-
-    public function __construct(\Psr\Container\ContainerInterface $container, InvokerInterface $invoker, SessionInterface $session)
+    public function __construct(ContainerInterface $container, InvokerInterface $invoker, SessionInterface $session)
     {
         $this->container = $container;
         $this->invoker = $invoker;

@@ -60,19 +60,12 @@ return [
     ],
 
     'emailing' => [
-        'driver'     => 'native', // one of: 'native', 'mailgun', 'aws'
+        'driver'     => 'native', // one of: 'native', 'mailgun'
         'debugEmail' => 'my@email.com', // The email to use when debugging. Forces this email as the recipient for all emails sent.
 
         'mailgun' => [
             'domain' => getenv('MAILGUN_DOMAIN'),
             'apiKey' => getenv('MAILGUN_API_KEY'),
-        ],
-
-        'aws' => [
-            'domain'    => getenv('AWS_SES_DOMAIN'),
-            'region'    => getenv('AWS_SES_REGION'),
-            'apiKey'    => getenv('AWS_SES_API_KEY'),
-            'secretKey' => getenv('AWS_SES_SECRET_KEY'),
         ],
     ],
 

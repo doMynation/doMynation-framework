@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http;
 
 use Domynation\Authentication\UserInterface;
 use Domynation\View\ViewFactoryInterface;
+use JsonException;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use \Domynation\Bus\CommandBusInterface;
 
@@ -66,13 +70,13 @@ trait BaseActionTrait
     public function getJson(): array
     {
         if ($this->request->getContentType() !== 'json') {
-            throw new \RuntimeException("Request is not of type application/json");
+            throw new RuntimeException("Request is not of type application/json");
         }
 
         try {
             return json_decode($this->request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \RuntimeException("Error while decoding JSON payload.");
+        } catch (JsonException $e) {
+            throw new RuntimeException("Error while decoding JSON payload.");
         }
     }
 }

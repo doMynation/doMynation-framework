@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Http\Middlewares;
 
 use Domynation\Http\ResolvedRoute;
@@ -19,7 +21,7 @@ abstract class RouteMiddleware
      *
      * @var RouteMiddleware
      */
-    protected $next;
+    protected ?RouteMiddleware $next;
 
     /**
      * Handles a route.
@@ -31,10 +33,7 @@ abstract class RouteMiddleware
      */
     abstract public function handle(ResolvedRoute $resolvedRoute, Request $request);
 
-    /**
-     * @return RouteMiddleware
-     */
-    public function getNext()
+    public function getNext(): ?RouteMiddleware
     {
         return $this->next;
     }

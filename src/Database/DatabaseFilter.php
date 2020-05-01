@@ -1,5 +1,8 @@
 <?php
 
+
+declare(strict_types=1);
+
 namespace Domynation\Database;
 
 /**
@@ -32,9 +35,9 @@ abstract class DatabaseFilter
      *
      * @param $data
      *
-     * @return DatabaseFilter
+     * @return \Domynation\Database\DatabaseFilter
      */
-    public static function fromForm($data)
+    public static function fromForm($data): self
     {
         return new static($data);
     }
@@ -46,7 +49,7 @@ abstract class DatabaseFilter
      *
      * @return bool
      */
-    public static function validate($data)
+    public static function validate($data): bool
     {
         return true;
     }

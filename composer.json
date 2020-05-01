@@ -1,7 +1,10 @@
 {
   "name": "domynation/domynation-framework",
   "description": "An opinionated PHP micro-framework to build modular applications",
-  "keywords": ["php", "framework"],
+  "keywords": [
+    "php",
+    "framework"
+  ],
   "license": "MIT",
   "authors": [
     {
@@ -28,6 +31,8 @@
   },
   "require": {
     "php": ">=7.4.0",
+    "ext-intl": "*",
+    "ext-json": "*",
     "symfony/http-foundation": "^5",
     "symfony/routing": "^5",
     "symfony/var-dumper": "^4",
@@ -40,10 +45,8 @@
     "ramsey/uuid": "^3.8",
     "erusev/parsedown": "^1.6",
     "predis/predis": "^1.0",
-    "pusher/pusher-php-server": "^2.2",
     "aws/aws-sdk-php": "^3.17",
     "filp/whoops": "^2.1",
-    "elasticsearch/elasticsearch": "^7.0",
     "symfony/mailer": "^5.0",
     "symfony/mailgun-mailer": "^5.0",
     "symfony/http-client": "^5.0"

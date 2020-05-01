@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Domynation\Communication;
 
 use Assert\Assertion;
@@ -12,13 +14,12 @@ use Assert\Assertion;
  */
 final class EmailMessage
 {
-
-    public $recipients;
-    public $subject;
-    public $body;
-    public $from;
-    public $fromName;
-    public $bcc;
+    public array $recipients;
+    public string $subject;
+    public string $body;
+    public string $from;
+    public ?string $fromName;
+    public array $bcc;
 
     /**
      * EmailMessage constructor
@@ -30,12 +31,12 @@ final class EmailMessage
      * @param string $fromName
      * @param array $bcc
      */
-    public function __construct($recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
+    public function __construct(array $recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
     {
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
-        Assertion::email($from, "Invalid FROM email");
-        Assertion::allIsInstanceOf($transformedRecipients, Email::class, "Invalid recipient(s)");
+        Assertion::email($from, 'Invalid FROM email');
+        Assertion::allIsInstanceOf($transformedRecipients, Email::class, 'Invalid recipient(s)');
 
         $this->recipients = $transformedRecipients;
         $this->subject = $subject;
