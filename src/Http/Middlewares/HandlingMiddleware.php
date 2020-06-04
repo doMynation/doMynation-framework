@@ -7,6 +7,7 @@ namespace Domynation\Http\Middlewares;
 use Assert\AssertionFailedException;
 use Domynation\Authentication\UserInterface;
 use Domynation\Bus\CommandBusInterface;
+use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Exceptions\ValidationException;
 use Domynation\Http\BaseActionTrait;
 use Domynation\Http\ResolvedRoute;
@@ -96,6 +97,7 @@ final class HandlingMiddleware extends RouteMiddleware
             $instance->setUser($this->container->get(UserInterface::class));
             $instance->setView($this->container->get(ViewFactoryInterface::class));
             $instance->setBus($this->container->get(CommandBusInterface::class));
+            $instance->setEventDispatcher($this->container->get(EventDispatcherInterface::class));
         }
 
         try {

@@ -57,7 +57,7 @@ final class ApiClient
                 'query' => $this->prepareQuery($data),
             ]);
 
-            $json = json_decode($response->getBody(), true);
+            $json = json_decode($response->getBody()->getContents(), true);
 
             if (array_key_exists('error', $json)) {
                 throw new ApiException($json['error']['message'], $json['error']['code']);
@@ -88,7 +88,7 @@ final class ApiClient
                 'form_params' => $postData,
             ]);
 
-            $json = json_decode($response->getBody(), true);
+            $json = json_decode($response->getBody()->getContents(), true);
 
             if (array_key_exists('error', $json)) {
                 throw new ApiException($json['error']['message'], $json['error']['code']);

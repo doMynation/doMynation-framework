@@ -20,5 +20,5 @@ interface SqlFilter
      *
      * @param \Doctrine\DBAL\Query\QueryBuilder $builder
      */
-    public function applySql(QueryBuilder $builder): void;
+    public function applySql(QueryBuilder $builder);
 }

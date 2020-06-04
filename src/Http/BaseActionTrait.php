@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domynation\Http;
 
 use Domynation\Authentication\UserInterface;
+use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\View\ViewFactoryInterface;
 use JsonException;
 use RuntimeException;
@@ -20,6 +21,7 @@ trait BaseActionTrait
     protected UserInterface $user;
     protected CommandBusInterface $bus;
     protected ViewFactoryInterface $view;
+    protected EventDispatcherInterface $dispatcher;
 
     public function setRequest(Request $request): void
     {
@@ -39,6 +41,11 @@ trait BaseActionTrait
     public function setView(ViewFactoryInterface $view): void
     {
         $this->view = $view;
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->dispatcher = $dispatcher;
     }
 
     /**

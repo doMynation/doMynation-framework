@@ -19,5 +19,5 @@ interface DqlFilter
      *
      * @param \Doctrine\ORM\QueryBuilder $builder
      */
-    public function applyDql(QueryBuilder $builder): void;
+    public function applyDql(QueryBuilder $builder);
 }
