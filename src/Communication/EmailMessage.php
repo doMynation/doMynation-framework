@@ -22,8 +22,6 @@ final class EmailMessage
     public array $bcc;
 
     /**
-     * EmailMessage constructor
-     *
      * @param Email|Email[] $recipients
      * @param string $subject
      * @param string $body
@@ -31,7 +29,7 @@ final class EmailMessage
      * @param string $fromName
      * @param array $bcc
      */
-    public function __construct(array $recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
+    public function __construct($recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
     {
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
