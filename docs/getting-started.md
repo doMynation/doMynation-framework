@@ -63,7 +63,7 @@ Open `/public/index.php` and paste the following code in it.
 // Include composer dependencies
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Create an application instance with the path corresponding to the route of your project
+// Create an application instance with the path corresponding to the root of your project
 $app = new Domynation\Application(__DIR__ . '/../');
 
 // Boot the application
