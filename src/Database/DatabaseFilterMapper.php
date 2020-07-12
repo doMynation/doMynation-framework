@@ -5,61 +5,42 @@ declare(strict_types=1);
 namespace Domynation\Database;
 
 /**
- * A class that maps the filter names to their implementation.
- *
- * @package Domynation\Database
  * @author Dominique Sarrazin <domynation@gmail.com>
- * @deprecated Use `DatabaseFilterMapperSimplified` instead
  */
 final class DatabaseFilterMapper implements DatabaseFilterMapperInterface
 {
-    private string $namespace;
-    private array $allowedFilters;
+    /**
+     * A mapping from a filters name to a class.
+     */
+    private array $mapping;
 
-    public function __construct(string $namespace, array $allowedFilters)
+    public function __construct(array $mapping)
     {
-        $this->namespace = $namespace;
-        $this->allowedFilters = $allowedFilters;
+        $this->mapping = $mapping;
     }
 
     /**
-     * Maps an array of string based filters to their
-     * corresponding classes.
-     *
-     * @param array $filters
-     *
-     * @return DatabaseFilter[]
+     * {@inheritdoc}
      */
     public function map(array $filters): array
     {
-        $classes = [];
+        $instances = [];
 
         foreach ($filters as $name => $value) {
-            if (in_array($name, $this->allowedFilters, true)) {
-                $className = $this->resolveClassName($name);
+            if (!isset($this->mapping[$name])) {
+                continue;
+            }
 
-                if (class_exists($className)) {
-                    $isValid = call_user_func_array($className . '::validate', [$value]);
+            $className = $this->mapping[$name];
 
-                    if ($isValid) {
-                        $classes[] = call_user_func_array($className . '::fromForm', [$value]);
-                    }
-                }
+            // Call `validate` if it exists
+            $isValid = call_user_func_array($className . '::validate', [$value]);
+
+            if ($isValid) {
+                $instances[] = call_user_func_array($className . '::fromForm', [$value]);
             }
         }
 
-        return $classes;
-    }
-
-    /**
-     * Resolves the filter class based on its name.
-     *
-     * @param string $name
-     *
-     * @return string
-     */
-    private function resolveClassName(string $name): string
-    {
-        return $this->namespace . '\\' . ucfirst($name) . 'Filter';
+        return $instances;
     }
 }

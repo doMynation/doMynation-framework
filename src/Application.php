@@ -9,8 +9,8 @@ use Domynation\Config\ConfigInterface;
 use Domynation\Config\InMemoryConfigStore;
 use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Http\RouterInterface;
-use Domynation\Session\PHPSession;
 use Domynation\Session\SessionInterface;
+use Domynation\Session\Session;
 use Domynation\View\ViewFactoryInterface;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -169,7 +171,7 @@ final class Application
      */
     private function bootSession(): SessionInterface
     {
-        $session = new PHPSession;
+        $session = new Session(new NativeSessionStorage([], new NativeFileSessionHandler()));
 
         if ($this->environment === 'web') {
             $session->start();
