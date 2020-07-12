@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
@@ -32,7 +33,6 @@ use Whoops\Run;
  */
 final class Application
 {
-
     /**
      * The root path of the application.
      *
@@ -171,11 +171,12 @@ final class Application
      */
     private function bootSession(): SessionInterface
     {
-        $session = new Session(new NativeSessionStorage([], new NativeFileSessionHandler()));
+        // Use PHP's native session for the web, and an in-memory handler for unit tests.
+        $session = $this->environment === 'web'
+            ? new Session(new NativeSessionStorage([], new NativeFileSessionHandler()))
+            : new Session(new MockArraySessionStorage());
 
-        if ($this->environment === 'web') {
-            $session->start();
-        }
+        $session->start();
 
         return $session;
     }
