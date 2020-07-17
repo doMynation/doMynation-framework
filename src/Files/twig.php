@@ -4,14 +4,6 @@ declare(strict_types=1);
 
 /*
 |--------------------------------------------------------------------------
-| Globals
-|--------------------------------------------------------------------------
-*/
-
-$twig->addGlobal('currentLang', \Language::lang());
-
-/*
-|--------------------------------------------------------------------------
 | Functions
 |--------------------------------------------------------------------------
 */
@@ -30,27 +22,4 @@ $twig->addFunction(new Twig_SimpleFunction('ceil', function ($value) {
 
 $twig->addFunction(new Twig_SimpleFunction('instanceOf', function ($thing, $class) {
     return $thing instanceof $class;
-}));
-
-$twig->addFunction(new Twig_SimpleFunction('getLang', function () {
-    return \Language::lang();
-}));
-
-/*
-|--------------------------------------------------------------------------
-| Filters
-|--------------------------------------------------------------------------
-*/
-
-$twig->addFilter(new Twig_SimpleFilter('translate', function ($key, $placeholders = []) {
-    return lang($key, $placeholders);
-}));
-
-// Aliases for convenience
-$twig->addFilter(new Twig_SimpleFilter('trans', function ($key, $placeholders = []) {
-    return lang($key, $placeholders);
-}));
-
-$twig->addFilter(new Twig_SimpleFilter('tr', function ($key, $placeholders = []) {
-    return lang($key, $placeholders);
 }));

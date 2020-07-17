@@ -3,24 +3,6 @@
 declare(strict_types=1);
 
 /**
- * @param $line
- * @param array $placeholders
- *
- * @return mixed
- * @deprecated Do not use, will be removed.
- */
-function lang($line, $placeholders = [])
-{
-    $line = \Language::get($line);
-
-    foreach ($placeholders as $key => $value) {
-        $line = str_replace("{" . $key . "}", $value, $line);
-    }
-
-    return $line;
-}
-
-/**
  * Returns a memoized version of the provided function. Memoized remmember the result
  * of previous calls by storing them in memory. This helps preventing the unnecessary execution
  * of expensive functions when the result is already known.
