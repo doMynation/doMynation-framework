@@ -14,14 +14,10 @@ use Domynation\Session\Session;
 use Domynation\View\ViewFactoryInterface;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-use Whoops\Handler\Handler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -78,6 +74,9 @@ final class Application
      * Boots the kernel.
      *
      * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
      */
     public function boot(): void
     {
@@ -88,7 +87,7 @@ final class Application
         $this->bootErrorReporting($config);
 
         // Boot the request
-        $this->request = $this->bootRequest();
+        $this->request = $this->bootRequest($config);
 
         // Boot the session
         $session = $this->bootSession();
@@ -104,6 +103,8 @@ final class Application
      * @param \Domynation\Session\SessionInterface $session
      *
      * @return \Psr\Container\ContainerInterface
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @throws \ReflectionException
      */
     private function bootContainer(ConfigInterface $config, SessionInterface $session): ContainerInterface
@@ -219,6 +220,7 @@ final class Application
      * Executes the request and returns the response.
      *
      * @return mixed
+     * @throws \Domynation\Http\RouteNotFoundException
      */
     public function run(): void
     {
@@ -234,6 +236,8 @@ final class Application
     /**
      * Boots error reporting.
      *
+     * @param \Domynation\Config\ConfigInterface $config
+     *
      * @return void
      */
     private function bootErrorReporting(ConfigInterface $config): void
@@ -242,7 +246,7 @@ final class Application
         error_reporting(-1);
 
         $isDevMode = $config->get('isDevMode');
-        $debugHandler = $isDevMode ? new PrettyPageHandler : function ($exception, $inspector, $run) {
+        $debugHandler = $isDevMode ? new PrettyPageHandler : function () {
             echo "Whoops, something went wrong...";
         };
 
@@ -254,10 +258,37 @@ final class Application
     /**
      * Boots the request.
      *
+     * @param \Domynation\Config\ConfigInterface $config
+     *
      * @return \Symfony\Component\HttpFoundation\Request
      */
-    private function bootRequest(): Request
+    private function bootRequest(ConfigInterface $config): Request
     {
-        return Request::createFromGlobals();
+        $i18nConfig = $config->get('i18n');
+
+        // Create the request object and guess the best locale
+        $request = Request::createFromGlobals();
+        $request->setLocale(
+            $this->guessLocale($request, $i18nConfig['cookieName'], $i18nConfig['supportedLocales'])
+        );
+
+        return $request;
+    }
+
+    /**
+     * Guesses the locale based on the environment.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $localeCookieName
+     * @param array $supportedLocales
+     *
+     * @return string
+     */
+    private function guessLocale(Request $request, string $localeCookieName, array $supportedLocales): string
+    {
+        return
+            $request->query->get('locale') ??
+            $request->cookies->get($localeCookieName) ??
+            $request->getPreferredLanguage($supportedLocales);
     }
 }

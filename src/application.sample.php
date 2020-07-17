@@ -111,4 +111,13 @@ return [
             'name'     => 'sushi_test',
         ],
     ],
+
+    'i18n' => [
+        'supportedLocales' => ['en'], // The list of supported locales
+        'fallbackLocale'   => 'en', // The locale to use when the requested locale isn't supported
+        'sourceDir'        => '/data/i18n', // The path to translation files
+        'cacheDir'         => '/cache', // The path wher cached translations should be stored
+        'cookieName'       => 'locale', // The name of the cookie storing the locale
+        'cookieLifetime'   => '15', // The lifetime of the cookie, in days
+    ],
 ];

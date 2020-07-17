@@ -2,23 +2,73 @@
 
 declare(strict_types=1);
 
+use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\PredisCache;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Logging\EchoSQLLogger;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
+use Doctrine\ORM\Cache\RegionsConfiguration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
+use Domynation\Authentication\UserInterface;
+use Domynation\Bus\BasicCommandBus;
+use Domynation\Bus\CommandBusInterface;
+use Domynation\Bus\Middlewares\CachingMiddleware;
+use Domynation\Bus\Middlewares\LoggingMiddleware;
+use Domynation\Cache\CacheInterface;
+use Domynation\Cache\InMemoryCache;
+use Domynation\Cache\RedisCache;
+use Domynation\Communication\DebugMailer;
+use Domynation\Communication\MailerInterface;
+use Domynation\Communication\MailgunMailer;
+use Domynation\Communication\MarkdownParserInterface;
+use Domynation\Communication\NativeMailer;
+use Domynation\Communication\ParsedownMarkdownParser;
+use Domynation\Config\ConfigInterface;
+use Domynation\Eventing\BasicEventDispatcher;
+use Domynation\Eventing\EventDispatcherInterface;
+use Domynation\Http\Middlewares\HandlingMiddleware;
+use Domynation\Http\RouterInterface;
+use Domynation\Http\SymfonyRouter;
+use Domynation\I18N\Translator;
+use Domynation\Security\NativePassword;
+use Domynation\Security\PasswordInterface;
+use Domynation\Session\SessionInterface;
+use Domynation\Storage\AwsS3FileStorage;
+use Domynation\Storage\NativeFileStorage;
+use Domynation\Storage\RackspaceFileStorage;
+use Domynation\Storage\StorageInterface;
+use Domynation\Storage\UnitTestStorage;
+use Domynation\View\TwigViewFactory;
+use Domynation\View\ViewFactoryInterface;
+use Invoker\InvokerInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Predis\Client;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
+
 return [
-    \Psr\Log\LoggerInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+    LoggerInterface::class => function (ConfigInterface $config) {
         $loggingConfigs = $config->get('logging');
         $logsPath = $config->get('basePath') . ($loggingConfigs['logsPath'] ?? '/app.log');
 
-        $appLogger = new Monolog\Logger('App_Logger');
-        $appLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::DEBUG));
+        $appLogger = new Logger('App_Logger');
+        $appLogger->pushHandler(new StreamHandler($logsPath, Monolog\Logger::DEBUG));
 
         return $appLogger;
     },
 
-    \Doctrine\ORM\Cache\Logging\CacheLogger::class => function () {
-        return new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
+    CacheLogger::class => function () {
+        return new StatisticsCacheLogger();
     },
 
-    \Doctrine\ORM\EntityManager::class => function (\Domynation\Config\ConfigInterface $config, \Doctrine\ORM\Cache\Logging\CacheLogger $cacherLogger) {
-        $ormConfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
+    EntityManager::class => function (ConfigInterface $config, CacheLogger $cacherLogger) {
+        $ormConfig = Setup::createAnnotationMetadataConfiguration(
             $config->get('entityDirectories'),
             $config->get('isDevMode'),
             $config->get('basePath') . '/cache/orm'
@@ -26,8 +76,8 @@ return [
 
         if (!$config->get('isDevMode')) {
             $cacheConfig = $config->get('caching');
-            $apcuCache = new \Doctrine\Common\Cache\ApcuCache();
-            $redisCache = new \Doctrine\Common\Cache\PredisCache(new \Predis\Client([
+            $apcuCache = new ApcuCache();
+            $redisCache = new PredisCache(new Client([
                 'scheme' => 'tcp',
                 'host'   => $cacheConfig['redis']['host'],
                 'port'   => $cacheConfig['redis']['port']
@@ -37,8 +87,8 @@ return [
 //            $redisCache->flushAll();
 
             // Second level cache configuration
-            $cacheFactory = new \Doctrine\ORM\Cache\DefaultCacheFactory(
-                new \Doctrine\ORM\Cache\RegionsConfiguration,
+            $cacheFactory = new DefaultCacheFactory(
+                new RegionsConfiguration,
                 $redisCache
             );
 
@@ -56,10 +106,10 @@ return [
 
         // Debug all SQL queries
         if ($dbConfig[$dbEnv]['debugSql'] ?? false) {
-            $ormConfig->setSQLLogger(new Doctrine\DBAL\Logging\EchoSQLLogger);
+            $ormConfig->setSQLLogger(new EchoSQLLogger);
         }
 
-        return Doctrine\ORM\EntityManager::create([
+        return EntityManager::create([
             'host'     => $dbConfig[$dbEnv]['host'],
             'driver'   => $dbConfig[$dbEnv]['driver'],
             'dbname'   => $dbConfig[$dbEnv]['name'],
@@ -69,38 +119,38 @@ return [
         ], $ormConfig);
     },
 
-    \Doctrine\DBAL\Connection::class => function (\Doctrine\ORM\EntityManager $em) {
+    Connection::class => function (EntityManager $em) {
         return $em->getConnection();
     },
 
-    \Domynation\Bus\CommandBusInterface::class => function (
-        Psr\Container\ContainerInterface $container,
-        \Domynation\Authentication\UserInterface $user,
-        \Domynation\Eventing\EventDispatcherInterface $dispatcher,
-        \Domynation\Cache\CacheInterface $cache,
-        \Domynation\Config\ConfigInterface $config
+    CommandBusInterface::class => function (
+        ContainerInterface $container,
+        UserInterface $user,
+        EventDispatcherInterface $dispatcher,
+        CacheInterface $cache,
+        ConfigInterface $config
     ) {
         // Configure logger
         $busConfigs = $config->get('bus');
 
         $busMiddlewares = [
-            new \Domynation\Bus\Middlewares\CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
+            new CachingMiddleware($cache, $config->get('bus')['cacheDuration']),
         ];
 
         if ($busConfigs['enableLogging']) {
             $logsPath = $config->get('basePath') . ($busConfigs['logsPath'] ?? '/bus.log');
             $busLogger = new Monolog\Logger('Bus_logger');
-            $busLogger->pushHandler(new Monolog\Handler\StreamHandler($logsPath, Monolog\Logger::INFO));
+            $busLogger->pushHandler(new StreamHandler($logsPath, Monolog\Logger::INFO));
 
-            $busMiddlewares[] = new \Domynation\Bus\Middlewares\LoggingMiddleware($busLogger, $user);
+            $busMiddlewares[] = new LoggingMiddleware($busLogger, $user);
         }
 
         $busMiddlewares[] = new \Domynation\Bus\Middlewares\HandlingMiddleware;
 
-        return new Domynation\Bus\BasicCommandBus($container, $dispatcher, $busMiddlewares);
+        return new BasicCommandBus($container, $dispatcher, $busMiddlewares);
     },
 
-    \Domynation\Http\RouterInterface::class => function (Psr\Container\ContainerInterface $container, \Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker, \Domynation\Session\SessionInterface $session) {
+    RouterInterface::class => function (ContainerInterface $container, ConfigInterface $config, InvokerInterface $invoker, SessionInterface $session) {
         $routingConfig = $config->get('routing');
 
         // Resolve all middleware through the container
@@ -109,86 +159,84 @@ return [
         }, $routingConfig[$config->get('environment')]['middlewares']);
 
         // Append the handling middleware at the end
-        $middlewares[] = new \Domynation\Http\Middlewares\HandlingMiddleware($container, $invoker, $session);
+        $middlewares[] = new HandlingMiddleware($container, $invoker, $session);
 
-        return new \Domynation\Http\SymfonyRouter($middlewares);
+        return new SymfonyRouter($middlewares);
     },
 
-    \Domynation\Cache\CacheInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+    CacheInterface::class => function (ConfigInterface $config) {
         if ($config->get('isDevMode')) {
-            return new \Domynation\Cache\InMemoryCache;
+            return new InMemoryCache;
         }
 
         $cacheConfig = $config->get('caching');
 
         switch ($cacheConfig['driver']) {
             case 'redis':
-                return new \Domynation\Cache\RedisCache($cacheConfig['redis']['host'], $cacheConfig['redis']['port']);
+                return new RedisCache($cacheConfig['redis']['host'], $cacheConfig['redis']['port']);
             default:
-                return new \Domynation\Cache\InMemoryCache;
+                return new InMemoryCache;
                 break;
         }
     },
 
-    \Domynation\Communication\MarkdownParserInterface::class => function () {
+    MarkdownParserInterface::class => function () {
         $parsedown = new Parsedown;
         $parsedown->setBreaksEnabled(true);
         $parsedown->setUrlsLinked(true);
         $parsedown->setMarkupEscaped(true);
 
-        return new \Domynation\Communication\ParsedownMarkdownParser($parsedown);
+        return new ParsedownMarkdownParser($parsedown);
     },
 
-    \Domynation\Security\PasswordInterface::class => function () {
-        return new \Domynation\Security\NativePassword;
+    PasswordInterface::class => function () {
+        return new NativePassword;
     },
 
-    \Domynation\Storage\StorageInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+    StorageInterface::class => function (ConfigInterface $config) {
         if ($config->get('environment') === 'test') {
-            return new \Domynation\Storage\UnitTestStorage;
+            return new UnitTestStorage;
         }
 
         $storageConfig = $config->get('storage');
 
         switch ($storageConfig['driver']) {
             case 'aws':
-                return new \Domynation\Storage\AwsS3FileStorage($storageConfig['aws']['region'], $storageConfig['aws']['apiKey'], $storageConfig['aws']['secretKey']);
+                return new AwsS3FileStorage($storageConfig['aws']['region'], $storageConfig['aws']['apiKey'], $storageConfig['aws']['secretKey'], '');
                 break;
 
             case 'rackspace':
-                return new Domynation\Storage\RackspaceFileStorage($storageConfig['rackspace']['username'], $storageConfig['rackspace']['password']);
+                return new RackspaceFileStorage($storageConfig['rackspace']['username'], $storageConfig['rackspace']['password']);
                 break;
 
             case 'file':
             default:
-                return new \Domynation\Storage\NativeFileStorage($storageConfig['file']['directory'], $storageConfig['file']['uri']);
+                return new NativeFileStorage($storageConfig['file']['directory'], $storageConfig['file']['uri']);
                 break;
         }
     },
 
-    \Domynation\Communication\MailerInterface::class => function (\Domynation\Config\ConfigInterface $config) {
+    MailerInterface::class => function (ConfigInterface $config) {
         $emailConfig = $config->get('emailing');
 
         switch ($emailConfig['driver']) {
             case 'mailgun':
-                $mailer = new Domynation\Communication\MailgunMailer($emailConfig['mailgun']['apiKey'], $emailConfig['mailgun']['domain']);
+                $mailer = new MailgunMailer($emailConfig['mailgun']['apiKey'], $emailConfig['mailgun']['domain']);
                 break;
 
             case 'native':
             default:
-                $mailer = new \Domynation\Communication\NativeMailer;
+                $mailer = new NativeMailer;
                 break;
         }
 
         // In dev mode, use the DebugMailer
         return $config->get('isDevMode')
-            ? new \Domynation\Communication\DebugMailer($mailer, $emailConfig['debugEmail'])
+            ? new DebugMailer($mailer, $emailConfig['debugEmail'])
             : $mailer;
     },
 
-    \Domynation\View\ViewFactoryInterface::class => function (\Domynation\Config\ConfigInterface $config) {
-        $devConfig = $config->get('dev');
-
+    ViewFactoryInterface::class => function (ConfigInterface $config, Translator $translator, Request $request) {
         $options = [
             'cache'            => $config->get('basePath') . '/cache/views',
             'debug'            => false,
@@ -202,14 +250,14 @@ return [
 
         $viewsConfig = $config->get('views');
         $twig = new Twig_Environment(new Twig_Loader_Filesystem($config->get('basePath') . $viewsConfig['path']), $options);
-        $instance = new \Domynation\View\TwigViewFactory($twig, $config->get('basePath') . $viewsConfig['path'], $viewsConfig['fileExtension']);
+        $instance = new TwigViewFactory($twig, $config->get('basePath') . $viewsConfig['path'], $viewsConfig['fileExtension']);
 
         require_once __DIR__ . '/twig.php';
 
         return $instance;
     },
 
-    \Domynation\Eventing\EventDispatcherInterface::class => function (\Domynation\Config\ConfigInterface $config, \Invoker\InvokerInterface $invoker, Psr\Container\ContainerInterface $container) {
+    EventDispatcherInterface::class => function (ConfigInterface $config, InvokerInterface $invoker, ContainerInterface $container) {
         $eventingConfig = $config->get('eventing');
 
         // Resolve all middleware through the container
@@ -217,6 +265,31 @@ return [
             return $container->get($middlewareName);
         }, $eventingConfig[$config->get('environment')]['middlewares']);
 
-        return new \Domynation\Eventing\BasicEventDispatcher($invoker, $middlewares);
+        return new BasicEventDispatcher($invoker, $middlewares);
     },
+
+    Translator::class => function (ConfigInterface $config, Request $request) {
+        $i18nConfig = $config->get('i18n');
+        $sourceDir = $config->get('basePath') . $i18nConfig['sourceDir'];
+
+        $translator = new \Symfony\Component\Translation\Translator($request->getLocale());
+        $translator->addLoader('yaml', new YamlFileLoader);
+
+        foreach (new FilesystemIterator($sourceDir, FilesystemIterator::SKIP_DOTS) as $file) {
+            // Ignore non-YAML files
+            if (!in_array($file->getExtension(), ['yml', 'yaml'], true)) {
+                continue;
+            }
+
+            // Ignore files whose names are not in the correct format
+            if (!preg_match('/^.*?\.(.*?)\.(?:yml|yaml)$/', $file->getRealPath(), $matches)) {
+                continue;
+            }
+
+            // Add the resource
+            $translator->addResource('yaml', $file->getRealPath(), $matches[1], 'messages+intl-icu');
+        }
+
+        return new Translator($translator->getLocale(), $i18nConfig['supportedLocales'], $translator);
+    }
 ];
