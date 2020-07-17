@@ -51,6 +51,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 return [
     LoggerInterface::class => function (ConfigInterface $config) {
@@ -249,7 +251,7 @@ return [
         }
 
         $viewsConfig = $config->get('views');
-        $twig = new Twig_Environment(new Twig_Loader_Filesystem($config->get('basePath') . $viewsConfig['path']), $options);
+        $twig = new Environment(new FilesystemLoader($config->get('basePath') . $viewsConfig['path']), $options);
         $instance = new TwigViewFactory($twig, $config->get('basePath') . $viewsConfig['path'], $viewsConfig['fileExtension']);
 
         require_once __DIR__ . '/twig.php';

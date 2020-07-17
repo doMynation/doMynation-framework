@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Domynation\View;
 
-use Twig_Environment;
+use Twig\Environment;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 /**
  * Class TwigViewFactory
@@ -14,10 +16,7 @@ use Twig_Environment;
  */
 final class TwigViewFactory implements ViewFactoryInterface
 {
-    /**
-     * @var \Twig_Environment
-     */
-    private Twig_Environment $twig;
+    private Environment $twig;
 
     /**
      * The path where view files are located.
@@ -27,7 +26,7 @@ final class TwigViewFactory implements ViewFactoryInterface
     private string $path;
     private string $fileExtension;
 
-    public function __construct(Twig_Environment $twig, string $path, string $defaultFileExtension)
+    public function __construct(Environment $twig, string $path, string $defaultFileExtension)
     {
         $this->twig = $twig;
         $this->path = $path;
@@ -65,7 +64,7 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     public function addFunction($name, callable $closure): void
     {
-        $this->twig->addFunction(new \Twig_SimpleFunction($name, $closure));
+        $this->twig->addFunction(new TwigFunction($name, $closure));
     }
 
     /**
@@ -73,6 +72,6 @@ final class TwigViewFactory implements ViewFactoryInterface
      */
     public function addFilter($name, callable $closure): void
     {
-        $this->twig->addFilter(new \Twig_SimpleFilter($name, $closure));
+        $this->twig->addFilter(new TwigFilter($name, $closure));
     }
 }

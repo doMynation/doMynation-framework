@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Twig\TwigFilter;
+use Twig\TwigFunction;
+
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -9,19 +12,20 @@ declare(strict_types=1);
 */
 
 /** @var \Twig_Environment $twig */
-$twig->addFunction(new Twig_SimpleFunction('dump', function ($value) {
+
+$twig->addFunction(new TwigFunction('dump', function ($value) {
     return dump($value);
 }));
 
-$twig->addFunction(new Twig_SimpleFunction('call', function ($function, $value) {
+$twig->addFunction(new TwigFunction('call', function ($function, $value) {
     return $function($value);
 }));
 
-$twig->addFunction(new Twig_SimpleFunction('ceil', function ($value) {
+$twig->addFunction(new TwigFunction('ceil', function ($value) {
     return ceil($value);
 }));
 
-$twig->addFunction(new Twig_SimpleFunction('instanceOf', function ($thing, $class) {
+$twig->addFunction(new TwigFunction('instanceOf', function ($thing, $class) {
     return $thing instanceof $class;
 }));
 
@@ -34,6 +38,6 @@ $twig->addFunction(new Twig_SimpleFunction('instanceOf', function ($thing, $clas
 /** @var \Symfony\Component\HttpFoundation\Request $request */
 
 $twig->addGlobal('currentLocale', $translator->getLocale());
-$twig->addFilter('tr', function (string $key, array $placeholders = [], string $preferredLocale = null) use ($translator) {
+$twig->addFilter(new TwigFilter('tr', function (string $key, array $placeholders = [], string $preferredLocale = null) use ($translator) {
     return $translator->trans($key, $placeholders, $preferredLocale);
-});
+}));
