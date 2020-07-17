@@ -6,6 +6,7 @@ namespace Domynation\Http;
 
 use Domynation\Authentication\UserInterface;
 use Domynation\Eventing\EventDispatcherInterface;
+use Domynation\I18N\Translator;
 use Domynation\View\ViewFactoryInterface;
 use JsonException;
 use RuntimeException;
@@ -22,6 +23,7 @@ trait BaseActionTrait
     protected CommandBusInterface $bus;
     protected ViewFactoryInterface $view;
     protected EventDispatcherInterface $dispatcher;
+    protected Translator $translator;
 
     public function setRequest(Request $request): void
     {
@@ -46,6 +48,11 @@ trait BaseActionTrait
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;
+    }
+
+    public function setTranslator(Translator $translator): void
+    {
+        $this->translator = $translator;
     }
 
     /**

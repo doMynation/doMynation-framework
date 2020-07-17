@@ -11,6 +11,7 @@ use Domynation\Eventing\EventDispatcherInterface;
 use Domynation\Exceptions\ValidationException;
 use Domynation\Http\BaseActionTrait;
 use Domynation\Http\ResolvedRoute;
+use Domynation\I18N\Translator;
 use Domynation\Session\SessionInterface;
 use Domynation\View\ViewFactoryInterface;
 use InvalidArgumentException;
@@ -98,6 +99,7 @@ final class HandlingMiddleware extends RouteMiddleware
             $instance->setView($this->container->get(ViewFactoryInterface::class));
             $instance->setBus($this->container->get(CommandBusInterface::class));
             $instance->setEventDispatcher($this->container->get(EventDispatcherInterface::class));
+            $instance->setTranslator($this->container->get(Translator::class));
         }
 
         try {
