@@ -123,10 +123,7 @@ final class SymfonyRouter implements RouterInterface
         $request->attributes = new ParameterBag($resolvedRoute->getParameters());
 
         // Let the middlewares do their job
-        $response = $this->middleware->handle($resolvedRoute, $request);
-
-        // Parse the response
-        return $this->parseResponse($request, $response);
+        return $this->middleware->handle($resolvedRoute, $request);
     }
 
     /**
@@ -148,44 +145,6 @@ final class SymfonyRouter implements RouterInterface
         }, ARRAY_FILTER_USE_KEY);
 
         return new ResolvedRoute($matchInfo['_internalRoute'], $parameters);
-    }
-
-    /**
-     * Parses the response using a series of helper functions to facilitate the
-     * generation of a response from within the controller.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param mixed $response
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    private function parseResponse(Request $request, $response): Response
-    {
-        if ($response === null) {
-            return $request->isXmlHttpRequest()
-                ? new JsonResponse
-                : new Response;
-        }
-
-        // Convert a redirect to a regular response for ajax requests
-        if ($response instanceof RedirectResponse && $request->isXmlHttpRequest()) {
-            $newResponse = new Response('', $response->getStatusCode());
-            $newResponse->headers->set('Location', $response->getTargetUrl());
-
-            return $newResponse;
-        }
-
-        if ($response instanceof Response) {
-            return $response;
-        }
-
-        if (is_string($response)) {
-            return new Response($response);
-        }
-
-        if (is_array($response)) {
-            return new JsonResponse($response);
-        }
     }
 
     /**
@@ -261,9 +220,6 @@ final class SymfonyRouter implements RouterInterface
         $request->attributes = new ParameterBag($resolvedRoute->getParameters());
 
         // Let the middlewares do their job
-        $response = $this->middleware->handle($resolvedRoute, $request);
-
-        // Parse the response
-        return $this->parseResponse($request, $response);
+        return $this->middleware->handle($resolvedRoute, $request);
     }
 }

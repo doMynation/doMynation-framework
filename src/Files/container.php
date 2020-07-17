@@ -152,16 +152,13 @@ return [
         return new BasicCommandBus($container, $dispatcher, $busMiddlewares);
     },
 
-    RouterInterface::class => function (ContainerInterface $container, ConfigInterface $config, InvokerInterface $invoker, SessionInterface $session) {
+    RouterInterface::class => function (ContainerInterface $container, ConfigInterface $config) {
         $routingConfig = $config->get('routing');
 
         // Resolve all middleware through the container
         $middlewares = array_map(function ($middlewareName) use ($container) {
             return $container->get($middlewareName);
         }, $routingConfig[$config->get('environment')]['middlewares']);
-
-        // Append the handling middleware at the end
-        $middlewares[] = new HandlingMiddleware($container, $invoker, $session);
 
         return new SymfonyRouter($middlewares);
     },

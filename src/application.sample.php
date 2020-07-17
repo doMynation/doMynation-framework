@@ -25,12 +25,17 @@ return [
                 Domynation\Http\Middlewares\AuthenticationMiddleware::class,
                 Domynation\Http\Middlewares\AuthorizationMiddleware::class,
                 Domynation\Http\Middlewares\ValidationMiddleware::class,
+                Domynation\Http\Middlewares\LocaleCookieMiddleware::class,
+                Domynation\Http\Middlewares\ResponseShortcutMiddleware::class,
+                Domynation\Http\Middlewares\HandlingMiddleware::class,
             ],
         ],
         'test'     => [
             // The middlewares chain (from top to bottom) that will intercept each request in automated tests
             'middlewares' => [
                 Domynation\Http\Middlewares\ValidationMiddleware::class,
+                Domynation\Http\Middlewares\ResponseShortcutMiddleware::class,
+                Domynation\Http\Middlewares\HandlingMiddleware::class,
             ],
         ],
     ],
