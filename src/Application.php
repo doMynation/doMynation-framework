@@ -268,8 +268,13 @@ final class Application
 
         // Create the request object and guess the best locale
         $request = Request::createFromGlobals();
+        $guessedLocale = $this->guessLocale($request, $i18nConfig['cookieName'], $i18nConfig['supportedLocales']);
+
+        // Attach the locale to the request object
         $request->setLocale(
-            $this->guessLocale($request, $i18nConfig['cookieName'], $i18nConfig['supportedLocales'])
+            in_array($guessedLocale, $i18nConfig['supportedLocales'], true)
+                ? $guessedLocale
+                : $i18nConfig['fallbackLocale']
         );
 
         return $request;
