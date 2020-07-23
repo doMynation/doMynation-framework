@@ -35,9 +35,13 @@ $twig->addFunction(new TwigFunction('instanceOf', function ($thing, $class) {
 |--------------------------------------------------------------------------
 */
 /** @var \Domynation\I18N\Translator $translator */
-/** @var \Symfony\Component\HttpFoundation\Request $request */
 
 $twig->addGlobal('currentLocale', $translator->getLocale());
-$twig->addFilter(new TwigFilter('tr', function (string $key, array $placeholders = [], string $preferredLocale = null) use ($translator) {
-    return $translator->trans($key, $placeholders, $preferredLocale);
-}));
+$twig->addFilter(
+    new TwigFilter('tr', function (string $key, array $placeholders = []) use ($translator) {
+        return $translator->trans($key, $placeholders);
+    }, [
+        'is_safe'     => ['html'],
+        'is_variadic' => true,
+    ])
+);

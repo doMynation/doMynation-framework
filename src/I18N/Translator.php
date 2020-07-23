@@ -43,6 +43,11 @@ final class Translator
         return $this->locale;
     }
 
+    public function getSupportedLocales(): array
+    {
+        return $this->supportedLocales;
+    }
+
     private function isLocaleSupported(string $locale): bool
     {
         return in_array($locale, $this->supportedLocales, true);
