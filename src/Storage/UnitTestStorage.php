@@ -29,11 +29,9 @@ final class UnitTestStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function put($filePath, $data = [])
+    public function put(UploadedFile $file, $data = [])
     {
-        $fileInfo = pathinfo($filePath);
-
-        return new StorageResponse($fileInfo['filename'], "/tests/{$fileInfo['filename']}");
+        return new StorageResponse($file->getPath(), "/tests/{$file->getOriginalName()}");
     }
 
     /**

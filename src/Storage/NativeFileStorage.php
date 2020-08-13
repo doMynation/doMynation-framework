@@ -50,13 +50,12 @@ final class NativeFileStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function put($filePath, $data = [])
+    public function put(UploadedFile $file, $data = [])
     {
-        $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        $newFileName = Uuid::uuid4() . '.' . $ext;
+        $newFileName = Uuid::uuid4() . '.' . $file->getExtension();
 
         // Move the file
-        rename($filePath, $this->folder . '/' . $newFileName);
+        rename($file->getPath(), $this->folder . '/' . $newFileName);
 
         return new StorageResponse($newFileName, "{$this->uri}/{$newFileName}");
     }

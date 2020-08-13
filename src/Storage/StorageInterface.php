@@ -5,14 +5,10 @@ declare(strict_types=1);
 namespace Domynation\Storage;
 
 /**
- * Interface StorageInterface
- *
- * @package Domynation\Storage
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 interface StorageInterface
 {
-
     /**
      * Retrieves a file from the storage.
      *
@@ -35,12 +31,12 @@ interface StorageInterface
     /**
      * Puts a file in the storage.
      *
-     * @param string $filePath
+     * @param \Domynation\Storage\UploadedFile $file
      * @param array $data
      *
-     * @return StorageResponse
+     * @return \Domynation\Storage\StorageResponse
      */
-    public function put($filePath, $data = []);
+    public function put(UploadedFile $file, $data = []);
 
     /**
      * Deletes a file from the storage.

@@ -7,9 +7,6 @@ namespace Domynation\Storage;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Class RackspaceFileStorage
- *
- * @package Domynation\Storage
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class RackspaceFileStorage implements StorageInterface
@@ -95,7 +92,7 @@ final class RackspaceFileStorage implements StorageInterface
     /**
      * {@inheritdoc}
      */
-    public function put($filePath, $data = [])
+    public function put(UploadedFile $file, $data = [])
     {
         if (array_key_exists('container', $data)) {
             throw new \RuntimeException("Container missing");
@@ -104,11 +101,10 @@ final class RackspaceFileStorage implements StorageInterface
         $connection = $this->authenticate();
         $container = $connection->get_container($data['container']);
 
-        $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        $fileName = Uuid::uuid4() . '.' . $ext;
+        $fileName = Uuid::uuid4() . '.' . $file->getExtension();
 
         $object = $container->create_object($fileName);
-        $object->load_from_filename($filePath);
+        $object->load_from_filename($file->getPath());
         $uri = $container->make_public();
 
         return new StorageResponse($object->name, $object->public_ssl_uri());

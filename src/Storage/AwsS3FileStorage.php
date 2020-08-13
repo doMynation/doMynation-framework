@@ -9,9 +9,6 @@ use Aws\S3\S3Client;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Class AwsS3FileStorage
- *
- * @package Domynation\Storage
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class AwsS3FileStorage implements StorageInterface
@@ -82,27 +79,20 @@ final class AwsS3FileStorage implements StorageInterface
     }
 
     /**
-     * Puts a file in the storage.
-     *
-     * @param string $filePath
-     * @param array $data
-     *
-     * @return StorageResponse
+     * {@inheritdoc}
      */
-    public function put($filePath, $data = [])
+    public function put(UploadedFile $file, $data = [])
     {
-        $fileInfo = pathinfo($filePath);
-
         // Generate a unique name
-        $key = Uuid::uuid4() . '.' . $fileInfo['extension'];
+        $key = Uuid::uuid4() . '.' . $file->getExtension();
 
         $result = $this->client->putObject([
             'Bucket'     => $this->defaultBucket,
             'Key'        => $key,
-            'SourceFile' => $filePath,
+            'SourceFile' => $file->getPath(),
             'ACL'        => 'public-read',
             'Metadata'   => array_merge($data, [
-                'originalName' => $fileInfo['basename']
+                'originalName' => $file->getOriginalName()
             ])
         ]);
 
