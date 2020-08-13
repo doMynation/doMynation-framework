@@ -45,3 +45,11 @@ $twig->addFilter(
         'is_variadic' => true,
     ])
 );
+
+$twig->addFunction(
+    new TwigFunction('dumpTranslations', function () use ($translator) {
+        $translations = $translator->getAllTranslations();
+
+        return json_encode($translations);
+    })
+);

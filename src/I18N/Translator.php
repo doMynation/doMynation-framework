@@ -9,12 +9,14 @@ use Symfony\Component\Translation\Translator as SymfonyTranslator;
  */
 final class Translator
 {
+    private array $translations;
     private string $locale;
     private array $supportedLocales;
     private SymfonyTranslator $innerTranslator;
 
-    public function __construct(string $locale, array $supportedLocales, SymfonyTranslator $innerTranslator)
+    public function __construct(array $translations, string $locale, array $supportedLocales, SymfonyTranslator $innerTranslator)
     {
+        $this->translations = $translations;
         $this->locale = $locale;
         $this->supportedLocales = $supportedLocales;
         $this->innerTranslator = $innerTranslator;
@@ -51,5 +53,10 @@ final class Translator
     private function isLocaleSupported(string $locale): bool
     {
         return in_array($locale, $this->supportedLocales, true);
+    }
+
+    public function getAllTranslations(): array
+    {
+        return $this->translations;
     }
 }

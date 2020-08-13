@@ -50,7 +50,9 @@ use Predis\Client;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -274,7 +276,15 @@ return [
         $translator = new \Symfony\Component\Translation\Translator($request->getLocale());
         $translator->addLoader('yaml', new YamlFileLoader);
 
-        foreach (new FilesystemIterator($sourceDir, FilesystemIterator::SKIP_DOTS) as $file) {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sourceDir, FilesystemIterator::SKIP_DOTS));
+
+        $translations = [];
+
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                continue;
+            }
+
             // Ignore non-YAML files
             if (!in_array($file->getExtension(), ['yml', 'yaml'], true)) {
                 continue;
@@ -285,10 +295,14 @@ return [
                 continue;
             }
 
+            $fileTranslations = Yaml::parseFile($file->getRealPath());
+            $translations[$matches[1]] = $translations[$matches[1]] ?? [];
+            $translations[$matches[1]] = array_merge($translations[$matches[1]], $fileTranslations);
+
             // Add the resource
             $translator->addResource('yaml', $file->getRealPath(), $matches[1], 'messages+intl-icu');
         }
 
-        return new Translator($translator->getLocale(), $i18nConfig['supportedLocales'], $translator);
+        return new Translator($translations, $translator->getLocale(), $i18nConfig['supportedLocales'], $translator);
     }
 ];
