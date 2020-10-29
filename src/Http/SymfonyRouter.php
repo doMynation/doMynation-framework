@@ -98,7 +98,7 @@ final class SymfonyRouter implements RouterInterface
                 : new RedirectResponse('/403');
         } catch (RouteNotFoundException $e) {
             return $request->isXmlHttpRequest()
-                ? new Response(null, Response::HTTP_UNAUTHORIZED)
+                ? new Response(null, Response::HTTP_NOT_FOUND)
                 : new RedirectResponse('/404');
         } catch (ValidationException $e) {
             return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);

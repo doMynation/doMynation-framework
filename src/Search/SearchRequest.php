@@ -8,9 +8,6 @@ use Assert\Assertion;
 use InvalidArgumentException;
 
 /**
- * Class SearchRequest
- *
- * @package Domynation\Search
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class SearchRequest
@@ -95,7 +92,7 @@ final class SearchRequest
 
         // Determine sorting
         $sort = null;
-        $order = 'asc';
+        $order = self::ORDER_ASC;
 
         if (!empty($queryStrings['sortField'])) {
             $sort = $queryStrings['sortField'];
@@ -224,7 +221,7 @@ final class SearchRequestBuilder
      *
      * @return $this
      */
-    public function sort($field, $order = 'asc')
+    public function sort($field, $order = SearchRequest::ORDER_ASC)
     {
         $this->sortField = $field;
         $this->sortOrder = $order;

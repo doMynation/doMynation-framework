@@ -39,6 +39,11 @@ $twig->addFunction(new TwigFunction('instanceOf', function ($thing, $class) {
 $twig->addGlobal('currentLocale', $translator->getLocale());
 $twig->addFilter(
     new TwigFilter('tr', function (string $key, array $placeholders = []) use ($translator) {
+        // This filter is variadic on the last argument, so whatever is supplied as the placeholder will be wrapped in an array (e.g. 'banana' => ['banana']).
+        // When the first placeholder is an array, it means the view passed an associative array with named placeholders, in which case
+        // said array will be stored in $placeholder[0].
+        $placeholders = is_array($placeholders[0] ?? null) ? $placeholders[0] : $placeholders;
+
         return $translator->trans($key, $placeholders);
     }, [
         'is_safe'     => ['html'],
