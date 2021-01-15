@@ -29,14 +29,16 @@ final class SymfonyRouter implements RouterInterface
 {
     private RouteCollection $routes;
     private ?RouteMiddleware $middleware;
+    private string $loginRoute;
 
     /**
      * @param array \Domynation\Http\Middlewares\RouteMiddleware[] $middlewares
      */
-    public function __construct(array $middlewares)
+    public function __construct(array $middlewares, string $loginRoute)
     {
         $this->middleware = $this->buildMiddlewareChain($middlewares);
         $this->routes = new RouteCollection;
+        $this->loginRoute = $loginRoute;
     }
 
     /**
@@ -91,19 +93,17 @@ final class SymfonyRouter implements RouterInterface
         } catch (AuthenticationException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_UNAUTHORIZED)
-                : new RedirectResponse('/login');
+                : new RedirectResponse($this->loginRoute);
         } catch (AuthorizationException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_FORBIDDEN)
                 : new RedirectResponse('/403');
-        } catch (RouteNotFoundException $e) {
+        } catch (RouteNotFoundException | EntityNotFoundException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_NOT_FOUND)
                 : new RedirectResponse('/404');
         } catch (ValidationException $e) {
             return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
-        } catch (EntityNotFoundException $e) {
-            return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
         } catch (DomainException $e) {
             return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

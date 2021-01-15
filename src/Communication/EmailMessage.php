@@ -29,8 +29,9 @@ final class EmailMessage
      * @param string $fromName
      * @param array $bcc
      */
-    public function __construct($recipients, string $subject, string $body, string $from, ?string $fromName = null, array $bcc = [])
+    public function __construct($recipients, string $subject, string $body, string|\Stringable $from, ?string $fromName = null, array $bcc = [])
     {
+        $from = (string)$from;
         $transformedRecipients = is_array($recipients) ? $recipients : [$recipients];
 
         Assertion::email($from, 'Invalid FROM email');

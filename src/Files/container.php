@@ -162,7 +162,7 @@ return [
             return $container->get($middlewareName);
         }, $routingConfig[$config->get('environment')]['middlewares']);
 
-        return new SymfonyRouter($middlewares);
+        return new SymfonyRouter($middlewares, $routingConfig['loginRoute'] ?? '/login');
     },
 
     CacheInterface::class => function (ConfigInterface $config) {
