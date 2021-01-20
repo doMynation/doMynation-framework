@@ -55,7 +55,7 @@ final class ResponseShortcutMiddleware extends RouteMiddleware
         }
 
         // Convert array to a Json response
-        if (is_array($response)) {
+        if (is_array($response) || $response instanceof \JsonSerializable) {
             return new JsonResponse($response);
         }
 

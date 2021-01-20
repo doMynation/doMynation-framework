@@ -62,12 +62,10 @@ final class SearchRequest
     }
 
     /**
-     * @param array $queryStrings
-     * @param bool $isPaginated
-     *
-     * @return \Domynation\Search\SearchRequest
+     * @deprecated
+     * @see \Domynation\Search\SearchRequest::fromQueryStrings()
      */
-    public static function fromQueryStrings(array $queryStrings, bool $isPaginated = true): self
+    public static function fromQueryStrings2(array $queryStrings, bool $isPaginated = true): self
     {
         $inputFilters = !empty($queryStrings['filters']) ? $queryStrings['filters'] : [];
 
@@ -104,6 +102,49 @@ final class SearchRequest
             ->take($limit)
             ->skip($offset)
             ->sort($sort, $order)
+            ->paginate($isPaginated)
+            ->get();
+    }
+
+    public static function fromQueryStrings(array $queryStrings, bool $isPaginated = true): self
+    {
+        $inputFilters = !empty($queryStrings['filters']) ? $queryStrings['filters'] : [];
+
+        // Parse filters
+        $filters = array_fold($inputFilters, function (array $acc, string $name, $value) {
+            if (is_string($value)) {
+                $trimmedValue = trim($value);
+                if ($trimmedValue !== '') {
+                    $acc[$name] = $trimmedValue;
+                }
+            } else {
+                $acc[$name] = $value;
+            }
+
+            return $acc;
+        });
+
+        // Determine pagination
+        $limit = !empty($queryStrings['pageSize']) ? (int)$queryStrings['pageSize'] : 25;
+        $page = !empty($queryStrings['page']) && is_numeric($queryStrings['page']) && $queryStrings['page'] > 0 ? (int)$queryStrings['page'] : 1;
+        $offset = $limit * ($page - 1);
+
+        // Determine sorting
+        $sortField = null;
+        $sortOrder = self::ORDER_ASC;
+
+        if (!empty($queryStrings['sort'])) {
+            preg_match('/^(\-)?(.*)$/', $queryStrings['sort'], $matches);
+            [$_, $sortSymbol, $sortField] = $matches;
+
+            $sortOrder = $sortSymbol && $sortSymbol === '-' ? self::ORDER_DESC : self::ORDER_ASC;
+        }
+
+        return self::make()
+            ->filter($filters)
+            ->take($limit)
+            ->skip($offset)
+            ->sort($sortField, $sortOrder)
             ->paginate($isPaginated)
             ->get();
     }

@@ -10,15 +10,10 @@ namespace Domynation\Search;
  * @package Domynation\Search
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
-final class SearchResult
+final class SearchResult implements \JsonSerializable
 {
-    private array $hits;
-    private int $count;
-
-    public function __construct(array $hits, int $count)
+    public function __construct(private array $hits, private int $count, private bool $isPaginated, private int $pageSize)
     {
-        $this->hits = $hits;
-        $this->count = $count;
     }
 
     /**
@@ -60,5 +55,38 @@ final class SearchResult
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function getPageSize(): int
+    {
+        return $this->pageSize;
+    }
+
+    public function getPages(): int
+    {
+        if (!$this->isPaginated) {
+            return 1;
+        }
+        
+        return (int)ceil($this->count / $this->pageSize);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+    
+    public function toArray(): array
+    {
+        return [
+            'count' => $this->count,
+            'results' => $this->hits,
+            'isPaginated' => $this->isPaginated,
+            'pageSize' => $this->pageSize,
+            'pages' => $this->getPages(),
+        ];
     }
 }
