@@ -32,10 +32,8 @@ final class UploadedFile
 
     public static function fromPath(string $path): self
     {
-        $pathInfo = pathinfo($path);
-
         return new self(
-            $pathInfo['filename'],
+            pathinfo($path, PATHINFO_BASENAME),
             $path,
             filesize($path),
             MimeTypes::getDefault()->guessMimeType($path)
