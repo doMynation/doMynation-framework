@@ -7,28 +7,12 @@ namespace Domynation\Exceptions;
 use Exception;
 
 /**
- * Class ValidationException
- *
- * @package Domynation\Exceptions
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class ValidationException extends Exception
 {
-    /**
-     * The list of errors.
-     *
-     * @var array
-     */
-    protected array $errors;
-
-    /**
-     * ValidationException constructor.
-     *
-     * @param array|string $errors
-     */
-    public function __construct($errors)
+    public function __construct(protected array $errors)
     {
-        $this->errors = is_array($errors) ? $errors : [$errors];
     }
 
     /**

@@ -40,7 +40,8 @@ final class ValidationMiddleware extends RouteMiddleware
             try {
                 $this->validate($request, $route->getValidator());
             } catch (AssertionFailedException $e) {
-                throw new ValidationException([$e->getMessage()]);
+                $error = [$e->getPropertyPath() ?? 0 => $e->getMessage()];
+                throw new ValidationException([$error]);
             }
         }
 

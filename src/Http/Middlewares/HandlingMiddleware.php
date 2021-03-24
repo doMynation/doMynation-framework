@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domynation\Http\Middlewares;
 
 use Assert\AssertionFailedException;
+use Assert\LazyAssertionException;
 use Domynation\Authentication\UserInterface;
 use Domynation\Bus\CommandBusInterface;
 use Domynation\Eventing\EventDispatcherInterface;
@@ -128,8 +129,24 @@ final class HandlingMiddleware extends RouteMiddleware
     {
         try {
             return $this->invoker->call([$instance, 'validate'], $resolvedRoute->getParameters());
+        } catch (LazyAssertionException $e) {
+            $errors = array_reduce($e->getErrorExceptions(), function (array $acc, \Assert\InvalidArgumentException $exception) {
+                $levels = explode('.', $exception->getPropertyPath());
+
+                if (isset($levels[1])) {
+                    $acc[$levels[0]] = $acc[$levels[0]] ?? [];
+                    $acc[$levels[0]][$levels[1]] = $exception->getMessage();
+                } else {
+                    $acc[$levels[0]] = $exception->getMessage();
+                }
+
+                return $acc;
+            }, []);
+
+            throw new ValidationException($errors);
         } catch (AssertionFailedException $e) {
-            throw new ValidationException([$e->getMessage()]);
+            $error = [$e->getPropertyPath() ?? 0 => $e->getMessage()];
+            throw new ValidationException($error);
         }
     }
 

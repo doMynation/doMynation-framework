@@ -7,16 +7,11 @@ namespace Domynation\Communication;
 use Assert\Assertion;
 
 /**
- * Class Email
- *
- * @package Domynation\Communication
  * @author Dominique Sarrazin <domynation@gmail.com>
  */
 final class Email
 {
-    private string $email;
-
-    public function __construct(string $email)
+    public function __construct(private string $email)
     {
         Assertion::email($email, "Invalid email address {$email}");
 
