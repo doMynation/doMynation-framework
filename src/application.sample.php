@@ -19,6 +19,8 @@ return [
 
     'routing' => [
         'logsPath' => '/storage/logs/router.log',
+        'loginRoute' => '/login',
+        'prefix'     => '',
         'web'      => [
             // The middlewares chain (from top to bottom) that will intercept each request in a Web environment
             'middlewares' => [

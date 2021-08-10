@@ -29,16 +29,14 @@ final class SymfonyRouter implements RouterInterface
 {
     private RouteCollection $routes;
     private ?RouteMiddleware $middleware;
-    private string $loginRoute;
 
     /**
      * @param array \Domynation\Http\Middlewares\RouteMiddleware[] $middlewares
      */
-    public function __construct(array $middlewares, string $loginRoute)
+    public function __construct(array $middlewares, private string $routePrefix, private string $loginRoute)
     {
         $this->middleware = $this->buildMiddlewareChain($middlewares);
         $this->routes = new RouteCollection;
-        $this->loginRoute = $loginRoute;
     }
 
     /**
@@ -70,7 +68,7 @@ final class SymfonyRouter implements RouterInterface
 
         $domynationRoute = new Route($name, $controller, $method);
 
-        $route = new SymfonyRoute($path);
+        $route = new SymfonyRoute($this->routePrefix . $path);
         $route->setMethods($method);
         $route->setDefaults([
             '_internalRoute' => $domynationRoute
