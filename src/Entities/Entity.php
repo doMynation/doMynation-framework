@@ -25,6 +25,7 @@ abstract class Entity implements Arrayable, JsonSerializable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toArray();

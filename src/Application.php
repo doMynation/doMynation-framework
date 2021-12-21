@@ -243,7 +243,7 @@ final class Application
     private function bootErrorReporting(ConfigInterface $config): void
     {
         // Report all errors
-        error_reporting(-1);
+        error_reporting(E_ALL ^ E_DEPRECATED);
 
         $isDevMode = $config->get('isDevMode');
         $debugHandler = $isDevMode ? new PrettyPageHandler : function () {
