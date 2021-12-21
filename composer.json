@@ -44,7 +44,7 @@
     "erusev/parsedown": "^1.6",
     "predis/predis": "^1.0",
     "aws/aws-sdk-php": "^3.17",
-    "filp/whoops": "^2.1",
+    "filp/whoops": "^2.14",
     "symfony/mailer": "^5.0",
     "symfony/mailgun-mailer": "^5.0",
     "symfony/http-client": "^5.0",

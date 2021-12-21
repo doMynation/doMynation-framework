@@ -91,15 +91,15 @@ final class SymfonyRouter implements RouterInterface
         } catch (AuthenticationException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_UNAUTHORIZED)
-                : new RedirectResponse($this->loginRoute);
+                : new RedirectResponse($this->routePrefix . $this->loginRoute);
         } catch (AuthorizationException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_FORBIDDEN)
-                : new RedirectResponse('/403');
+                : new RedirectResponse($this->routePrefix . '/403');
         } catch (RouteNotFoundException | EntityNotFoundException $e) {
             return $request->isXmlHttpRequest()
                 ? new Response(null, Response::HTTP_NOT_FOUND)
-                : new RedirectResponse('/404');
+                : new RedirectResponse($this->routePrefix . '/404');
         } catch (ValidationException $e) {
             return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
         } catch (DomainException $e) {
@@ -205,7 +205,7 @@ final class SymfonyRouter implements RouterInterface
     public function forward(Request $request, $route): Response
     {
         $context = (new RequestContext)->fromRequest($request);
-        $context->setPathInfo($route);
+        $context->setPathInfo($this->routePrefix . $route);
 
         // Resolve the route definition
         try {
