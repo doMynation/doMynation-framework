@@ -119,7 +119,7 @@ return [
             'dbname'   => $dbConfig[$dbEnv]['name'],
             'user'     => $dbConfig[$dbEnv]['user'],
             'password' => $dbConfig[$dbEnv]['password'],
-            'charset'  => 'utf8'
+            'charset'  => 'utf8mb4'
         ], $ormConfig);
     },
 

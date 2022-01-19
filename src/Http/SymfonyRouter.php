@@ -93,13 +93,9 @@ final class SymfonyRouter implements RouterInterface
                 ? new Response(null, Response::HTTP_UNAUTHORIZED)
                 : new RedirectResponse($this->routePrefix . $this->loginRoute);
         } catch (AuthorizationException $e) {
-            return $request->isXmlHttpRequest()
-                ? new Response(null, Response::HTTP_FORBIDDEN)
-                : new RedirectResponse($this->routePrefix . '/403');
+            return new Response(null, Response::HTTP_FORBIDDEN);
         } catch (RouteNotFoundException | EntityNotFoundException $e) {
-            return $request->isXmlHttpRequest()
-                ? new Response(null, Response::HTTP_NOT_FOUND)
-                : new RedirectResponse($this->routePrefix . '/404');
+            return new Response(null, Response::HTTP_NOT_FOUND);
         } catch (ValidationException $e) {
             return new JsonResponse(['errors' => $e->getErrors()], Response::HTTP_BAD_REQUEST);
         } catch (DomainException $e) {
